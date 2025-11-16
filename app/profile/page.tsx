@@ -1,6 +1,7 @@
 'use client';
 
 import { UnifiedLayout } from '@/components/layout/UnifiedLayout';
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { ArrowRight, User } from 'lucide-react';
@@ -58,7 +59,12 @@ export default function ProfilePage() {
               Twój profil został przeniesiony do Panelu Użytkownika
             </p>
 
-            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 mb-8">
+            <UnifiedCard
+              variant="glass"
+              glow={true}
+              hover={true}
+              className="p-8 bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white mb-8"
+            >
               <h2 className="text-2xl font-bold text-white mb-4">
                 Co znajdziesz w Panelu Użytkownika?
               </h2>
@@ -92,7 +98,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </UnifiedCard>
 
             <Link
               href="/dashboard?tab=profile"

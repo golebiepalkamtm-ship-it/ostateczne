@@ -1,6 +1,7 @@
 # Pałka MTM – PROD-READY STACK ⚡️
 
 ## Kluczowe technologie:
+
 - Next.js 14
 - PWA (next-pwa)
 - Monitoring: Sentry, Prometheus, Grafana
@@ -12,32 +13,45 @@
 - Canary ready, docker ready, cloud native
 
 ## Healthcheck
+
 GET `/api/health` → `{ status: 'ok', timestamp: ... }`
 
 ## Feature flags
+
 - Plik: `lib/features.ts`
-- Użycie:  `isFeatureEnabled('animatedHomepage')`
+- Użycie: `isFeatureEnabled('animatedHomepage')`
 
 ## Monitoring/observability
+
 - Sentry (`sentry.client|server.config.ts`): DSN do `.env.local`
 - Prometheus dashboard: http://localhost:9090
 - Grafana z Prometheus: http://localhost:4000
 
 ## Caching
-- Redis: endpointy listingów (np. auctions) – wrapper `withRedisCache`
+
+- **Redis (OPCJONALNY)**: zwiększa wydajność, ale NIE jest wymagany
+- Aplikacja działa z in-memory cache jeśli Redis nie jest dostępny
+- Endpointy listingów (np. auctions) – wrapper `withRedisCache`
+- Setup guide: `docs/REDIS-SETUP.md`
+- Aby włączyć: uncomment `REDIS_URL` w `.env.local`
 
 ## Testy
+
 - Playwright: `npm run test:e2e` / katalog `e2e/`
 
 ## Build & deploy
+
 - Build: `npm run build`
 - Start prod: `npm start` lub Docker (`docker build -t palka-mtm . && docker run -p 3000:3000 palka-mtm`)
 
 ## Debugowanie
+
 - Error logs: `logs/app.log`
 
 ## CI/CD ready (GitHub Actions)
+
 Możesz od razu dodać workflow `.github/workflows/ci.yml`:
+
 ```yaml
 name: CI/CD
 on: [push]
@@ -70,6 +84,7 @@ jobs:
 ---
 
 ## Szybki test i debug produkcji (checklista):
+
 1. Healthcheck: odwiedź `/api/health` → **OK**
 2. Test E2E: `npx playwright test` → wszystko **pass**
 3. Monitoring: zaloguj się do Grafana (http://localhost:4000) + Prometheus (http://localhost:9090)

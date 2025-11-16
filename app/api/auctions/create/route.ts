@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireAdminAuth } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -38,13 +39,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, auction: updatedAuction });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.issues[0].message }, { status: 400 });
-    }
-    console.error('Błąd zatwierdzania aukcji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas zatwierdzania aukcji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'auctions/create' });
   }
 }

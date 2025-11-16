@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { redis } from './redis';
+import { getRedisClient } from './redis';
+import { debug } from './logger';
 
 // Prosty in-memory cache (fallback dla Redis)
 interface CacheEntry<T> {
@@ -95,21 +96,45 @@ class MemoryCache {
   }
 }
 
-// Redis cache implementation
+// Redis cache implementation z lazy connection
 class RedisCache {
   async get<T>(key: string): Promise<T | null> {
-    // TODO: Zaimplementuj prosty getJson na bazie redis.get
-    const val = await redis.get(key);
-    return val ? (JSON.parse(val) as T) : null;
+    try {
+      const redis = await getRedisClient();
+      if (!redis) {
+        debug('Redis nie dostępny w RedisCache.get - używam fallback');
+        return null;
+      }
+      const val = await redis.get(key);
+      return val ? (JSON.parse(val) as T) : null;
+    } catch (err) {
+      debug('Błąd Redis w get:', err);
+      return null;
+    }
   }
 
   async set<T>(key: string, data: T, ttlSeconds: number = 300): Promise<void> {
-    await redis.set(key, JSON.stringify(data));
-    if (ttlSeconds) await redis.expire(key, ttlSeconds);
+    try {
+      const redis = await getRedisClient();
+      if (!redis) {
+        debug('Redis nie dostępny w RedisCache.set - pomijam cache');
+        return;
+      }
+      await redis.set(key, JSON.stringify(data));
+      if (ttlSeconds) await redis.expire(key, ttlSeconds);
+    } catch (err) {
+      debug('Błąd Redis w set:', err);
+    }
   }
 
   async delete(key: string): Promise<void> {
-    await redis.del(key);
+    try {
+      const redis = await getRedisClient();
+      if (!redis) return;
+      await redis.del(key);
+    } catch (err) {
+      debug('Błąd Redis w delete:', err);
+    }
   }
 
   async clear(): Promise<void> {
@@ -118,9 +143,10 @@ class RedisCache {
     console.warn('Redis clear operation not implemented for safety reasons');
   }
 
-  getStats() {
+  async getStats() {
+    const redis = await getRedisClient();
     return {
-      redis: !!redis.isOpen,
+      redis: !!redis,
       type: 'redis',
     };
   }
@@ -132,20 +158,34 @@ interface CacheInterface {
   set<T>(key: string, data: T, ttlSeconds?: number): Promise<void> | void;
   delete(key: string): Promise<void> | void;
   clear(): Promise<void> | void;
-  getStats(): Record<string, unknown>;
+  getStats(): Record<string, unknown> | Promise<Record<string, unknown>>;
 }
 
 // Factory function to create appropriate cache
-function createCache(): CacheInterface {
+async function createCache(): Promise<CacheInterface> {
   // During build time or when Redis is not available, always use memory cache
-  if (typeof window !== 'undefined' || process.env.NODE_ENV === 'test' || !redis.isOpen) {
+  if (typeof window !== 'undefined' || process.env.NODE_ENV === 'test') {
     return new MemoryCache();
   }
+
+  const redis = await getRedisClient();
+  if (!redis) {
+    debug('Redis niedostępny w createCache - używam MemoryCache');
+    return new MemoryCache();
+  }
+
   return new RedisCache();
 }
 
-// Globalna instancja cache
-const cache = createCache();
+// Globalna instancja cache (lazy initialization)
+let cacheInstance: CacheInterface | null = null;
+
+async function getCache(): Promise<CacheInterface> {
+  if (!cacheInstance) {
+    cacheInstance = await createCache();
+  }
+  return cacheInstance;
+}
 
 /**
  * Generuje klucz cache na podstawie requestu
@@ -183,6 +223,7 @@ export function withCache(
     }
 
     const cacheKey = generateCacheKey(request, keyPrefix);
+    const cache = await getCache();
 
     // Sprawdź cache
     const cachedData = await cache.get<{
@@ -218,13 +259,8 @@ export function withCache(
         headers: Object.fromEntries(response.headers.entries()),
       };
 
-      if (cache.set.length === 3) {
-        // Async version (Redis)
-        await cache.set(cacheKey, cacheableData, ttl);
-      } else {
-        // Sync version (Memory)
-        cache.set(cacheKey, cacheableData, ttl);
-      }
+      // Zawsze używaj async version
+      await cache.set(cacheKey, cacheableData, ttl);
     }
 
     // Dodaj nagłówki cache miss
@@ -243,106 +279,6 @@ export function withCache(
   };
 }
 
-/**
- * Cache dla danych z bazy danych
- */
-export class DatabaseCache {
-  private static instance: DatabaseCache;
-  private cache = new MemoryCache();
-
-  static getInstance(): DatabaseCache {
-    if (!DatabaseCache.instance) {
-      DatabaseCache.instance = new DatabaseCache();
-    }
-    return DatabaseCache.instance;
-  }
-
-  /**
-   * Cache dla listy aukcji
-   */
-  async getAuctions(key: string, fetcher: () => Promise<unknown>, ttl: number = 60) {
-    const cached = this.cache.get(key);
-    if (cached) {
-      return cached;
-    }
-
-    const data = await fetcher();
-    this.cache.set(key, data, ttl);
-    return data;
-  }
-
-  /**
-   * Cache dla pojedynczej aukcji
-   */
-  async getAuction(id: string, fetcher: () => Promise<unknown>, ttl: number = 300) {
-    const key = `auction:${id}`;
-    const cached = this.cache.get(key);
-    if (cached) {
-      return cached;
-    }
-
-    const data = await fetcher();
-    this.cache.set(key, data, ttl);
-    return data;
-  }
-
-  /**
-   * Cache dla danych użytkownika
-   */
-  async getUser(id: string, fetcher: () => Promise<unknown>, ttl: number = 600) {
-    const key = `user:${id}`;
-    const cached = this.cache.get(key);
-    if (cached) {
-      return cached;
-    }
-
-    const data = await fetcher();
-    this.cache.set(key, data, ttl);
-    return data;
-  }
-
-  /**
-   * Inwaliduj cache dla aukcji
-   */
-  invalidateAuction(id: string): void {
-    this.cache.delete(`auction:${id}`);
-    // Inwaliduj też listy aukcji
-    this.invalidatePattern();
-  }
-
-  /**
-   * Inwaliduj cache dla użytkownika
-   */
-  invalidateUser(id: string): void {
-    this.cache.delete(`user:${id}`);
-  }
-
-  /**
-   * Inwaliduj cache według wzorca
-   */
-  invalidatePattern(): void {
-    // W prawdziwej implementacji z Redis użyjbyś SCAN
-    // Tutaj po prostu wyczyść cały cache
-    this.cache.clear();
-  }
-
-  /**
-   * Wyczyść cały cache
-   */
-  clear(): void {
-    this.cache.clear();
-  }
-
-  /**
-   * Statystyki cache
-   */
-  getStats() {
-    return this.cache.getStats();
-  }
-}
-
-// Export singleton instance
-export const dbCache = DatabaseCache.getInstance();
 
 /**
  * Middleware do cache'owania API responses

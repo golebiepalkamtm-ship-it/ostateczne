@@ -10,8 +10,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies (ignore platform restrictions for Docker)
-RUN npm ci --legacy-peer-deps --force
+# Install dependencies
+RUN npm ci
 
 # Copy the rest of the application
 COPY . .

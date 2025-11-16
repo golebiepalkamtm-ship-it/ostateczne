@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -95,10 +96,6 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Błąd podczas pobierania referencji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas pobierania referencji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'admin/references' });
   }
 }

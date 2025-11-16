@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server.js';
 import { ZodError } from 'zod';
+import { PrismaClientInitializationError, PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from '@prisma/client/runtime/library';
 import { captureError } from './sentry-helpers';
 
 // Typy błędów
@@ -132,12 +133,11 @@ export function withErrorHandling<T extends unknown[]>(
     try {
       return await handler(...args);
     } catch (error) {
-      const requestId = Math.random().toString(36).substring(2, 15);
-      
-      // Loguj błąd przez ErrorLogger (który wyśle do Sentry)
-      errorLogger.log(error as Error, { requestId });
-
-      return createErrorResponse(error as Error, requestId);
+      // Próbuj wyciągnąć NextRequest z argumentów (pierwszy argument w Next.js API routes)
+      const request = args[0] && typeof args[0] === 'object' && 'url' in args[0] && 'method' in args[0]
+        ? (args[0] as NextRequest)
+        : undefined;
+      return handleApiError(error, request);
     }
   };
 }
@@ -305,3 +305,178 @@ export function handleZodError(error: ZodError): AppError {
 }
 
 // Helper do obsługi błędów Firebase
+export function handleFirebaseError(error: unknown): AppError {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof error.code === 'string'
+  ) {
+    const code = error.code;
+
+    if (code === 'auth/email-already-in-use' || code === 'auth/email-already-exists') {
+      return AppErrors.conflict('Użytkownik z tym emailem już istnieje');
+    }
+
+    if (code === 'auth/weak-password') {
+      return AppErrors.validation('Hasło jest zbyt słabe');
+    }
+
+    if (code === 'auth/user-not-found') {
+      return AppErrors.notFound('Użytkownik');
+    }
+
+    if (code === 'auth/wrong-password') {
+      return AppErrors.unauthorized('Nieprawidłowe hasło');
+    }
+
+    if (code === 'auth/invalid-email') {
+      return AppErrors.validation('Nieprawidłowy adres email');
+    }
+
+    if (code === 'auth/too-many-requests') {
+      return AppErrors.rateLimit('Zbyt wiele prób. Spróbuj ponownie później');
+    }
+  }
+
+  const message =
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+      ? error.message
+      : 'Błąd autoryzacji Firebase';
+
+  return AppErrors.externalService('Firebase', message);
+}
+
+/**
+ * Uniwersalna funkcja do obsługi błędów w API routes
+ * Automatycznie rozpoznaje typ błędu (Zod, Firebase, Prisma, AppError) i zwraca odpowiednią NextResponse
+ *
+ * @param error - Błąd do obsłużenia
+ * @param request - NextRequest (opcjonalne, dla logowania kontekstu)
+ * @param context - Dodatkowy kontekst do logowania (opcjonalne)
+ * @returns NextResponse z odpowiednim kodem statusu i komunikatem błędu
+ *
+ * @example
+ * try {
+ *   // ... kod API route
+ * } catch (error) {
+ *   return handleApiError(error, request);
+ * }
+ */
+export function handleApiError(
+  error: unknown,
+  request?: NextRequest,
+  context?: Record<string, unknown>
+): NextResponse {
+  // Zod validation errors
+  if (error instanceof ZodError) {
+    const zodError = handleZodError(error);
+    if (request) {
+      errorLogger.logApiError(zodError, request, context);
+    }
+    return NextResponse.json(
+      {
+        error: zodError.message,
+        details: zodError.details,
+      },
+      { status: zodError.statusCode }
+    );
+  }
+
+  // AppError (nasze własne błędy aplikacji)
+  if (error instanceof AppError) {
+    if (request) {
+      errorLogger.logApiError(error, request, context);
+    }
+    return NextResponse.json(
+      {
+        error: error.message,
+        ...(error.details && { details: error.details }),
+        ...(process.env.NODE_ENV === 'development' && {
+          type: error.type,
+          stack: error.stack,
+        }),
+      },
+      { status: error.statusCode }
+    );
+  }
+
+  // Firebase errors
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof error.code === 'string' &&
+    error.code.startsWith('auth/')
+  ) {
+    const firebaseError = handleFirebaseError(error);
+    if (request) {
+      errorLogger.logApiError(firebaseError, request, context);
+    }
+    return NextResponse.json(
+      {
+        error: firebaseError.message,
+      },
+      { status: firebaseError.statusCode }
+    );
+  }
+
+  // Prisma errors
+  if (
+    error instanceof PrismaClientInitializationError ||
+    error instanceof PrismaClientKnownRequestError ||
+    error instanceof PrismaClientUnknownRequestError ||
+    (typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      typeof error.code === 'string' &&
+      error.code.startsWith('P'))
+  ) {
+    const prismaError = handlePrismaError(error);
+    if (request) {
+      errorLogger.logApiError(prismaError, request, context);
+    }
+    return NextResponse.json(
+      {
+        error: prismaError.message,
+      },
+      { status: prismaError.statusCode }
+    );
+  }
+
+  // Generic Error
+  if (error instanceof Error) {
+    const appError = AppErrors.internal(error.message);
+    if (request) {
+      errorLogger.logApiError(appError, request, context);
+    }
+    return NextResponse.json(
+      {
+        error: appError.message,
+        ...(process.env.NODE_ENV === 'development' && {
+          details: error.message,
+          stack: error.stack,
+        }),
+      },
+      { status: 500 }
+    );
+  }
+
+  // Unknown error type
+  const appError = AppErrors.internal('Wystąpił nieoczekiwany błąd');
+  if (request) {
+    errorLogger.logApiError(appError, request, { ...context, originalError: String(error) });
+  }
+  return NextResponse.json(
+    {
+      error: appError.message,
+      ...(process.env.NODE_ENV === 'development' && {
+        details: String(error),
+      }),
+    },
+    { status: 500 }
+  );
+}

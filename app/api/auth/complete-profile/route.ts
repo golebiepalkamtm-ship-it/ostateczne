@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -67,10 +68,6 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Błąd uzupełniania profilu:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas aktualizacji profilu' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'auth/complete-profile' });
   }
 }

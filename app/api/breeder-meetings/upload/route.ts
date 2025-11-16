@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getActiveUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { uploadRateLimit } from '@/lib/rate-limit';
@@ -142,7 +143,6 @@ export async function POST(request: NextRequest) {
       message: 'Zdjęcia zostały przesłane i oczekują na zatwierdzenie',
     });
   } catch (error) {
-    console.error('Błąd podczas uploadu:', error);
-    return NextResponse.json({ error: 'Wystąpił błąd podczas przesyłania zdjęć' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'breeder-meetings/upload' });
   }
 }

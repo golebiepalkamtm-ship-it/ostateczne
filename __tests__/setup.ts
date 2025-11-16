@@ -128,6 +128,12 @@ vi.mock('@/lib/firebase-admin', () => ({
     updateUser: vi.fn(),
     deleteUser: vi.fn(),
   },
+  getAdminAuth: vi.fn(() => ({
+    verifyIdToken: vi.fn(),
+    createUser: vi.fn(),
+    updateUser: vi.fn(),
+    deleteUser: vi.fn(),
+  })),
 }));
 
 // Mock external services

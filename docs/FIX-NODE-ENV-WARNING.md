@@ -3,6 +3,7 @@
 ## Problem
 
 Next.js wyświetla ostrzeżenie:
+
 ```
 ⚠ You are using a non-standard "NODE_ENV" value in your environment.
 ```
@@ -10,6 +11,7 @@ Next.js wyświetla ostrzeżenie:
 ## Przyczyna
 
 Next.js automatycznie ustawia `NODE_ENV`:
+
 - `development` podczas `next dev`
 - `production` podczas `next build`
 - `test` podczas testów
@@ -28,6 +30,7 @@ grep -r "NODE_ENV" .env* 2>/dev/null
 ```
 
 Jeśli znajdziesz `NODE_ENV`, **usuń tę linię** z plików:
+
 - `.env`
 - `.env.local`
 - `.env.development`
@@ -36,22 +39,26 @@ Jeśli znajdziesz `NODE_ENV`, **usuń tę linię** z plików:
 ### 2. Sprawdź zmienne środowiskowe systemowe
 
 Na Windows PowerShell:
+
 ```powershell
 $env:NODE_ENV
 ```
 
 Na Linux/Mac:
+
 ```bash
 echo $NODE_ENV
 ```
 
 Jeśli jest ustawione, usuń:
+
 - Windows PowerShell: `Remove-Item Env:\NODE_ENV`
 - Linux/Mac: `unset NODE_ENV`
 
 ### 3. Sprawdź pliki konfiguracyjne shell
 
 Jeśli używasz bash/zsh, sprawdź:
+
 - `~/.bashrc`
 - `~/.bash_profile`
 - `~/.zshrc`
@@ -71,8 +78,9 @@ APP_ENV="staging"
 ```
 
 Następnie w kodzie:
+
 ```typescript
-const environment = process.env.APP_ENV || process.env.NODE_ENV
+const environment = process.env.APP_ENV || process.env.NODE_ENV;
 ```
 
 ## Co zostało naprawione w projekcie
@@ -85,6 +93,7 @@ const environment = process.env.APP_ENV || process.env.NODE_ENV
 ## Weryfikacja
 
 Po naprawie, uruchom:
+
 ```bash
 npm run dev
 ```
@@ -94,4 +103,3 @@ Ostrzeżenie powinno zniknąć.
 ## Dokumentacja
 
 [Next.js - Non-Standard NODE_ENV](https://nextjs.org/docs/messages/non-standard-node-env)
-

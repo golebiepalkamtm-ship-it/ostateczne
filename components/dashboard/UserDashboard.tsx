@@ -3,6 +3,7 @@
 import ChangePasswordForm from '@/components/auth/ChangePasswordForm';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 import { CountrySelect } from '@/components/ui/CountrySelect';
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { getPhoneCodeForCountry } from '@/lib/country-codes';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -39,10 +40,11 @@ import {
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { debug, error, isDev } from '@/lib/logger';
+import { debug, info, error, isDev } from '@/lib/logger';
+import CreateAuctionForm from '@/components/auctions/CreateAuctionForm';
 
 export function UserDashboard() {
-  const { user, dbUser, signOut } = useAuth();
+  const { user, dbUser, signOut, refetchDbUser } = useAuth();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('profile');
   const [auctionsSubTab, setAuctionsSubTab] = useState<
@@ -60,6 +62,10 @@ export function UserDashboard() {
     phoneCode: '+48',
   });
   const [isProfileComplete, setIsProfileComplete] = useState(false);
+  const [showSmsVerification, setShowSmsVerification] = useState(false);
+  const [smsCode, setSmsCode] = useState('');
+  const [isVerifyingSms, setIsVerifyingSms] = useState(false);
+  const [showCreateAuctionForm, setShowCreateAuctionForm] = useState(false);
   const [auctionsData, _setAuctionsData] = useState({
     myAuctions: [],
     watchedAuctions: [],
@@ -89,10 +95,16 @@ export function UserDashboard() {
   const hasFetchedProfile = useRef<string | false>(false);
 
   const fetchUserProfile = useCallback(async () => {
-    if (!user?.uid || hasFetchedProfile.current === user.uid) return;
+    if (!user?.uid) return;
+
+    // ⚠️ Sprawdź czy fetch już trwa (zabezpieczenie przed wielokrotnym wywołaniem)
+    if (hasFetchedProfile.current === user.uid) {
+      if (isDev) debug('⏭️ Fetch już wykonany dla tego użytkownika, pomijam');
+      return;
+    }
 
     try {
-      hasFetchedProfile.current = user.uid; // Zapisz UID zamiast true
+      hasFetchedProfile.current = user.uid; // Zapisz UID aby zaznaczyć że fetch jest w trakcie
       const token = await user.getIdToken();
       const response = await fetch('/api/profile', {
         headers: { Authorization: `Bearer ${token}` },
@@ -100,7 +112,25 @@ export function UserDashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        setIsProfileComplete(data.user.isProfileVerified);
+        const userData = data.user;
+
+        // ✅ AKTUALIZUJ profileData z danymi z bazy
+        setProfileData({
+          displayName:
+            userData.firstName && userData.lastName
+              ? `${userData.firstName} ${userData.lastName}`
+              : user.displayName || '',
+          phoneNumber: userData.phoneNumber || '',
+          address: userData.address || '',
+          city: userData.city || '',
+          postalCode: userData.postalCode || '',
+          country: 'Polska', // Domyślnie Polska (brak pola w bazie)
+          phoneCode: '+48', // Domyślnie +48
+        });
+
+        setIsProfileComplete(userData.isProfileVerified);
+
+        if (isDev) debug('✅ Zaktualizowano profileData z API:', userData);
       }
     } catch (err) {
       error('Błąd podczas pobierania profilu:', err instanceof Error ? err.message : err);
@@ -198,7 +228,12 @@ export function UserDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <UnifiedCard
+            variant="glass"
+            glow={true}
+            hover={true}
+            className="p-6"
+          >
             {/* User Info */}
             <div className="text-center mb-6">
               <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -255,12 +290,17 @@ export function UserDashboard() {
                 <span>Wyloguj się</span>
               </button>
             </div>
-          </div>
+          </UnifiedCard>
         </div>
 
         {/* Main Content */}
         <div className="lg:col-span-3">
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <UnifiedCard
+            variant="glass"
+            glow={true}
+            hover={true}
+            className="p-6"
+          >
             {activeTab === 'profile' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -300,7 +340,7 @@ export function UserDashboard() {
                           title="Wpisz imię i nazwisko"
                         />
                       ) : (
-                        <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                        <div className="flex items-center gap-3 p-3">
                           <User className="w-4 h-4 text-blue-400" />
                           <span className="text-white">
                             {profileData.displayName || 'Nie ustawiono'}
@@ -311,7 +351,7 @@ export function UserDashboard() {
 
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm">Email</label>
-                      <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                      <div className="flex items-center gap-3 p-3">
                         <Mail className="w-4 h-4 text-blue-400" />
                         <span className="text-white">{user.email}</span>
                         {user.emailVerified ? (
@@ -356,7 +396,7 @@ export function UserDashboard() {
                           />
                         </div>
                       ) : (
-                        <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex-1">
+                        <div className="flex items-center gap-3 p-3 flex-1">
                           <Phone className="w-4 h-4 text-green-400" />
                           <span className="text-white">
                             {profileData.phoneNumber || 'Nie ustawiono'}
@@ -367,15 +407,90 @@ export function UserDashboard() {
                         <button
                           className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-300"
                           title="Zweryfikuj numer telefonu"
-                          onClick={e => {
+                          onClick={async e => {
                             e.preventDefault();
                             e.stopPropagation();
-                            // Tutaj będzie logika weryfikacji SMS
-                            if (isDev)
-                              debug(
-                                'Rozpocznij weryfikację SMS dla numeru:',
-                                profileData.phoneNumber
+
+                            // ⚠️ Walidacja: sprawdź czy numer telefonu jest wypełniony
+                            if (!profileData.phoneNumber || profileData.phoneNumber.trim() === '') {
+                              toast.error('❌ Najpierw wprowadź numer telefonu w profilu!', {
+                                duration: 5000,
+                                position: 'top-center',
+                              });
+                              return;
+                            }
+
+                            try {
+                              if (isDev)
+                                debug(
+                                  'Rozpocznij weryfikację SMS dla numeru:',
+                                  profileData.phoneNumber
+                                );
+
+                              // Wyślij kod weryfikacyjny SMS
+                              const token = await user!.getIdToken();
+                              const response = await fetch('/api/auth/send-verification-code', {
+                                method: 'POST',
+                                headers: {
+                                  Authorization: `Bearer ${token}`,
+                                  'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                  phoneNumber: profileData.phoneNumber,
+                                }),
+                              });
+
+                              if (!response.ok) {
+                                const errorData = await response.json();
+                                throw new Error(errorData.error || 'Błąd wysyłania kodu SMS');
+                              }
+
+                              const data = await response.json();
+
+                              // ✅ W DEV mode - pokaż kod w toaście
+                              if (isDev && data.code) {
+                                toast.success(
+                                  `📱 [DEV] Kod weryfikacyjny: ${data.code}\n\nWpisz ten kod w polu poniżej!`,
+                                  {
+                                    duration: 15000, // 15 sekund
+                                    position: 'top-center',
+                                    icon: '🔑',
+                                    style: {
+                                      fontSize: '18px',
+                                      fontWeight: 'bold',
+                                      padding: '20px',
+                                    },
+                                  }
+                                );
+                                info(`🔑 DEV MODE - Kod SMS: ${data.code}`);
+                              } else {
+                                // Production - tylko info o wysłaniu
+                                toast.success(
+                                  '📱 Kod weryfikacyjny został wysłany na Twój telefon!',
+                                  {
+                                    duration: 6000,
+                                    position: 'top-center',
+                                    icon: '✉️',
+                                  }
+                                );
+                              }
+
+                              // Pokaż modal z polem do wpisania kodu
+                              setShowSmsVerification(true);
+                              setSmsCode('');
+                            } catch (err) {
+                              error(
+                                'Błąd weryfikacji telefonu:',
+                                err instanceof Error ? err.message : err
                               );
+                              toast.error(
+                                `❌ ${err instanceof Error ? err.message : 'Nie udało się wysłać kodu SMS'}`,
+                                {
+                                  duration: 5000,
+                                  position: 'top-center',
+                                }
+                              );
+                            }
                           }}
                         >
                           <Shield className="w-4 h-4" />
@@ -409,7 +524,7 @@ export function UserDashboard() {
                             }
                           />
                         ) : (
-                          <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                          <div className="flex items-center gap-3 p-3">
                             <MapPin className="w-4 h-4 text-blue-400" />
                             <span className="text-white">
                               {profileData.address || 'Nie ustawiono'}
@@ -439,7 +554,7 @@ export function UserDashboard() {
                             }
                           />
                         ) : (
-                          <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                          <div className="flex items-center gap-3 p-3">
                             <MapPin className="w-4 h-4 text-blue-400" />
                             <span className="text-white">
                               {profileData.city || 'Nie ustawiono'}
@@ -463,7 +578,7 @@ export function UserDashboard() {
                             pattern="[0-9]{2}-[0-9]{3}"
                           />
                         ) : (
-                          <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                          <div className="flex items-center gap-3 p-3">
                             <MapPin className="w-4 h-4 text-blue-400" />
                             <span className="text-white">
                               {profileData.postalCode || 'Nie ustawiono'}
@@ -498,7 +613,7 @@ export function UserDashboard() {
                             }}
                           />
                         ) : (
-                          <div className="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                          <div className="flex items-center gap-3 p-3">
                             <MapPin className="w-4 h-4 text-blue-400" />
                             <span className="text-white">{profileData.country}</span>
                           </div>
@@ -542,10 +657,74 @@ export function UserDashboard() {
                 {isEditingProfile && (
                   <div className="mt-8 flex gap-4">
                     <button
-                      onClick={() => {
-                        // Tutaj będzie logika zapisywania
-                        debug('Zapisywanie profilu:', profileData);
-                        setIsEditingProfile(false);
+                      onClick={async () => {
+                        try {
+                          if (isDev) debug('Zapisywanie profilu:', profileData);
+
+                          // Parsuj imię i nazwisko z displayName
+                          const nameParts = profileData.displayName.trim().split(' ');
+                          const firstName = nameParts[0] || '';
+                          const lastName = nameParts.slice(1).join(' ') || '';
+
+                          if (!firstName || !lastName) {
+                            toast.error('Podaj imię i nazwisko', { duration: 4000 });
+                            return;
+                          }
+
+                          const token = await user!.getIdToken();
+                          const response = await fetch('/api/profile', {
+                            method: 'PATCH',
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              firstName,
+                              lastName,
+                              address: profileData.address,
+                              city: profileData.city,
+                              postalCode: profileData.postalCode,
+                              phoneNumber: profileData.phoneNumber,
+                            }),
+                          });
+
+                          if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Błąd zapisywania profilu');
+                          }
+
+                          const data = await response.json();
+
+                          // ✅ Komunikat sukcesu z informacją o zapisaniu do Prisma
+                          toast.success('✅ Profil został zapisany w bazie danych!', {
+                            duration: 5000,
+                            position: 'top-center',
+                            icon: '💾',
+                          });
+
+                          setIsEditingProfile(false);
+
+                          // ✅ WYMUŚ ponowne pobranie profilu z bazy
+                          hasFetchedProfile.current = false;
+                          await fetchUserProfile();
+
+                          // Odśwież dane profilu
+                          if (data.user) {
+                            setIsProfileComplete(data.user.isProfileVerified);
+                          }
+                        } catch (err) {
+                          error(
+                            'Błąd zapisywania profilu:',
+                            err instanceof Error ? err.message : err
+                          );
+                          toast.error(
+                            `❌ Błąd: ${err instanceof Error ? err.message : 'Nie udało się zapisać profilu'}`,
+                            {
+                              duration: 5000,
+                              position: 'top-center',
+                            }
+                          );
+                        }
                       }}
                       className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-300"
                     >
@@ -581,19 +760,19 @@ export function UserDashboard() {
                           <Search className="w-4 h-4" />
                           <span>Przeglądaj</span>
                         </Link>
-                        <Link
-                          href="/seller/create-auction"
+                        <button
+                          onClick={() => setShowCreateAuctionForm(true)}
                           className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-300"
                         >
                           <Plus className="w-4 h-4" />
                           <span>Utwórz</span>
-                        </Link>
+                        </button>
                       </div>
                     </div>
 
                     {/* Statystyki */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                      <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                      <div className="p-4">
                         <div className="flex items-center gap-3">
                           <Gavel className="w-5 h-5 text-blue-400" />
                           <div>
@@ -604,7 +783,7 @@ export function UserDashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                      <div className="p-4">
                         <div className="flex items-center gap-3">
                           <Heart className="w-5 h-5 text-pink-400" />
                           <div>
@@ -615,7 +794,7 @@ export function UserDashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                      <div className="p-4">
                         <div className="flex items-center gap-3">
                           <TrendingUp className="w-5 h-5 text-green-400" />
                           <div>
@@ -624,7 +803,7 @@ export function UserDashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                      <div className="p-4">
                         <div className="flex items-center gap-3">
                           <BarChart3 className="w-5 h-5 text-purple-400" />
                           <div>
@@ -678,7 +857,7 @@ export function UserDashboard() {
                               {auctionsData.myAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
-                                  className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                                  className="p-4"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
@@ -726,7 +905,7 @@ export function UserDashboard() {
                               {auctionsData.watchedAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
-                                  className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                                  className="p-4"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
@@ -767,7 +946,7 @@ export function UserDashboard() {
                               {auctionsData.myBids.map((bid: any) => (
                                 <div
                                   key={bid.id}
-                                  className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                                  className="p-4"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
@@ -813,7 +992,7 @@ export function UserDashboard() {
                               {auctionsData.endedAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
-                                  className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                                  className="p-4"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
@@ -853,7 +1032,7 @@ export function UserDashboard() {
                               {auctionsData.soldAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
-                                  className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                                  className="p-4"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
@@ -911,7 +1090,7 @@ export function UserDashboard() {
                 <h3 className="text-2xl font-bold text-white mb-6">Wiadomości</h3>
 
                 <div className="space-y-6">
-                  <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                  <div className="p-4">
                     <div className="flex items-center gap-3">
                       <MessageSquare className="w-5 h-5 text-blue-400" />
                       <div>
@@ -922,7 +1101,7 @@ export function UserDashboard() {
                   </div>
 
                   <div className="space-y-3">
-                    <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="text-white font-semibold">Brak nowych wiadomości</h4>
@@ -955,7 +1134,7 @@ export function UserDashboard() {
                 <h3 className="text-2xl font-bold text-white mb-6">Osiągnięcia</h3>
 
                 <div className="space-y-6">
-                  <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                  <div className="p-4">
                     <div className="flex items-center gap-3">
                       <Trophy className="w-5 h-5 text-yellow-400" />
                       <div>
@@ -966,7 +1145,7 @@ export function UserDashboard() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <Trophy className="w-5 h-5 text-yellow-400" />
                         <h4 className="text-white font-semibold">Pierwsza aukcja</h4>
@@ -977,7 +1156,7 @@ export function UserDashboard() {
                       </div>
                     </div>
 
-                    <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <Star className="w-5 h-5 text-blue-400" />
                         <h4 className="text-white font-semibold">Aktywny hodowca</h4>
@@ -1011,7 +1190,7 @@ export function UserDashboard() {
                 <h3 className="text-2xl font-bold text-white mb-6">Referencje</h3>
 
                 <div className="space-y-6">
-                  <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                  <div className="p-4">
                     <div className="flex items-center gap-3">
                       <Star className="w-5 h-5 text-green-400" />
                       <div>
@@ -1022,7 +1201,7 @@ export function UserDashboard() {
                   </div>
 
                   <div className="space-y-3">
-                    <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="text-white font-semibold">Brak referencji</h4>
@@ -1057,7 +1236,7 @@ export function UserDashboard() {
                 <h3 className="text-2xl font-bold text-white mb-6">Spotkania hodowców</h3>
 
                 <div className="space-y-6">
-                  <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                  <div className="p-4">
                     <div className="flex items-center gap-3">
                       <Users className="w-5 h-5 text-purple-400" />
                       <div>
@@ -1068,7 +1247,7 @@ export function UserDashboard() {
                   </div>
 
                   <div className="space-y-3">
-                    <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="text-white font-semibold">Brak nadchodzących spotkań</h4>
@@ -1114,20 +1293,8 @@ export function UserDashboard() {
                   />
                 ) : (
                   <div className="space-y-6">
-                    <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
-                      <div className="flex items-center gap-3">
-                        <Shield className="w-5 h-5 text-green-400" />
-                        <div>
-                          <h4 className="text-white font-semibold">Konto zabezpieczone</h4>
-                          <p className="text-white/70 text-sm">
-                            Twoje konto jest chronione przez Firebase Authentication
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                      <div className="flex items-center justify-between p-4">
                         <div className="flex items-center gap-3">
                           <Mail className="w-4 h-4 text-blue-400" />
                           <div>
@@ -1150,24 +1317,8 @@ export function UserDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
-                        <div className="flex items-center gap-3">
-                          <Key className="w-4 h-4 text-purple-400" />
-                          <div>
-                            <h4 className="text-white font-semibold">Hasło</h4>
-                            <p className="text-white/70 text-sm">Zarządzaj swoim hasłem</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setShowChangePassword(true)}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300"
-                        >
-                          Zmień hasło
-                        </button>
-                      </div>
-
                       {!user.emailVerified && (
-                        <div className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                        <div className="flex items-center justify-between p-4">
                           <div className="flex items-center gap-3">
                             <Mail className="w-4 h-4 text-yellow-400" />
                             <div>
@@ -1206,6 +1357,34 @@ export function UserDashboard() {
                           </button>
                         </div>
                       )}
+
+                      <div className="p-4">
+                        <div className="flex items-center gap-3">
+                          <Shield className="w-5 h-5 text-green-400" />
+                          <div>
+                            <h4 className="text-white font-semibold">Konto zabezpieczone</h4>
+                            <p className="text-white/70 text-sm">
+                              Twoje konto jest chronione przez Firebase Authentication
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between p-4">
+                        <div className="flex items-center gap-3">
+                          <Key className="w-4 h-4 text-purple-400" />
+                          <div>
+                            <h4 className="text-white font-semibold">Hasło</h4>
+                            <p className="text-white/70 text-sm">Zarządzaj swoim hasłem</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setShowChangePassword(true)}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300"
+                        >
+                          Zmień hasło
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1221,7 +1400,7 @@ export function UserDashboard() {
                 <h3 className="text-2xl font-bold text-white mb-6">Powiadomienia</h3>
 
                 <div className="space-y-4">
-                  <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                  <div className="p-4">
                     <div className="flex items-center gap-3">
                       <Bell className="w-5 h-5 text-blue-400" />
                       <div>
@@ -1234,7 +1413,7 @@ export function UserDashboard() {
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="flex items-center justify-between p-3">
                       <span className="text-white">Nowe aukcje</span>
                       <input
                         type="checkbox"
@@ -1243,7 +1422,7 @@ export function UserDashboard() {
                         aria-label="Włącz powiadomienia o nowych aukcjach"
                       />
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="flex items-center justify-between p-3">
                       <span className="text-white">Aktualizacje konta</span>
                       <input
                         type="checkbox"
@@ -1252,7 +1431,7 @@ export function UserDashboard() {
                         aria-label="Włącz powiadomienia o aktualizacjach konta"
                       />
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="flex items-center justify-between p-3">
                       <span className="text-white">Powiadomienia SMS</span>
                       <input
                         type="checkbox"
@@ -1275,7 +1454,7 @@ export function UserDashboard() {
 
                 <div className="space-y-6">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="flex items-center justify-between p-4">
                       <div>
                         <h4 className="text-white font-semibold">Język</h4>
                         <p className="text-white/70 text-sm">Wybierz język interfejsu</p>
@@ -1289,7 +1468,7 @@ export function UserDashboard() {
                       </select>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="flex items-center justify-between p-4">
                       <div>
                         <h4 className="text-white font-semibold">Motyw</h4>
                         <p className="text-white/70 text-sm">Wybierz motyw aplikacji</p>
@@ -1304,7 +1483,7 @@ export function UserDashboard() {
                       </select>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+                    <div className="flex items-center justify-between p-4">
                       <div>
                         <h4 className="text-white font-semibold">Tryb deweloperski</h4>
                         <p className="text-white/70 text-sm">
@@ -1327,9 +1506,208 @@ export function UserDashboard() {
                 </div>
               </motion.div>
             )}
-          </div>
+          </UnifiedCard>
         </div>
       </div>
+
+      {/* Modal weryfikacji SMS */}
+      {showSmsVerification && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="card-glass p-8 max-w-md w-full"
+          >
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-green-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Weryfikacja telefonu</h3>
+              <p className="text-white/70 text-sm">
+                Wpisz 6-cyfrowy kod wysłany na numer <br />
+                <span className="font-semibold text-white">{profileData.phoneNumber}</span>
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Kod weryfikacyjny</label>
+                <input
+                  type="text"
+                  value={smsCode}
+                  onChange={e => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    setSmsCode(value);
+                  }}
+                  className="w-full p-4 bg-white/10 border border-white/20 rounded-lg text-white text-center text-2xl font-mono tracking-widest placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="000000"
+                  maxLength={6}
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={async () => {
+                    if (smsCode.length !== 6) {
+                      toast.error('Kod musi mieć 6 cyfr', { duration: 3000 });
+                      return;
+                    }
+
+                    setIsVerifyingSms(true);
+                    try {
+                      const token = await user!.getIdToken();
+                      const response = await fetch('/api/auth/verify-sms-code', {
+                        method: 'POST',
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ code: smsCode }),
+                      });
+
+                      if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Nieprawidłowy kod');
+                      }
+
+                      // ✅ SUKCES - Telefon zweryfikowany!
+                      toast.success(
+                        '🎉 Telefon zweryfikowany! Masz teraz pełny dostęp do platformy!',
+                        {
+                          duration: 7000,
+                          position: 'top-center',
+                          icon: '✅',
+                        }
+                      );
+
+                      setShowSmsVerification(false);
+                      setSmsCode('');
+                      setIsProfileComplete(true);
+
+                      // ✅ WYMUŚ ponowne pobranie profilu z bazy (z zaktualizowaną rolą)
+                      hasFetchedProfile.current = false;
+                      await fetchUserProfile();
+
+                      // ✅ Odśwież również AuthContext aby mieć najnowszą rolę
+                      await refetchDbUser();
+                    } catch (err) {
+                      error('Błąd weryfikacji SMS:', err instanceof Error ? err.message : err);
+                      toast.error(
+                        `❌ ${err instanceof Error ? err.message : 'Nieprawidłowy kod'}`,
+                        {
+                          duration: 5000,
+                        }
+                      );
+                    } finally {
+                      setIsVerifyingSms(false);
+                    }
+                  }}
+                  disabled={isVerifyingSms || smsCode.length !== 6}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-300"
+                >
+                  {isVerifyingSms ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <span>Weryfikacja...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Zweryfikuj</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowSmsVerification(false);
+                    setSmsCode('');
+                  }}
+                  disabled={isVerifyingSms}
+                  className="px-6 py-3 bg-gray-600 hover:bg-gray-700 disabled:opacity-50 text-white rounded-lg transition-all duration-300"
+                >
+                  Anuluj
+                </button>
+              </div>
+
+              <div className="text-center pt-4 border-t border-white/10">
+                <p className="text-white/50 text-xs mb-2">Nie otrzymałeś kodu?</p>
+                <button
+                  onClick={async () => {
+                    // ⚠️ Walidacja: sprawdź czy numer telefonu jest wypełniony
+                    if (!profileData.phoneNumber || profileData.phoneNumber.trim() === '') {
+                      toast.error('❌ Brak numeru telefonu w profilu!', {
+                        duration: 4000,
+                        position: 'top-center',
+                      });
+                      return;
+                    }
+
+                    try {
+                      const token = await user!.getIdToken();
+                      const response = await fetch('/api/auth/send-verification-code', {
+                        method: 'POST',
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ phoneNumber: profileData.phoneNumber }),
+                      });
+
+                      const data = await response.json();
+
+                      // ✅ W DEV mode - pokaż nowy kod w toaście
+                      if (isDev && data.code) {
+                        toast.success(`🔑 [DEV] Nowy kod: ${data.code}`, {
+                          duration: 12000,
+                          position: 'top-center',
+                          style: {
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                          },
+                        });
+                        info(`🔑 DEV MODE - Nowy kod SMS: ${data.code}`);
+                      } else {
+                        toast.success('📱 Nowy kod został wysłany!', {
+                          duration: 4000,
+                        });
+                      }
+                    } catch {
+                      toast.error('Błąd wysyłania kodu', { duration: 3000 });
+                    }
+                  }}
+                  className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+                >
+                  Wyślij ponownie
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modal formularza tworzenia aukcji */}
+      {showCreateAuctionForm && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 pointer-events-none overflow-y-auto">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm pointer-events-auto"
+            onClick={() => setShowCreateAuctionForm(false)}
+          />
+          {/* Formularz */}
+          <div className="relative z-10 w-full max-w-6xl my-auto pointer-events-auto">
+            <CreateAuctionForm
+              showHeader={true}
+              onCancel={() => setShowCreateAuctionForm(false)}
+              onSuccess={() => {
+                setShowCreateAuctionForm(false);
+                // Odśwież dane aukcji jeśli potrzeba
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

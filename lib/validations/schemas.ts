@@ -41,25 +41,49 @@ export const auctionCreateSchema = z
     startingPrice: z.number().min(0, 'Cena startowa nie może być ujemna').optional(),
     buyNowPrice: z.number().min(0, 'Cena kup teraz nie może być ujemna').optional(),
     reservePrice: z.number().min(0, 'Cena rezerwowa nie może być ujemna').optional(),
-    startTime: z.string().datetime('Nieprawidłowa data rozpoczęcia'),
+    startTime: z.string().datetime('Nieprawidłowa data rozpoczęcia').optional(),
+    endTime: z.string().datetime('Nieprawidłowa data zakończenia').optional(),
     images: z.array(z.string().min(1, 'URL obrazu nie może być pusty')).optional(),
     videos: z.array(z.string().min(1, 'URL wideo nie może być pusty')).optional(),
     documents: z.array(z.string().min(1, 'URL dokumentu nie może być pusty')).optional(),
     location: z.string().optional(),
+    locationData: z.any().optional(),
     pigeon: z
       .object({
-        ringNumber: z.string().optional(),
-        bloodline: z.string().optional(),
-        sex: z.enum(['male', 'female']).optional(),
+        ringNumber: z.string().min(1, 'Numer obrączki jest wymagany dla gołębia'),
+        bloodline: z.string().min(1, 'Linia krwi jest wymagana dla gołębia'),
+        sex: z.enum(['male', 'female'], { message: 'Płeć jest wymagana dla gołębia' }),
         eyeColor: z.string().optional(),
         featherColor: z.string().optional(),
         purpose: z.array(z.string()).optional(),
+        // Charakterystyka
+        dnaCertificate: z.string().optional(),
+        size: z.string().optional(),
+        bodyStructure: z.string().optional(),
+        vitality: z.string().optional(),
+        colorDensity: z.string().optional(),
+        length: z.string().optional(),
+        endurance: z.string().optional(),
+        forkStrength: z.string().optional(),
+        forkAlignment: z.string().optional(),
+        muscles: z.string().optional(),
+        balance: z.string().optional(),
+        back: z.string().optional(),
+        // Opis skrzydła
+        breedingFeathers: z.string().optional(),
+        flightFeathers: z.string().optional(),
+        plumage: z.string().optional(),
+        featherQuality: z.string().optional(),
+        secondaryFlightFeathers: z.string().optional(),
+        flexibility: z.string().optional(),
       })
       .optional(),
+    csrfToken: z.string().min(1, 'Token CSRF jest wymagany').optional(),
   })
   .refine(
     data => {
-      if (data.buyNowPrice && data.startingPrice) {
+      // Sprawdź tylko jeśli buyNowPrice jest ustawione i > 0
+      if (data.buyNowPrice && data.buyNowPrice > 0 && data.startingPrice) {
         return data.buyNowPrice >= data.startingPrice;
       }
       return true;
@@ -67,6 +91,18 @@ export const auctionCreateSchema = z
     {
       message: 'Cena kup teraz musi być większa lub równa cenie startowej',
       path: ['buyNowPrice'],
+    }
+  )
+  .refine(
+    data => {
+      if (data.category === 'Pigeon') {
+        return data.pigeon && data.pigeon.ringNumber && data.pigeon.bloodline && data.pigeon.sex;
+      }
+      return true;
+    },
+    {
+      message: 'Dla aukcji gołębia wymagane są: numer obrączki, linia krwi i płeć',
+      path: ['pigeon'],
     }
   );
 
@@ -92,12 +128,32 @@ const baseAuctionSchema = z.object({
   location: z.string().optional(),
   pigeon: z
     .object({
-      ringNumber: z.string().optional(),
-      bloodline: z.string().optional(),
-      sex: z.enum(['male', 'female']).optional(),
+      ringNumber: z.string().min(1, 'Numer obrączki jest wymagany dla gołębia'),
+      bloodline: z.string().min(1, 'Linia krwi jest wymagana dla gołębia'),
+      sex: z.enum(['male', 'female'], { message: 'Płeć jest wymagana dla gołębia' }),
       eyeColor: z.string().optional(),
       featherColor: z.string().optional(),
       purpose: z.array(z.string()).optional(),
+      // Charakterystyka
+      dnaCertificate: z.string().optional(),
+      size: z.string().optional(),
+      bodyStructure: z.string().optional(),
+      vitality: z.string().optional(),
+      colorDensity: z.string().optional(),
+      length: z.string().optional(),
+      endurance: z.string().optional(),
+      forkStrength: z.string().optional(),
+      forkAlignment: z.string().optional(),
+      muscles: z.string().optional(),
+      balance: z.string().optional(),
+      back: z.string().optional(),
+      // Opis skrzydła
+      breedingFeathers: z.string().optional(),
+      flightFeathers: z.string().optional(),
+      plumage: z.string().optional(),
+      featherQuality: z.string().optional(),
+      secondaryFlightFeathers: z.string().optional(),
+      flexibility: z.string().optional(),
     })
     .optional(),
 });

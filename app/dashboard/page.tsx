@@ -1,39 +1,13 @@
 'use client';
 
-import { CompleteProfileCard } from '@/components/dashboard/CompleteProfileCard';
 import { UserDashboard } from '@/components/dashboard/UserDashboard';
-import { VerifyEmailCard } from '@/components/dashboard/VerifyEmailCard';
-import { VerifyPhoneCard } from '@/components/dashboard/VerifyPhoneCard';
 import { UnifiedLayout } from '@/components/layout/UnifiedLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-// Definicja typu dla użytkownika z bazy danych, aby uniknąć 'any'
-interface DbUser {
-  firstName?: string;
-  lastName?: string;
-  address?: string;
-  city?: string;
-  postalCode?: string;
-  phoneNumber?: string;
-}
-
-// Helper function to check if profile is complete
-function isProfileComplete(dbUser: DbUser | null) {
-  if (!dbUser) return false;
-  return (
-    dbUser.firstName &&
-    dbUser.lastName &&
-    dbUser.address &&
-    dbUser.city &&
-    dbUser.postalCode &&
-    dbUser.phoneNumber
-  );
-}
-
 export default function DashboardPage() {
-  const { user, dbUser, loading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -60,15 +34,7 @@ export default function DashboardPage() {
   return (
     <UnifiedLayout>
       <div className="container mx-auto px-4 py-8">
-        {!user.emailVerified ? (
-          <VerifyEmailCard />
-        ) : !isProfileComplete(dbUser) ? (
-          <CompleteProfileCard />
-        ) : !dbUser?.isPhoneVerified ? (
-          <VerifyPhoneCard />
-        ) : (
-          <UserDashboard />
-        )}
+        <UserDashboard />
       </div>
     </UnifiedLayout>
   );

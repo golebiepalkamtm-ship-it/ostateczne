@@ -21,18 +21,37 @@ import * as logger from '@/lib/logger';
 
 type AuthMode = 'signin' | 'signup';
 
-export default function FirebaseAuthForm() {
+interface FirebaseAuthFormProps {
+  initialMode?: 'signin' | 'signup';
+  hideAuthModeToggle?: boolean;
+  minimal?: boolean;
+}
+
+export default function FirebaseAuthForm({
+  initialMode = 'signin',
+  hideAuthModeToggle = false,
+  minimal = false,
+}: FirebaseAuthFormProps) {
   const searchParams = useSearchParams();
-  const [mode, setMode] = useState<AuthMode>('signin');
+  const [mode, setMode] = useState<AuthMode>(initialMode);
+
+  // Ustaw mode na initialMode gdy się zmieni
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
 
   // Sprawdź czy użytkownik właśnie zweryfikował email
   useEffect(() => {
     const verified = searchParams.get('verified') === 'true';
     const emailVerified = searchParams.get('emailVerified') === 'true';
     if (verified && emailVerified) {
-      setSuccess('✅ Email został zweryfikowany! Możesz się teraz zalogować.');
+      setSuccess(
+        '✅ Email został pomyślnie zweryfikowany! Jesteś już zalogowany. Przejdź do panelu użytkownika, aby uzupełnić dane i zweryfikować numer telefonu.'
+      );
     } else if (verified) {
-      setSuccess('Email został zweryfikowany. Zaloguj się aby kontynuować.');
+      setSuccess(
+        '✅ Email został pomyślnie zweryfikowany! Jesteś już zalogowany. Przejdź do panelu użytkownika, aby uzupełnić dane i zweryfikować numer telefonu.'
+      );
     }
   }, [searchParams]);
   const [email, setEmail] = useState('');
@@ -57,27 +76,9 @@ export default function FirebaseAuthForm() {
     }
   }, [success]);
 
-  if (logger.isDev)
-    logger.debug(
-      'FirebaseAuthForm render - mode:',
-      mode,
-      'isLoading:',
-      isLoading,
-      'success:',
-      success,
-      'error:',
-      error
-    );
-  if (logger.isDev)
-    logger.debug(
-      'FirebaseAuthForm render - success condition check:',
-      !!success,
-      'success value:',
-      success
-    );
-
   // Funkcja pomocnicza do synchronizacji danych użytkownika
-  const syncUser = async () => {
+  // successMessage: opcjonalny komunikat, który zostanie ustawiony po sukcesie (jeśli null - brak komunikatu)
+  const syncUser = async (successMessage?: string | null) => {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error('Brak zalogowanego użytkownika');
@@ -98,8 +99,11 @@ export default function FirebaseAuthForm() {
 
       await response.json();
       if (logger.isDev) logger.debug('Synchronizacja udana.');
-      // Ustawienie komunikatu o sukcesie logowania
-      setSuccess('Zalogowano pomyślnie! Możesz teraz przejść do panelu.');
+
+      // Ustaw komunikat sukcesu tylko jeśli został podany (i nie jest null)
+      if (successMessage !== null && successMessage !== undefined) {
+        setSuccess(successMessage);
+      }
     } catch (error) {
       logger.error('Błąd synchronizacji:', error instanceof Error ? error.message : error);
       setError('Wystąpił błąd po zalogowaniu. Spróbuj ponownie.');
@@ -152,9 +156,14 @@ export default function FirebaseAuthForm() {
             handleCodeInApp: false,
           } as const;
           await sendEmailVerification(user, actionCodeSettings);
-          setSuccess('Wysłaliśmy ponownie email weryfikacyjny. Sprawdź skrzynkę (także SPAM).');
+          setSuccess(
+            '⚠️ Twoje konto wymaga weryfikacji emaila. Wysłaliśmy ponownie link aktywacyjny - sprawdź skrzynkę (także SPAM). Po weryfikacji będziesz mógł uzupełnić dane i zweryfikować telefon.'
+          );
         } catch (emailError) {
           logger.error('Błąd ponownego wysłania email weryfikacyjnego:', emailError);
+          setSuccess(
+            '⚠️ Twoje konto wymaga weryfikacji emaila. Sprawdź skrzynkę odbiorczą (także SPAM) i kliknij link aktywacyjny.'
+          );
         }
         // Nie ustawiaj błędu, pozwól na zalogowanie
         // setError('Musisz zweryfikować swój email przed zalogowaniem. Sprawdź skrzynkę odbiorczą.');
@@ -163,7 +172,7 @@ export default function FirebaseAuthForm() {
       }
 
       // Synchronizuj dane
-      await syncUser();
+      await syncUser('✅ Zalogowano pomyślnie! Witamy w panelu użytkownika.');
     } catch (e: unknown) {
       const error = e as { code?: string; message?: string };
       logger.error('Błąd logowania:', error);
@@ -216,15 +225,19 @@ export default function FirebaseAuthForm() {
             url: `${window.location.origin}/auth/verify-email`,
             handleCodeInApp: false,
           });
-          setSuccess('✅ Rejestracja przez Google zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź też folder SPAM.');
+          setSuccess(
+            '✅ Rejestracja przez Google zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź skrzynkę (także SPAM) i kliknij link, aby uzyskać dostęp do panelu użytkownika.'
+          );
         } catch (emailError) {
           logger.error('Błąd wysyłania email weryfikacyjnego dla OAuth:', emailError);
-          setSuccess('✅ Zalogowano przez Google! Aby uzyskać pełny dostęp, zweryfikuj email.');
+          setSuccess(
+            '✅ Zalogowano przez Google! Aby uzyskać dostęp do panelu, zweryfikuj email. Sprawdź skrzynkę odbiorczą.'
+          );
         }
       }
 
       // Synchronizuj dane
-      await syncUser();
+      await syncUser('✅ Zalogowano pomyślnie przez Google! Witamy w panelu użytkownika.');
     } catch (e: unknown) {
       const error = e as { code?: string; message?: string };
       logger.error('Błąd logowania przez Google:', error);
@@ -276,15 +289,19 @@ export default function FirebaseAuthForm() {
             url: `${window.location.origin}/auth/verify-email`,
             handleCodeInApp: false,
           });
-          setSuccess('✅ Rejestracja przez Facebook zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź też folder SPAM.');
+          setSuccess(
+            '✅ Rejestracja przez Facebook zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź skrzynkę (także SPAM) i kliknij link, aby uzyskać dostęp do panelu użytkownika.'
+          );
         } catch (emailError) {
           logger.error('Błąd wysyłania email weryfikacyjnego dla OAuth:', emailError);
-          setSuccess('✅ Zalogowano przez Facebook! Aby uzyskać pełny dostęp, zweryfikuj email.');
+          setSuccess(
+            '✅ Zalogowano przez Facebook! Aby uzyskać dostęp do panelu, zweryfikuj email. Sprawdź skrzynkę odbiorczą.'
+          );
         }
       }
 
       // Użyj tej samej funkcji synchronizacji co inne metody
-      await syncUser();
+      await syncUser('✅ Zalogowano pomyślnie przez Facebook! Witamy w panelu użytkownika.');
     } catch (e: unknown) {
       const error = e as { code?: string; message?: string };
       logger.error('Błąd logowania przez Facebook:', error);
@@ -409,9 +426,9 @@ export default function FirebaseAuthForm() {
       }
 
       // Synchronizuj użytkownika z bazą
-      await syncUser();
+      await syncUser(null); // Nie ustawiaj komunikatu - zostanie ustawiony poniżej
 
-      const successMessage = `✅ Email weryfikacyjny został wysłany na adres: ${user.email}. Sprawdź skrzynkę odbiorczą i kliknij link weryfikacyjny, aby aktywować konto.`;
+      const successMessage = `✅ Rejestracja zakończona! Email weryfikacyjny został wysłany na adres: ${user.email}. Sprawdź skrzynkę odbiorczą (także SPAM) i kliknij link weryfikacyjny, aby uzyskać dostęp do panelu użytkownika.`;
       setSuccess(successMessage);
     } catch (e: unknown) {
       const error = e as { code?: string; message?: string };
@@ -451,19 +468,21 @@ export default function FirebaseAuthForm() {
   // Usunięto obsługę trybu SMS - SMS służy tylko do autoryzacji już zarejestrowanych użytkowników
 
   return (
-    <div className="min-h-screen flex items-start justify-center p-4 pt-8">
+    <div className={minimal ? '' : 'min-h-screen flex items-start justify-center p-4 pt-8'}>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="w-full max-w-lg"
+        initial={minimal ? {} : { opacity: 0, y: 20 }}
+        animate={minimal ? {} : { opacity: 1, y: 0 }}
+        transition={minimal ? {} : { duration: 0.8 }}
+        className={minimal ? '' : 'w-full max-w-lg'}
       >
-        <div className="card p-6">
-          <div className="text-center mb-4">
-            <h1 className="text-2xl font-bold text-white mb-2">
-              {mode === 'signin' ? 'Logowanie' : 'Rejestracja'}
-            </h1>
-          </div>
+        <div className={minimal ? '' : 'card p-6'}>
+          {!minimal && (
+            <div className="text-center mb-4">
+              <h1 className="text-2xl font-bold text-white mb-2">
+                {mode === 'signin' ? 'Logowanie' : 'Rejestracja'}
+              </h1>
+            </div>
+          )}
 
           {error && (
             <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
@@ -501,7 +520,7 @@ export default function FirebaseAuthForm() {
             disabled={isLoading}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mb-3 flex items-center justify-center shadow-lg hover:shadow-xl"
+            className="w-full py-2 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mb-2 flex items-center justify-center shadow-lg hover:shadow-xl text-sm"
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
               <path
@@ -537,7 +556,7 @@ export default function FirebaseAuthForm() {
             disabled={isLoading}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 bg-[#1877F2] text-white font-semibold rounded-xl hover:bg-[#166FE5] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mb-4 flex items-center justify-center shadow-lg hover:shadow-xl"
+            className="w-full py-2 bg-[#1877F2] text-white font-semibold rounded-xl hover:bg-[#166FE5] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mb-3 flex items-center justify-center shadow-lg hover:shadow-xl text-sm"
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="currentColor">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -552,12 +571,12 @@ export default function FirebaseAuthForm() {
             )}
           </motion.button>
 
-          <div className="relative mb-4">
+          <div className="relative mb-3">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-transparent text-white/70">lub</span>
+              <span className="px-2 bg-transparent text-white/70 text-xs">lub</span>
             </div>
           </div>
 
@@ -569,7 +588,7 @@ export default function FirebaseAuthForm() {
                   ? handleEmailSignUp
                   : undefined
             }
-            className="space-y-4"
+            className="space-y-3"
           >
             {/* Email */}
             <div className="relative">
@@ -585,7 +604,8 @@ export default function FirebaseAuthForm() {
                   }
                 }}
                 placeholder="Email"
-                className={`w-full pl-10 pr-4 py-3 bg-white/10 border rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                autoComplete="email"
+                className={`w-full pl-10 pr-4 py-3 bg-transparent border rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                   formErrors.email ? 'border-red-500' : 'border-white/20'
                 }`}
                 disabled={isLoading}
@@ -607,7 +627,8 @@ export default function FirebaseAuthForm() {
                   }
                 }}
                 placeholder="Hasło"
-                className={`w-full pl-10 pr-12 py-3 bg-white/10 border rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                className={`w-full pl-10 pr-12 py-3 bg-transparent border rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                   formErrors.password ? 'border-red-500' : 'border-white/20'
                 }`}
                 disabled={isLoading}
@@ -640,7 +661,8 @@ export default function FirebaseAuthForm() {
                     }
                   }}
                   placeholder="Potwierdź hasło"
-                  className={`w-full pl-10 pr-4 py-3 bg-white/10 border rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  autoComplete="new-password"
+                  className={`w-full pl-10 pr-4 py-3 bg-transparent border rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     formErrors.confirmPassword ? 'border-red-500' : 'border-white/20'
                   }`}
                 />
@@ -652,7 +674,7 @@ export default function FirebaseAuthForm() {
 
             {/* Opcja "Zapamiętaj mnie" - tylko dla logowania */}
             {mode === 'signin' && (
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center">
                   <input
                     type="checkbox"
@@ -660,11 +682,11 @@ export default function FirebaseAuthForm() {
                     onChange={e => setRememberMe(e.target.checked)}
                     className="mr-2 w-4 h-4 text-blue-600 bg-white/10 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
                   />
-                  <span className="text-white/70 text-sm">Zapamiętaj mnie</span>
+                  <span className="text-white/70 text-xs">Zapamiętaj mnie</span>
                 </label>
                 <Link
                   href="/auth/reset-password"
-                  className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
+                  className="text-blue-400 hover:text-blue-300 transition-colors text-xs"
                 >
                   Zapomniałeś hasła?
                 </Link>
@@ -674,13 +696,13 @@ export default function FirebaseAuthForm() {
             {/* Usunięto pole numeru telefonu - SMS służy tylko do autoryzacji już zarejestrowanych użytkowników */}
 
             {/* Przyciski */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               <motion.button
                 type="submit"
                 disabled={isLoading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
                 {isLoading
                   ? mode === 'signup'
@@ -695,38 +717,40 @@ export default function FirebaseAuthForm() {
             </div>
           </form>
 
-          <div className="mt-6 space-y-4 text-center">
-            <Link
-              href="/auth/reset-password"
-              className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
-            >
-              Zapomniałeś hasła?
-            </Link>
+          {!hideAuthModeToggle && (
+            <div className="mt-6 space-y-4 text-center">
+              <Link
+                href="/auth/reset-password"
+                className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
+              >
+                Zapomniałeś hasła?
+              </Link>
 
-            <div className="text-white/70 text-sm">
-              {mode === 'signin' ? (
-                <>
-                  Nie masz konta?{' '}
-                  <button
-                    onClick={() => setMode('signup')}
-                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    Zarejestruj się
-                  </button>
-                </>
-              ) : (
-                <>
-                  Masz już konto?{' '}
-                  <button
-                    onClick={() => setMode('signin')}
-                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    Zaloguj się
-                  </button>
-                </>
-              )}
+              <div className="text-white/70 text-sm">
+                {mode === 'signin' ? (
+                  <>
+                    Nie masz konta?{' '}
+                    <button
+                      onClick={() => setMode('signup')}
+                      className="text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      Zarejestruj się
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Masz już konto?{' '}
+                    <button
+                      onClick={() => setMode('signin')}
+                      className="text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      Zaloguj się
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </motion.div>
     </div>

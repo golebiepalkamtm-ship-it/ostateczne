@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { requirePhoneVerification } from '@/lib/phone-verification';
 import { prisma } from '@/lib/prisma';
@@ -288,10 +289,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.issues[0].message }, { status: 400 });
-    }
-    console.error('Error sending message:', error);
-    return NextResponse.json({ error: 'Nie udało się wysłać wiadomości' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'messages' });
   }
 }

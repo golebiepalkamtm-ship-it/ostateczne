@@ -3,7 +3,7 @@ export async function register() {
   if (process.env.NODE_ENV === 'production') {
     // Dynamic import - only loads in production, avoids webpack processing in dev
     const Sentry = await import('@sentry/nextjs');
-    
+
     if (process.env.NEXT_RUNTIME === 'nodejs') {
       await import('./sentry.server.config');
     }
@@ -11,7 +11,7 @@ export async function register() {
     if (process.env.NEXT_RUNTIME === 'edge') {
       await import('./sentry.edge.config');
     }
-    
+
     // Export onRequestError only in production
     return {
       onRequestError: Sentry.captureRequestError,

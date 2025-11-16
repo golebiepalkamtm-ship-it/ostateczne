@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireAdminAuth } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,19 +17,25 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
       firstName?: string;
       lastName?: string;
       isActive?: boolean;
-      role?: 'USER' | 'ADMIN';
+      role?: 'USER_REGISTERED' | 'USER_EMAIL_VERIFIED' | 'USER_FULL_VERIFIED' | 'ADMIN';
     } = {};
     if (typeof body.firstName === 'string') data.firstName = body.firstName;
     if (typeof body.lastName === 'string') data.lastName = body.lastName;
     if (typeof body.isActive === 'boolean') data.isActive = body.isActive;
-    if (typeof body.role === 'string' && ['USER', 'ADMIN'].includes(body.role))
-      data.role = body.role as 'USER' | 'ADMIN';
+    if (
+      typeof body.role === 'string' &&
+      ['USER_REGISTERED', 'USER_EMAIL_VERIFIED', 'USER_FULL_VERIFIED', 'ADMIN'].includes(body.role)
+    )
+      data.role = body.role as
+        | 'USER_REGISTERED'
+        | 'USER_EMAIL_VERIFIED'
+        | 'USER_FULL_VERIFIED'
+        | 'ADMIN';
 
     const updated = await prisma.user.update({ where: { id }, data });
     return NextResponse.json({ success: true, user: { id: updated.id } });
   } catch (e) {
-    console.error('Admin user PATCH error', e);
-    return NextResponse.json({ error: 'Błąd serwera' }, { status: 500 });
+    return handleApiError(e, request, { endpoint: 'admin/users/[id]', method: 'PATCH' });
   }
 }
 
@@ -50,7 +57,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     await prisma.user.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (e) {
-    console.error('Admin user DELETE error', e);
-    return NextResponse.json({ error: 'Błąd serwera' }, { status: 500 });
+    return handleApiError(e, request, { endpoint: 'admin/users/[id]', method: 'DELETE' });
   }
 }

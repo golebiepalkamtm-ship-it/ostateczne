@@ -1,0 +1,283 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Development - Alternative ports)
+  postgres:
+    image: postgres:15-alpine
+    container_name: pigeon-auction-postgres-dev-alt
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pigeon_auction_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    volumes:
+      - postgres_dev_data_alt:/var/lib/postgresql/data
+    ports:
+      - '5433:5432' # Alternative port to avoid conflicts
+    networks:
+      - pigeon-network-alt
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for caching and sessions (Development - Alternative ports)
+  redis:
+    image: redis:7-alpine
+    container_name: pigeon-auction-redis-dev-alt
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis123
+    volumes:
+      - redis_dev_data_alt:/data
+    ports:
+      - '6380:6379' # Alternative port to avoid conflicts
+    networks:
+      - pigeon-network-alt
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'redis123', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Prisma Migrations & Client Generation (Development - Alternative ports)
+  prisma:
+    image: node:18-alpine
+    container_name: pigeon-auction-prisma-dev-alt
+    restart: 'no'
+    working_dir: /app
+    environment:
+      # Database
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/pigeon_auction_dev
+      # Next.js telemetry (NODE_ENV is set automatically by Next.js)
+      NEXT_TELEMETRY_DISABLED: 1
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pigeon-network-alt
+    entrypoint: sh
+    command: >
+      -c "
+        echo '📦 Installing dependencies...' &&
+        npm ci --silent &&
+        echo '🔄 Generating Prisma Client...' &&
+        npx prisma generate &&
+        echo '🚀 Running database migrations...' &&
+        npx prisma migrate deploy &&
+        echo '✅ Prisma setup completed!'
+      "
+
+  # Next.js Application (Development - Alternative port)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: pigeon-auction-app-dev-alt
+    restart: unless-stopped
+    ports:
+      - '3001:3000' # Alternative port to avoid conflicts
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+      - ./firebase-key.json:/app/firebase-key.json:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    environment:
+      # Database (using alternative port)
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/pigeon_auction_dev
+
+      # Redis (using alternative port)
+      REDIS_URL: redis://:redis123@redis:6379
+
+      # Firebase Admin SDK (for server-side operations)
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY}
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL}
+      FIREBASE_AUTH_URI: ${FIREBASE_AUTH_URI}
+      FIREBASE_TOKEN_URI: ${FIREBASE_TOKEN_URI}
+
+      # Firebase Client (for browser-side operations)
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${NEXT_PUBLIC_FIREBASE_APP_ID}
+
+      # Next.js
+      NEXT_PUBLIC_APP_URL: http://localhost:3001
+
+      # Authentication
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: development-secret-key-change-in-production
+
+      # Disable telemetry in development
+      NEXT_TELEMETRY_DISABLED: 1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      prisma:
+        condition: service_completed_successfully
+    networks:
+      - pigeon-network-alt
+    command: >
+      sh -c "
+        echo '🔄 Generating Prisma Client (fallback)...' &&
+        npx prisma generate &&
+        npm run dev
+      "
+
+  # Prometheus - Metrics Collection (Development)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pigeon-auction-prometheus-dev-alt
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_dev_data_alt:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - pigeon-network-alt
+
+  # Grafana - Dashboards & Visualization (Development)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pigeon-auction-grafana-dev-alt
+    restart: unless-stopped
+    ports:
+      - '4000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_dev_data_alt:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - pigeon-network-alt
+
+  # pgAdmin - PostgreSQL Management (Development)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pigeon-auction-pgadmin-dev-alt
+    restart: unless-stopped
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@palka-mtm.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'False'
+    volumes:
+      - pgadmin_dev_data_alt:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - pigeon-network-alt
+
+  # Mailhog - Email Testing (Development)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: pigeon-auction-mailhog-dev-alt
+    restart: unless-stopped
+    ports:
+      - '1025:1025'  # SMTP
+      - '8025:8025'  # Web UI
+    networks:
+      - pigeon-network-alt
+
+  # MinIO - S3-Compatible Object Storage (Development)
+  minio:
+    image: minio/minio:latest
+    container_name: pigeon-auction-minio-dev-alt
+    restart: unless-stopped
+    ports:
+      - '9000:9000'  # API
+      - '9001:9001'  # Console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_dev_data_alt:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - pigeon-network-alt
+
+  # Redis Commander - Redis UI (Development)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: pigeon-auction-redis-commander-dev-alt
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    environment:
+      - REDIS_HOSTS=default:redis:6379:0:redis123
+    depends_on:
+      - redis
+    networks:
+      - pigeon-network-alt
+
+  # Adminer - Lightweight DB GUI (Development)
+  adminer:
+    image: adminer:latest
+    container_name: pigeon-auction-adminer-dev-alt
+    restart: unless-stopped
+    ports:
+      - '8082:8080'
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+    networks:
+      - pigeon-network-alt
+
+  # Nginx - Reverse Proxy & Load Balancer (Development)
+  nginx:
+    image: nginx:alpine
+    container_name: pigeon-auction-nginx-dev-alt
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    networks:
+      - pigeon-network-alt
+
+volumes:
+  postgres_dev_data_alt:
+    driver: local
+  redis_dev_data_alt:
+    driver: local
+  prometheus_dev_data_alt:
+    driver: local
+  grafana_dev_data_alt:
+    driver: local
+  pgadmin_dev_data_alt:
+    driver: local
+  minio_dev_data_alt:
+    driver: local
+
+networks:
+  pigeon-network-alt:
+    driver: bridge

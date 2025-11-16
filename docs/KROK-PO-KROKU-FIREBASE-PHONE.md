@@ -31,10 +31,12 @@ Firebase wymaga dodania domen, na których aplikacja będzie działać.
 ### Dodaj domeny:
 
 **Dla developmentu:**
+
 - `localhost` (powinno być już dodane)
 - `192.168.177.1` (twój lokalny adres IP - sprawdź w terminalu `ipconfig`)
 
 **Dla produkcji:**
+
 - Twoja domena produkcyjna (np. `pigeon-aucion.firebaseapp.com`)
 - Inne domeny gdzie aplikacja będzie działać
 
@@ -70,12 +72,12 @@ Firebase wymaga dodania domen, na których aplikacja będzie działać.
 6. Skopiuj wartości z sekcji **SDK setup and configuration** → **npm**:
 
 ```javascript
-apiKey: "AIzaSy..."
-authDomain: "pigeon-aucion.firebaseapp.com"
-projectId: "pigeon-aucion"
-storageBucket: "pigeon-aucion.firebasestorage.app"
-messagingSenderId: "151771999775"
-appId: "1:151771999775:web:..."
+apiKey: 'AIzaSy...';
+authDomain: 'pigeon-aucion.firebaseapp.com';
+projectId: 'pigeon-aucion';
+storageBucket: 'pigeon-aucion.firebasestorage.app';
+messagingSenderId: '151771999775';
+appId: '1:151771999775:web:...';
 ```
 
 ### B) Klucze Admin SDK (dla serwera)
@@ -107,6 +109,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 ```
 
 **Ważne:**
+
 - `FIREBASE_PRIVATE_KEY` - skopiuj cały klucz z pliku JSON (z `\n` na końcu każdej linii)
 - Jeśli klucz jest w formacie `"-----BEGIN PRIVATE KEY-----\\n..."` → zamień `\\n` na `\n`
 
@@ -115,9 +118,11 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 ## KROK 7: Sprawdź Plan Firebase (dla Produkcji)
 
 **Dla rozwoju/testowania:**
+
 - Możesz używać numerów testowych (bez kosztów)
 
 **Dla produkcji:**
+
 1. W Firebase Console → **Usage and billing**
 2. Sprawdź aktualny plan
 3. **Wymagany plan Blaze** (płatny) do wysyłania rzeczywistych SMS
@@ -149,6 +154,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 ### ❌ SMS nie przychodzą
 
 **Sprawdź:**
+
 1. Czy Phone Authentication jest włączone? (Krok 2)
 2. Czy domena jest dodana w Authorized domains? (Krok 3)
 3. Czy jesteś na planie Blaze? (Krok 7 - dla produkcji)
@@ -158,6 +164,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 ### ❌ Błąd reCAPTCHA
 
 **Sprawdź:**
+
 1. Czy domena jest w Authorized domains?
 2. Czy reCAPTCHA ładuje się w konsoli przeglądarki?
 3. Spróbuj wyczyścić cache przeglądarki
@@ -165,6 +172,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 ### ❌ "Invalid API key"
 
 **Sprawdź:**
+
 1. Czy `NEXT_PUBLIC_FIREBASE_API_KEY` jest poprawne?
 2. Czy restartowałeś serwer dev po dodaniu `.env.local`?
 3. Czy wszystkie zmienne `NEXT_PUBLIC_*` są ustawione?
@@ -172,6 +180,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 ### ❌ "Firebase Admin SDK not initialized"
 
 **Sprawdź:**
+
 1. Czy `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` są ustawione?
 2. Czy `FIREBASE_PRIVATE_KEY` ma `\n` zamiast `\\n`?
 3. Czy klucz zaczyna się od `-----BEGIN PRIVATE KEY-----`?
@@ -183,6 +192,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 Twoja aplikacja jest teraz skonfigurowana z Firebase Phone Verification!
 
 **Następne kroki:**
+
 1. Przetestuj weryfikację z numerem testowym
 2. Sprawdź czy status `isPhoneVerified` aktualizuje się w bazie danych
 3. Przetestuj z prawdziwym numerem (jeśli masz plan Blaze)
@@ -194,4 +204,3 @@ Twoja aplikacja jest teraz skonfigurowana z Firebase Phone Verification!
 - [Firebase Console](https://console.firebase.google.com/)
 - [Dokumentacja Firebase Phone Auth](https://firebase.google.com/docs/auth/web/phone-auth)
 - [Firebase Pricing](https://firebase.google.com/pricing)
-

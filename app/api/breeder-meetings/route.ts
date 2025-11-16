@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { requirePhoneVerification } from '@/lib/phone-verification';
 import { prisma, withDatabaseFallback } from '@/lib/prisma';
@@ -111,11 +112,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Błąd podczas dodawania spotkania:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas dodawania spotkania' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'breeder-meetings' });
   }
 }
 

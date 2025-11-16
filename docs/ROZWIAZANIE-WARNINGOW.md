@@ -3,18 +3,21 @@
 ## Problem
 
 Aplikacja wyświetla dużo warningów w konsoli podczas development:
+
 1. **Webpack warnings** z Prisma/OpenTelemetry/Sentry ("Critical dependency")
 2. **Watchpack errors** na Windows (EINVAL przy próbie skanowania plików systemowych)
 
 ## Diagnoza
 
 ### 1. Webpack Warnings (Prisma/Sentry)
+
 - **NIE SĄ BŁĘDAMI** - to tylko informacje webpack o dynamicznych importach
 - Prisma instrumentation używa dynamicznych importów - webpack o tym informuje
 - Sentry automatycznie wykrywa Prisma i używa instrumentation
 - **Aplikacja działa poprawnie** mimo tych warningów
 
 ### 2. Watchpack Errors (Windows)
+
 - **Znany problem** - Watchpack próbuje skanować pliki systemowe Windows
 - Issue: https://github.com/angular/angular-cli/issues/30617
 - Watchpack próbuje `lstat` na plikach jak `pagefile.sys`, `System Volume Information`
@@ -42,11 +45,13 @@ Aplikacja wyświetla dużo warningów w konsoli podczas development:
 ## Pliki konfiguracyjne
 
 ### `next.config.cjs`
+
 - `webpack.stats.warningsFilter` - filtruje webpack warnings
 - `webpack.onError` - ignoruje Watchpack errors
 - `webpack.watchOptions.ignored` - ignoruje pliki systemowe
 
 ### `package.json`
+
 - `WATCHPACK_POLLING=true` - używa polling zamiast native watching (Windows)
 
 ## Ważne
@@ -54,7 +59,7 @@ Aplikacja wyświetla dużo warningów w konsoli podczas development:
 ⚠️ **Te warningi NIE są błędami** - aplikacja działa poprawnie!
 
 - ✅ Firebase Admin SDK działa
-- ✅ Prisma działa  
+- ✅ Prisma działa
 - ✅ Sentry działa
 - ✅ Wszystkie endpointy zwracają 200 OK
 
@@ -80,4 +85,3 @@ Ale **to nie jest rozwiązanie** - tylko ukrycie problemu.
 ✅ Warningi są wyciszone  
 ✅ Watchpack errors są ignorowane  
 ✅ Aplikacja gotowa do development i production
-

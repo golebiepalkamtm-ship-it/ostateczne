@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminAuth } from '@/lib/firebase-admin';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,16 +26,9 @@ export async function POST(req: NextRequest) {
       const result = await auth.verifySessionCookie(sessionInfo);
       return NextResponse.json({ success: true, uid: result.uid });
     } catch (error) {
-      console.error('Error verifying SMS code:', error);
-      return NextResponse.json(
-        { error: 'Invalid verification code' },
-        {
-          status: 400,
-        }
-      );
+      return handleApiError(error, req, { endpoint: 'auth/verify-sms', inner: true });
     }
   } catch (error) {
-    console.error('Error processing SMS verify request:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return handleApiError(error, req, { endpoint: 'auth/verify-sms' });
   }
 }

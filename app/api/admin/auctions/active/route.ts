@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -102,7 +103,6 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / limit),
     });
   } catch (error) {
-    console.error('Błąd podczas pobierania aktywnych aukcji:', error);
-    return NextResponse.json({ error: 'Wystąpił błąd podczas pobierania aukcji' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'admin/auctions/active' });
   }
 }

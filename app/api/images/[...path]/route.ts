@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { promises as fs } from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
 import { join } from 'path';
@@ -33,13 +34,7 @@ export async function GET(
       });
     }
   } catch (error) {
-    console.error('Error serving image:', error);
-    return new NextResponse(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    return handleApiError(error, request, { endpoint: 'images/[...path]' });
   }
 }
 

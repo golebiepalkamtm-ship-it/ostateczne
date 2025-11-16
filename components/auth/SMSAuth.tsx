@@ -177,7 +177,7 @@ export default function SMSAuth({ phoneNumber, onSuccess, onBack }: SMSAuthProps
         transition={{ duration: 0.8 }}
         className="w-full max-w-md"
       >
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl">
+        <div className="card-glass p-8 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Phone className="w-8 h-8 text-blue-400" />

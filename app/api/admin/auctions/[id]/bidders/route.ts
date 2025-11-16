@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -113,10 +114,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       auctionStatus: auction.status,
     });
   } catch (error) {
-    console.error('Błąd podczas pobierania licytujących:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas pobierania danych licytujących' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'admin/auctions/[id]/bidders' });
   }
 }

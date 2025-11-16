@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getActiveUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { checkProfileCompleteness, getProfileCompletenessMessage } from '@/lib/profile-validation';
@@ -152,19 +153,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       { status: 201 }
     );
   } catch (error) {
-    console.error('Błąd podczas dodawania licytacji:', error);
-
-    if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        { error: 'Nieprawidłowe dane', details: error.message },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas dodawania licytacji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'auctions/[id]/bids', method: 'POST' });
   }
 }
 
@@ -223,10 +212,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       },
     });
   } catch (error) {
-    console.error('Błąd podczas pobierania licytacji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas pobierania licytacji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'auctions/[id]/bids', method: 'GET' });
   }
 }

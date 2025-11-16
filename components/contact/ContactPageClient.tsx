@@ -44,9 +44,9 @@ export default function ContactPageClient() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <UnifiedCard
                 variant="glass"
-                glow={false}
-                hover={false}
-                className="p-8 text-center bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                glow={true}
+                hover={true}
+                className="p-8 text-center"
               >
                 <div className="w-16 h-16 glass-morphism-strong rounded-full mx-auto mb-4 flex items-center justify-center border-2 border-white">
                   <Phone className="w-8 h-8 text-white/60" />
@@ -60,9 +60,9 @@ export default function ContactPageClient() {
 
               <UnifiedCard
                 variant="glass"
-                glow={false}
-                hover={false}
-                className="p-8 text-center bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                glow={true}
+                hover={true}
+                className="p-8 text-center"
               >
                 <div className="w-16 h-16 glass-morphism-strong rounded-full mx-auto mb-4 flex items-center justify-center border-2 border-white">
                   <Mail className="w-8 h-8 text-white/60" />
@@ -76,9 +76,9 @@ export default function ContactPageClient() {
 
               <UnifiedCard
                 variant="glass"
-                glow={false}
-                hover={false}
-                className="p-8 text-center bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                glow={true}
+                hover={true}
+                className="p-8 text-center"
               >
                 <div className="w-16 h-16 glass-morphism-strong rounded-full mx-auto mb-4 flex items-center justify-center border-2 border-white">
                   <MapPin className="w-8 h-8 text-slate-300" />
@@ -112,9 +112,9 @@ export default function ContactPageClient() {
           >
             <UnifiedCard
               variant="glass"
-              glow={false}
-              hover={false}
-              className="p-8 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              glow={true}
+              hover={true}
+              className="p-8"
             >
               <Text3D
                 variant="shimmer"
@@ -217,8 +217,9 @@ export default function ContactPageClient() {
           >
             <UnifiedCard
               variant="glass"
-              glow={false}
-              className="relative p-8 rounded-2xl border-2 border-white bg-white/25 backdrop-blur-xl shadow-[0_0_14px_3px_rgba(255,255,255,0.55)]"
+              glow={true}
+              hover={true}
+              className="relative p-8"
             >
               <Text3D
                 variant="glow"

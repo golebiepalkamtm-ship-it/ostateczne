@@ -38,5 +38,5 @@
     ".next/types/**/*.ts",
     ".next-temp/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "aucion", "pigeon", "functions"]
+  "exclude": ["node_modules", "aucion", "pigeon", "functions", "scripts"]
 }

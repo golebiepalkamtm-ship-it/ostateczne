@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const authResult = await requireAdminAuth(request);
-  if (authResult instanceof Response) {
+  if (authResult instanceof NextResponse) {
     return authResult;
   }
 

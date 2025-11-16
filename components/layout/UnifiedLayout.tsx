@@ -7,6 +7,7 @@ import { VerificationIndicator } from '@/components/ui/VerificationIndicator';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import Image from 'next/image';
 
 const navItems = [
   { href: '/', icon: 'fas fa-home', title: 'Strona Główna', label: 'Strona Główna' },
@@ -45,6 +46,7 @@ interface UnifiedLayoutProps {
   children: ReactNode;
   showNavigation?: boolean;
   showFooter?: boolean;
+  showBackground?: boolean;
   className?: string;
 }
 
@@ -52,10 +54,29 @@ export function UnifiedLayout({
   children,
   showNavigation = true,
   showFooter = true,
+  showBackground = true,
   className = '',
 }: UnifiedLayoutProps) {
   return (
     <div className={`min-h-screen flex flex-col ${className} relative`}>
+      {/* Tło strony - ukryte na stronie głównej, bo Liquid Background je zastępuje */}
+      {showBackground && (
+        <>
+          <div className="fixed inset-0 w-full h-full -z-10">
+            <Image
+              src="/pigeon-lofts-background.jpg"
+              alt="Tło gołębnika Pałka MTM"
+              fill
+              priority
+              className="object-cover object-top"
+              sizes="100vw"
+            />
+          </div>
+          {/* Szara nakładka na tło */}
+          <div className="fixed inset-0 bg-gray-900/40 pointer-events-none z-0"></div>
+        </>
+      )}
+
       {/* Główna zawartość, która się rozciąga */}
       <main className="flex-grow relative">
         {/* overlay usunięty na prośbę użytkownika */}
@@ -69,7 +90,7 @@ export function UnifiedLayout({
               <motion.div
                 className="flex items-center gap-3"
                 variants={navContainerVariants}
-                initial="hidden"
+                initial={false}
                 animate="visible"
               >
                 {navItems.map(item => (
@@ -101,7 +122,7 @@ export function UnifiedLayout({
         )}
 
         {/* Main Content */}
-        <div className="relative z-10">{children}</div>
+        <div className="relative z-20">{children}</div>
       </main>
 
       {/* Stopka */}

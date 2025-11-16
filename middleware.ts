@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 const protectedRoutes = ['/dashboard', '/admin', '/seller', '/auctions', '/profile', '/settings'];
 
 // Wymogi poziomów dla części tras (proste routingi po prefixie)
-const level2Routes = ['/profile']
-const level3Routes = ['/auctions/create', '/seller', '/auctions/bid']
+const level2Routes = ['/profile'];
+const level3Routes = ['/auctions/create', '/seller', '/auctions/bid'];
 
 // Trasy wymagające uprawnień administratora
 const adminRoutes = ['/admin'];
@@ -79,22 +79,22 @@ export async function middleware(request: NextRequest) {
     // - jeśli wchodzimy na trasy tylko Poziomu 2/3, a brak cookie z potwierdzeniem poziomu, przekieruj do odpowiednich ekranów
     // Uwaga: Rzeczywista autoryzacja jest w API routes. Middleware robi tylko UX redirect.
 
-    const cookies = request.cookies
-    const level2Cookie = cookies.get('level2-ok')?.value
-    const level3Cookie = cookies.get('level3-ok')?.value
+    const cookies = request.cookies;
+    const level2Cookie = cookies.get('level2-ok')?.value;
+    const level3Cookie = cookies.get('level3-ok')?.value;
 
     if (level2Routes.some(p => pathname.startsWith(p)) && !level2Cookie) {
-      const url = new URL('/auth/register', request.url)
-      url.searchParams.set('needs', 'email')
-      url.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(url)
+      const url = new URL('/auth/register', request.url);
+      url.searchParams.set('needs', 'email');
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
     }
 
     if (level3Routes.some(p => pathname.startsWith(p)) && !level3Cookie) {
-      const url = new URL('/profile', request.url)
-      url.searchParams.set('needs', 'sms')
-      url.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(url)
+      const url = new URL('/profile', request.url);
+      url.searchParams.set('needs', 'sms');
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
     }
 
     return NextResponse.next();

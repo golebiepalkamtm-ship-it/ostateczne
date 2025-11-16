@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -73,11 +74,7 @@ export async function PATCH(
       message: 'Licytacja została zaktualizowana',
     });
   } catch (error) {
-    console.error('Błąd podczas aktualizacji licytacji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas aktualizacji licytacji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'admin/auctions/[id]/bids/[bidId]', method: 'PATCH' });
   }
 }
 
@@ -144,10 +141,6 @@ export async function DELETE(
       newCurrentPrice,
     });
   } catch (error) {
-    console.error('Błąd podczas usuwania licytacji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas usuwania licytacji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'admin/auctions/[id]/bids/[bidId]', method: 'DELETE' });
   }
 }

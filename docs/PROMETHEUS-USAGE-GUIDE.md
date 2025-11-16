@@ -20,6 +20,7 @@ Prometheus jest już skonfigurowane w projekcie do monitorowania metryk aplikacj
 ### Endpoint metryk
 
 Prometheus zbiera metryki z endpointu:
+
 ```
 GET /api/metrics
 ```
@@ -40,6 +41,7 @@ scrape_configs:
 ### Docker Compose
 
 Uruchom Prometheus i Grafana:
+
 ```bash
 docker-compose up -d prometheus grafana
 ```
@@ -84,6 +86,7 @@ Wszystkie requesty do API routes są automatycznie śledzone przez middleware:
 ### System Metrics (domyślne)
 
 Prometheus automatycznie zbiera metryki systemowe:
+
 - `process_cpu_user_seconds_total` - użycie CPU
 - `process_resident_memory_bytes` - użycie pamięci
 - `nodejs_heap_size_total_bytes` - rozmiar heap Node.js
@@ -98,29 +101,29 @@ Prometheus automatycznie zbiera metryki systemowe:
 Wszystkie API routes używające `createApiMiddleware` automatycznie śledzą metryki:
 
 ```typescript
-import { createApiMiddleware } from '@/lib/api-middleware'
+import { createApiMiddleware } from '@/lib/api-middleware';
 
-export const GET = createApiMiddleware()(async (request) => {
+export const GET = createApiMiddleware()(async request => {
   // Metryki są automatycznie zbierane:
   // - http_requests_total
   // - http_request_duration_seconds
   // - http_request_errors_total (jeśli błąd)
-  return NextResponse.json({ data: 'test' })
-})
+  return NextResponse.json({ data: 'test' });
+});
 ```
 
 ### Przykład z pełną konfiguracją
 
 ```typescript
-import { createApiMiddleware, middlewareConfigs } from '@/lib/api-middleware'
+import { createApiMiddleware, middlewareConfigs } from '@/lib/api-middleware';
 
-export const POST = createApiMiddleware(middlewareConfigs.protected)(
-  async (request: NextRequest) => {
-    // Request jest automatycznie śledzony
-    const body = await request.json()
-    // ... kod
-  }
-)
+export const POST = createApiMiddleware(middlewareConfigs.protected)(async (
+  request: NextRequest
+) => {
+  // Request jest automatycznie śledzony
+  const body = await request.json();
+  // ... kod
+});
 ```
 
 ---
@@ -130,18 +133,18 @@ export const POST = createApiMiddleware(middlewareConfigs.protected)(
 ### Tracking aukcji
 
 ```typescript
-import { trackAuctionCreated, trackAuctionEnded } from '@/lib/prometheus-helpers'
+import { trackAuctionCreated, trackAuctionEnded } from '@/lib/prometheus-helpers';
 
 // Przy tworzeniu aukcji
 export async function createAuction(data: CreateAuctionData, userId: string) {
   const auction = await prisma.auction.create({
     data: { ...data, userId },
-  })
+  });
 
   // Track w Prometheus
-  trackAuctionCreated(userId)
+  trackAuctionCreated(userId);
 
-  return auction
+  return auction;
 }
 
 // Przy końcu aukcji
@@ -149,89 +152,77 @@ export async function endAuction(auctionId: string) {
   await prisma.auction.update({
     where: { id: auctionId },
     data: { status: 'ENDED' },
-  })
+  });
 
-  trackAuctionEnded()
+  trackAuctionEnded();
 }
 ```
 
 ### Tracking bidów
 
 ```typescript
-import { trackBidPlaced } from '@/lib/prometheus-helpers'
+import { trackBidPlaced } from '@/lib/prometheus-helpers';
 
-export async function placeBid(
-  auctionId: string,
-  userId: string,
-  amount: number
-) {
+export async function placeBid(auctionId: string, userId: string, amount: number) {
   const bid = await prisma.bid.create({
     data: {
       auctionId,
       userId,
       amount,
     },
-  })
+  });
 
   // Track w Prometheus
-  trackBidPlaced(auctionId, userId, amount)
+  trackBidPlaced(auctionId, userId, amount);
 
-  return bid
+  return bid;
 }
 ```
 
 ### Tracking użytkowników
 
 ```typescript
-import {
-  trackUserRegistered,
-  trackUserLogin,
-  trackUserLogout,
-} from '@/lib/prometheus-helpers'
+import { trackUserRegistered, trackUserLogin, trackUserLogout } from '@/lib/prometheus-helpers';
 
 // Przy rejestracji
 export async function registerUser(data: RegisterData, method: 'phone' | 'email') {
-  const user = await createUser(data)
-  trackUserRegistered(method)
-  return user
+  const user = await createUser(data);
+  trackUserRegistered(method);
+  return user;
 }
 
 // Przy logowaniu (w API route lub middleware)
-import { setUserContext } from '@/lib/sentry-helpers'
-import { trackUserLogin } from '@/lib/prometheus-helpers'
+import { setUserContext } from '@/lib/sentry-helpers';
+import { trackUserLogin } from '@/lib/prometheus-helpers';
 
 export async function onUserLogin(user: User) {
-  setUserContext({ id: user.id, email: user.email })
-  trackUserLogin()
+  setUserContext({ id: user.id, email: user.email });
+  trackUserLogin();
 }
 
 // Przy wylogowaniu
 export async function onUserLogout() {
-  clearUserContext()
-  trackUserLogout()
+  clearUserContext();
+  trackUserLogout();
 }
 ```
 
 ### Tracking wiadomości
 
 ```typescript
-import { trackMessageSent } from '@/lib/prometheus-helpers'
+import { trackMessageSent } from '@/lib/prometheus-helpers';
 
-export async function sendMessage(
-  conversationId: string,
-  userId: string,
-  content: string
-) {
+export async function sendMessage(conversationId: string, userId: string, content: string) {
   const message = await prisma.message.create({
     data: {
       conversationId,
       userId,
       content,
     },
-  })
+  });
 
-  trackMessageSent(conversationId)
-  return message
+  trackMessageSent(conversationId);
+  return message;
 }
 ```
 
@@ -242,29 +233,29 @@ export async function sendMessage(
 ### Tracking zapytań Prisma
 
 ```typescript
-import { trackDatabaseQuery, trackDatabaseError } from '@/lib/prometheus-helpers'
+import { trackDatabaseQuery, trackDatabaseError } from '@/lib/prometheus-helpers';
 
 export async function getAuctions() {
-  const startTime = Date.now()
+  const startTime = Date.now();
 
   try {
     const auctions = await prisma.auction.findMany({
       where: { status: 'ACTIVE' },
-    })
+    });
 
-    const duration = Date.now() - startTime
-    trackDatabaseQuery('findMany', 'auction', duration)
+    const duration = Date.now() - startTime;
+    trackDatabaseQuery('findMany', 'auction', duration);
 
-    return auctions
+    return auctions;
   } catch (error) {
-    const duration = Date.now() - startTime
-    trackDatabaseQuery('findMany', 'auction', duration)
+    const duration = Date.now() - startTime;
+    trackDatabaseQuery('findMany', 'auction', duration);
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      trackDatabaseError('findMany', error.code)
+      trackDatabaseError('findMany', error.code);
     }
 
-    throw error
+    throw error;
   }
 }
 ```
@@ -272,30 +263,28 @@ export async function getAuctions() {
 ### Helper dla automatycznego trackingu
 
 ```typescript
-import { trackDatabaseQuery } from '@/lib/prometheus-helpers'
+import { trackDatabaseQuery } from '@/lib/prometheus-helpers';
 
 export async function withDbTracking<T>(
   operation: string,
   table: string,
   query: () => Promise<T>
 ): Promise<T> {
-  const startTime = Date.now()
+  const startTime = Date.now();
   try {
-    const result = await query()
-    const duration = Date.now() - startTime
-    trackDatabaseQuery(operation, table, duration)
-    return result
+    const result = await query();
+    const duration = Date.now() - startTime;
+    trackDatabaseQuery(operation, table, duration);
+    return result;
   } catch (error) {
-    const duration = Date.now() - startTime
-    trackDatabaseQuery(operation, table, duration)
-    throw error
+    const duration = Date.now() - startTime;
+    trackDatabaseQuery(operation, table, duration);
+    throw error;
   }
 }
 
 // Użycie
-const auctions = await withDbTracking('findMany', 'auction', () =>
-  prisma.auction.findMany()
-)
+const auctions = await withDbTracking('findMany', 'auction', () => prisma.auction.findMany());
 ```
 
 ---
@@ -305,26 +294,23 @@ const auctions = await withDbTracking('findMany', 'auction', () =>
 ### Firebase
 
 ```typescript
-import {
-  trackFirebaseOperation,
-  trackFirebaseError,
-} from '@/lib/prometheus-helpers'
+import { trackFirebaseOperation, trackFirebaseError } from '@/lib/prometheus-helpers';
 
 export async function verifyFirebaseToken(token: string) {
-  const startTime = Date.now()
+  const startTime = Date.now();
 
   try {
-    const decoded = await admin.auth().verifyIdToken(token)
-    const duration = Date.now() - startTime
-    trackFirebaseOperation('verifyIdToken', duration)
-    return decoded
+    const decoded = await admin.auth().verifyIdToken(token);
+    const duration = Date.now() - startTime;
+    trackFirebaseOperation('verifyIdToken', duration);
+    return decoded;
   } catch (error) {
-    const duration = Date.now() - startTime
-    trackFirebaseOperation('verifyIdToken', duration)
+    const duration = Date.now() - startTime;
+    trackFirebaseOperation('verifyIdToken', duration);
 
-    const errorCode = error.code || 'unknown'
-    trackFirebaseError('verifyIdToken', errorCode)
-    throw error
+    const errorCode = error.code || 'unknown';
+    trackFirebaseError('verifyIdToken', errorCode);
+    throw error;
   }
 }
 ```
@@ -332,25 +318,25 @@ export async function verifyFirebaseToken(token: string) {
 ### SMS Service
 
 ```typescript
-import { trackSMSSent, trackSMSSending } from '@/lib/prometheus-helpers'
+import { trackSMSSent, trackSMSSending } from '@/lib/prometheus-helpers';
 
 export async function sendSMS(phoneNumber: string, message: string) {
-  const startTime = Date.now()
+  const startTime = Date.now();
 
   try {
-    const result = await smsService.send(phoneNumber, message)
-    const duration = Date.now() - startTime
+    const result = await smsService.send(phoneNumber, message);
+    const duration = Date.now() - startTime;
 
-    trackSMSSending(duration)
-    trackSMSSent('success')
+    trackSMSSending(duration);
+    trackSMSSent('success');
 
-    return result
+    return result;
   } catch (error) {
-    const duration = Date.now() - startTime
-    trackSMSSending(duration)
-    trackSMSSent('error')
+    const duration = Date.now() - startTime;
+    trackSMSSending(duration);
+    trackSMSSent('error');
 
-    throw error
+    throw error;
   }
 }
 ```
@@ -366,6 +352,7 @@ curl http://localhost:3000/api/metrics
 ```
 
 Zwraca metryki w formacie Prometheus:
+
 ```
 # HELP http_requests_total Total number of HTTP requests
 # TYPE http_requests_total counter
@@ -381,36 +368,43 @@ http_request_duration_seconds_bucket{method="GET",route="/api/auctions",le="0.5"
 ### PromQL Queries (w Prometheus UI)
 
 **Średni czas odpowiedzi:**
+
 ```promql
 rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])
 ```
 
 **Liczba requestów na sekundę:**
+
 ```promql
 rate(http_requests_total[5m])
 ```
 
 **Współczynnik błędów:**
+
 ```promql
 rate(http_request_errors_total[5m]) / rate(http_requests_total[5m])
 ```
 
 **Liczba aktywnych aukcji:**
+
 ```promql
 auctions_active
 ```
 
 **Top 10 endpointów pod względem czasu odpowiedzi:**
+
 ```promql
 topk(10, rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m]))
 ```
 
 **Liczba bidów w ostatniej godzinie:**
+
 ```promql
 increase(bids_placed_total[1h])
 ```
 
 **Średnia wartość bidu:**
+
 ```promql
 rate(bid_amount_pln_sum[5m]) / rate(bid_amount_pln_count[5m])
 ```
@@ -433,41 +427,49 @@ rate(bid_amount_pln_sum[5m]) / rate(bid_amount_pln_count[5m])
 Utwórz nowy dashboard z poniższymi panelami:
 
 #### 1. HTTP Request Rate
+
 ```
 rate(http_requests_total[5m])
 ```
 
 #### 2. Response Time (p95)
+
 ```
 histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
 ```
 
 #### 3. Error Rate
+
 ```
 rate(http_request_errors_total[5m]) / rate(http_requests_total[5m])
 ```
 
 #### 4. Active Auctions
+
 ```
 auctions_active
 ```
 
 #### 5. Bids per Hour
+
 ```
 increase(bids_placed_total[1h])
 ```
 
 #### 6. Database Query Duration
+
 ```
 rate(database_query_duration_seconds_sum[5m]) / rate(database_query_duration_seconds_count[5m])
 ```
 
 #### 7. CPU Usage
+
 ```
 rate(process_cpu_user_seconds_total[5m])
 ```
 
 #### 8. Memory Usage
+
 ```
 process_resident_memory_bytes
 ```
@@ -479,51 +481,51 @@ process_resident_memory_bytes
 ### 1. API Route z trackingiem biznesowym
 
 ```typescript
-import { createApiMiddleware } from '@/lib/api-middleware'
-import { trackAuctionCreated } from '@/lib/prometheus-helpers'
-import { trackDatabaseQuery } from '@/lib/prometheus-helpers'
-import { NextRequest, NextResponse } from 'next/server'
+import { createApiMiddleware } from '@/lib/api-middleware';
+import { trackAuctionCreated } from '@/lib/prometheus-helpers';
+import { trackDatabaseQuery } from '@/lib/prometheus-helpers';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = createApiMiddleware()(async (request: NextRequest) => {
-  const body = await request.json()
-  const userId = await getCurrentUserId(request)
+  const body = await request.json();
+  const userId = await getCurrentUserId(request);
 
   // Track database query
-  const startTime = Date.now()
+  const startTime = Date.now();
   const auction = await prisma.auction.create({
     data: {
       title: body.title,
       price: body.price,
       userId,
     },
-  })
-  trackDatabaseQuery('create', 'auction', Date.now() - startTime)
+  });
+  trackDatabaseQuery('create', 'auction', Date.now() - startTime);
 
   // Track business metric
-  trackAuctionCreated(userId)
+  trackAuctionCreated(userId);
 
-  return NextResponse.json(auction)
-})
+  return NextResponse.json(auction);
+});
 ```
 
 ### 2. Tracking w middleware autoryzacji
 
 ```typescript
 // lib/auth-middleware.ts
-import { trackUserLogin } from '@/lib/prometheus-helpers'
+import { trackUserLogin } from '@/lib/prometheus-helpers';
 
 export async function withAuth(handler: Function) {
   return async (request: NextRequest) => {
-    const user = await getCurrentUser(request)
+    const user = await getCurrentUser(request);
 
     if (user) {
       // Track login event
-      trackUserLogin()
+      trackUserLogin();
       // ... reszta logiki
     }
 
-    return handler(request)
-  }
+    return handler(request);
+  };
 }
 ```
 
@@ -531,20 +533,20 @@ export async function withAuth(handler: Function) {
 
 ```typescript
 // services/auction.service.ts
-import { trackBidPlaced, trackAuctionEnded } from '@/lib/prometheus-helpers'
+import { trackBidPlaced, trackAuctionEnded } from '@/lib/prometheus-helpers';
 
 export class AuctionService {
   async placeBid(auctionId: string, userId: string, amount: number) {
-    const bid = await this.createBid(auctionId, userId, amount)
-    trackBidPlaced(auctionId, userId, amount)
+    const bid = await this.createBid(auctionId, userId, amount);
+    trackBidPlaced(auctionId, userId, amount);
 
     // Sprawdź czy aukcja się zakończyła
-    const auction = await this.getAuction(auctionId)
+    const auction = await this.getAuction(auctionId);
     if (auction.status === 'ENDED') {
-      trackAuctionEnded()
+      trackAuctionEnded();
     }
 
-    return bid
+    return bid;
   }
 }
 ```
@@ -580,13 +582,13 @@ groups:
         expr: rate(http_request_errors_total[5m]) / rate(http_requests_total[5m]) > 0.05
         for: 5m
         annotations:
-          summary: "High error rate detected"
-      
+          summary: 'High error rate detected'
+
       - alert: SlowResponseTime
         expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
         for: 5m
         annotations:
-          summary: "Response time p95 is above 2 seconds"
+          summary: 'Response time p95 is above 2 seconds'
 ```
 
 ---
@@ -607,6 +609,7 @@ Użyj `labelNames` do grupowania i redukcji liczby unikalnych metryk.
 ### Wysokie użycie pamięci?
 
 Prometheus przechowuje metryki w pamięci. W produkcji rozważ:
+
 - Retencję metryk (retention period)
 - Agregację metryk (recording rules)
 - Przechowywanie w zewnętrznym storage
@@ -619,4 +622,3 @@ Prometheus przechowuje metryki w pamięci. W produkcji rozważ:
 - [prom-client Documentation](https://github.com/siimon/prom-client)
 - [PromQL Guide](https://prometheus.io/docs/prometheus/latest/querying/basics/)
 - [Grafana Dashboard Examples](https://grafana.com/grafana/dashboards/)
-

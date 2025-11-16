@@ -187,7 +187,7 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20"
+      className="card-glass p-8"
     >
       <div className="flex items-center justify-between mb-8">
         <h2 className="font-display font-bold text-2xl text-white">Dodaj referencję</h2>

@@ -1,17 +1,17 @@
-import { NextRequest } from 'next/server'
-import { register } from '@/lib/prometheus-helpers'
+import { handleApiError } from '@/lib/error-handling';
+import { register } from '@/lib/prometheus-helpers';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const metrics = await register.metrics()
-    return new Response(metrics, {
+    const metrics = await register.metrics();
+    return new NextResponse(metrics, {
       status: 200,
       headers: {
         'Content-Type': register.contentType,
       },
-    })
+    });
   } catch (error) {
-    console.error('Error generating metrics:', error)
-    return new Response('Error generating metrics', { status: 500 })
+    return handleApiError(error, request, { endpoint: 'metrics' });
   }
 }

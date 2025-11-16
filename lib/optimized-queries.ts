@@ -285,24 +285,24 @@ export function createAuctionFilters(params: {
 /**
  * Helper do tworzenia sortowania dla aukcji
  */
-export function createAuctionSorting(sortBy: string): Prisma.AuctionOrderByWithRelationInput[] {
+export function createAuctionSorting(sortBy: string): Prisma.AuctionOrderByWithRelationInput {
   switch (sortBy) {
     case 'newest':
-      return [{ createdAt: 'desc' }];
+      return { createdAt: 'desc' };
     case 'oldest':
-      return [{ createdAt: 'asc' }];
+      return { createdAt: 'asc' };
     case 'price-low':
-      return [{ currentPrice: 'asc' }];
+      return { currentPrice: 'asc' };
     case 'price-high':
-      return [{ currentPrice: 'desc' }];
+      return { currentPrice: 'desc' };
     case 'ending-soon':
-      return [{ endTime: 'asc' }];
+      return { endTime: 'asc' };
     case 'ending-latest':
-      return [{ endTime: 'desc' }];
+      return { endTime: 'desc' };
     case 'title':
-      return [{ title: 'asc' }];
+      return { title: 'asc' };
     default:
-      return [{ createdAt: 'desc' }];
+      return { createdAt: 'desc' };
   }
 }
 

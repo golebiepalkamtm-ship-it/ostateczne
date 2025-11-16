@@ -1,13 +1,13 @@
-specVersion: "v1"
-serviceId: "pigeon-aucion-41d68-service"
-location: "europe-central2"
+specVersion: 'v1'
+serviceId: 'pigeon-aucion-41d68-service'
+location: 'europe-central2'
 schema:
-  source: "./schema"
+  source: './schema'
   datasource:
     postgresql:
-      database: "pigeon-aucion-41d68-database"
+      database: 'pigeon-aucion-41d68-database'
       cloudSql:
-        instanceId: "pigeon-aucion-41d68-instance"
+        instanceId: 'pigeon-aucion-41d68-instance'
         # schemaValidation: "STRICT"     # STRICT mode makes Postgres schema match Data Connect exactly.
         # schemaValidation: "COMPATIBLE" # COMPATIBLE mode makes Postgres schema compatible with Data Connect.
-connectorDirs: ["./example"]
+connectorDirs: ['./example']

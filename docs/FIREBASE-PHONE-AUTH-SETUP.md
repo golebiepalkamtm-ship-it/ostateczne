@@ -42,7 +42,7 @@ Firebase Phone Authentication wymaga reCAPTCHA do weryfikacji użytkownika.
 
 Aplikacja używa **Firebase Phone Verification** (nie MFA):
 
-1. **Wysyłanie SMS**: 
+1. **Wysyłanie SMS**:
    - Użytkownik jest już zalogowany (email/hasło)
    - Użytkownik wprowadza numer telefonu w profilu
    - Firebase Phone Auth SDK automatycznie wysyła SMS z kodem weryfikacyjnym
@@ -67,15 +67,18 @@ Aplikacja używa **Firebase Phone Verification** (nie MFA):
 ## Troubleshooting
 
 ### SMS nie są wysyłane
+
 - Sprawdź czy Phone Authentication jest włączone w Firebase Console
 - Sprawdź czy jesteś na planie Blaze (wymagane dla produkcji)
 - Sprawdź limity SMS w Firebase Console
 
 ### Błąd reCAPTCHA
+
 - Sprawdź czy domena jest dodana w Authorized domains
 - Sprawdź czy reCAPTCHA jest poprawnie załadowana w przeglądarce
 
 ### Kod weryfikacyjny nie działa
+
 - Sprawdź czy kod został wprowadzony poprawnie (6 cyfr)
 - Sprawdź czy kod nie wygasł (Firebase ma własne limity czasowe)
 - Sprawdź logi w konsoli przeglądarki i serwera

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { motion } from 'framer-motion';
 import {
   BarChart3,
@@ -14,6 +15,15 @@ import {
   Trash2,
   Users,
   XCircle,
+  Activity,
+  FileText,
+  Database,
+  TrendingUp,
+  AlertTriangle,
+  AlertCircle,
+  Shield,
+  Download,
+  RefreshCw,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -131,7 +141,7 @@ interface Meeting {
 }
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
+  const { user: firebaseUser, dbUser } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState<StatsResponse | null>(null);
@@ -201,13 +211,22 @@ export default function AdminDashboard() {
     { id: 'references', label: 'Referencje', icon: Star },
     { id: 'meetings', label: 'Spotkania', icon: Camera },
     { id: 'transactions', label: 'Transakcje', icon: DollarSign },
+    { id: 'metrics', label: 'Metryki', icon: Activity },
+    { id: 'logs', label: 'Logi', icon: FileText },
+    { id: 'reports', label: 'Raporty', icon: TrendingUp },
     { id: 'settings', label: 'Ustawienia', icon: Settings },
   ];
 
   // Load stats
   const loadStats = useCallback(async () => {
+    if (!firebaseUser) return;
     try {
-      const response = await fetch('/api/admin/stats');
+      const token = await firebaseUser.getIdToken();
+      const response = await fetch('/api/admin/stats', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setStats(data);
@@ -217,11 +236,13 @@ export default function AdminDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [firebaseUser]);
 
   // Load users
   const loadUsers = useCallback(async () => {
+    if (!firebaseUser) return;
     try {
+      const token = await firebaseUser.getIdToken();
       const params = new URLSearchParams({
         page: usersPage.toString(),
         pageSize: usersPageSize.toString(),
@@ -229,7 +250,11 @@ export default function AdminDashboard() {
         ...(usersStatus && { status: usersStatus }),
       });
 
-      const response = await fetch(`/api/admin/users?${params}`);
+      const response = await fetch(`/api/admin/users?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setUsers(data.items);
@@ -238,47 +263,57 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Błąd podczas ładowania użytkowników:', error);
     }
-  }, [usersPage, usersPageSize, usersRole, usersStatus]);
+  }, [firebaseUser, usersPage, usersPageSize, usersRole, usersStatus]);
 
   // Load auctions
   const loadAuctions = useCallback(async () => {
+    if (!firebaseUser) return;
     try {
+      const token = await firebaseUser.getIdToken();
       const params = new URLSearchParams({
         page: auctionsPage.toString(),
-        pageSize: auctionsPageSize.toString(),
-        status: 'PENDING',
+        limit: auctionsPageSize.toString(),
       });
 
-      const response = await fetch(`/api/admin/auctions?${params}`);
+      const response = await fetch(`/api/admin/auctions/pending?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
-        setAuctions(data.items);
-        setAuctionsTotal(data.total);
+        setAuctions(data.auctions || []);
+        setAuctionsTotal(data.total || 0);
       }
     } catch (error) {
       console.error('Błąd podczas ładowania aukcji:', error);
     }
-  }, [auctionsPage, auctionsPageSize]);
+  }, [firebaseUser, auctionsPage, auctionsPageSize]);
 
   // Load active auctions
   const loadActiveAuctions = useCallback(async () => {
+    if (!firebaseUser) return;
     try {
+      const token = await firebaseUser.getIdToken();
       const params = new URLSearchParams({
         page: activeAuctionsPage.toString(),
-        pageSize: activeAuctionsPageSize.toString(),
-        status: 'ACTIVE',
+        limit: activeAuctionsPageSize.toString(),
       });
 
-      const response = await fetch(`/api/admin/auctions?${params}`);
+      const response = await fetch(`/api/admin/auctions/active?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
-        setActiveAuctions(data.items);
-        setActiveAuctionsTotal(data.total);
+        setActiveAuctions(data.auctions || []);
+        setActiveAuctionsTotal(data.total || 0);
       }
     } catch (error) {
       console.error('Błąd podczas ładowania aktywnych aukcji:', error);
     }
-  }, [activeAuctionsPage, activeAuctionsPageSize]);
+  }, [firebaseUser, activeAuctionsPage, activeAuctionsPageSize]);
 
   // User handlers
   const handleEditUser = useCallback((user: User) => {
@@ -292,13 +327,17 @@ export default function AdminDashboard() {
   }, []);
 
   const handleSaveUser = useCallback(async () => {
-    if (!editingUser) return;
+    if (!editingUser || !firebaseUser) return;
 
     setSaving(true);
     try {
+      const token = await firebaseUser.getIdToken();
       const response = await fetch(`/api/admin/users/${editingUser.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(editForm),
       });
 
@@ -311,14 +350,19 @@ export default function AdminDashboard() {
     } finally {
       setSaving(false);
     }
-  }, [editingUser, editForm, loadUsers]);
+  }, [editingUser, editForm, loadUsers, firebaseUser]);
 
   const handleDeleteUser = useCallback(
     async (userId: string) => {
+      if (!firebaseUser) return;
       setDeleting(true);
       try {
+        const token = await firebaseUser.getIdToken();
         const response = await fetch(`/api/admin/users/${userId}`, {
           method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -330,16 +374,21 @@ export default function AdminDashboard() {
         setDeleting(false);
       }
     },
-    [loadUsers]
+    [loadUsers, firebaseUser]
   );
 
   // Auction handlers
   const handleApproveAuction = useCallback(
     async (auctionId: string) => {
+      if (!firebaseUser) return;
       setApproving(auctionId);
       try {
+        const token = await firebaseUser.getIdToken();
         const response = await fetch(`/api/admin/auctions/${auctionId}/approve`, {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -352,14 +401,19 @@ export default function AdminDashboard() {
         setApproving(null);
       }
     },
-    [loadAuctions, loadActiveAuctions]
+    [loadAuctions, loadActiveAuctions, firebaseUser]
   );
 
   const handleRejectAuction = useCallback(
     async (auctionId: string) => {
+      if (!firebaseUser) return;
       try {
+        const token = await firebaseUser.getIdToken();
         const response = await fetch(`/api/admin/auctions/${auctionId}/reject`, {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -369,7 +423,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas odrzucania aukcji:', error);
       }
     },
-    [loadAuctions]
+    [loadAuctions, firebaseUser]
   );
 
   const handleEditAuction = useCallback((auction: Auction) => {
@@ -385,12 +439,16 @@ export default function AdminDashboard() {
   }, []);
 
   const handleSaveAuction = useCallback(async () => {
-    if (!editingAuction) return;
+    if (!editingAuction || !firebaseUser) return;
 
     try {
+      const token = await firebaseUser.getIdToken();
       const response = await fetch(`/api/admin/auctions/${editingAuction.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(editingAuctionData),
       });
 
@@ -402,13 +460,18 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Błąd podczas zapisywania aukcji:', error);
     }
-  }, [editingAuction, editingAuctionData, loadAuctions, loadActiveAuctions]);
+  }, [editingAuction, editingAuctionData, loadAuctions, loadActiveAuctions, firebaseUser]);
 
   const handleSelectAuction = useCallback(async (auction: Auction | null) => {
     setSelectedAuction(auction);
-    if (auction) {
+    if (auction && firebaseUser) {
       try {
-        const response = await fetch(`/api/admin/auctions/${auction.id}/bids`);
+        const token = await firebaseUser.getIdToken();
+        const response = await fetch(`/api/admin/auctions/${auction.id}/bids`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setAuctionBidders(data);
@@ -417,7 +480,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas ładowania licytacji:', error);
       }
     }
-  }, []);
+  }, [firebaseUser]);
 
   // Helper functions
   function getStatusColor(status: string) {
@@ -470,14 +533,20 @@ export default function AdminDashboard() {
 
   // Load transactions
   const loadTransactions = useCallback(async () => {
+    if (!firebaseUser) return;
     try {
+      const token = await firebaseUser.getIdToken();
       const params = new URLSearchParams({
         page: txsPage.toString(),
         pageSize: txsPageSize.toString(),
         ...(txsStatus && { status: txsStatus }),
       });
 
-      const response = await fetch(`/api/admin/transactions?${params}`);
+      const response = await fetch(`/api/admin/transactions?${params}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setTxs(data.items || []);
@@ -486,13 +555,20 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Błąd podczas ładowania transakcji:', error);
     }
-  }, [txsPage, txsPageSize, txsStatus]);
+  }, [firebaseUser, txsPage, txsPageSize, txsStatus]);
 
   // Load references
   const loadReferences = useCallback(async () => {
+    if (!firebaseUser) return;
     try {
+      const token = await firebaseUser.getIdToken();
       const response = await fetch(
-        `/api/admin/references?page=1&limit=50&status=${referencesStatus}`
+        `/api/admin/references?page=1&limit=50&status=${referencesStatus}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -502,13 +578,20 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Błąd podczas ładowania referencji:', error);
     }
-  }, [referencesStatus]);
+  }, [firebaseUser, referencesStatus]);
 
   // Load meetings
   const loadMeetings = useCallback(async () => {
+    if (!firebaseUser) return;
     try {
+      const token = await firebaseUser.getIdToken();
       const response = await fetch(
-        `/api/admin/breeder-meetings?page=1&limit=50&status=${meetingsStatus}`
+        `/api/admin/breeder-meetings?page=1&limit=50&status=${meetingsStatus}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -518,15 +601,20 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Błąd podczas ładowania spotkań:', error);
     }
-  }, [meetingsStatus]);
+  }, [firebaseUser, meetingsStatus]);
 
   // Reference handlers
   const approveReference = useCallback(
     async (referenceId: string, isApproved: boolean) => {
+      if (!firebaseUser) return;
       try {
+        const token = await firebaseUser.getIdToken();
         const response = await fetch(`/api/admin/references/${referenceId}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({ isApproved }),
         });
 
@@ -537,16 +625,21 @@ export default function AdminDashboard() {
         console.error('Błąd podczas aktualizacji referencji:', error);
       }
     },
-    [loadReferences]
+    [loadReferences, firebaseUser]
   );
 
   const deleteReference = useCallback(
     async (referenceId: string) => {
+      if (!firebaseUser) return;
       if (!confirm('Czy na pewno chcesz usunąć tę referencję?')) return;
 
       try {
+        const token = await firebaseUser.getIdToken();
         const response = await fetch(`/api/admin/references/${referenceId}`, {
           method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -556,16 +649,21 @@ export default function AdminDashboard() {
         console.error('Błąd podczas usuwania referencji:', error);
       }
     },
-    [loadReferences]
+    [loadReferences, firebaseUser]
   );
 
   // Meeting handlers
   const approveMeeting = useCallback(
     async (meetingId: string, isApproved: boolean) => {
+      if (!firebaseUser) return;
       try {
+        const token = await firebaseUser.getIdToken();
         const response = await fetch(`/api/admin/breeder-meetings/${meetingId}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({ isApproved }),
         });
 
@@ -576,16 +674,21 @@ export default function AdminDashboard() {
         console.error('Błąd podczas aktualizacji spotkania:', error);
       }
     },
-    [loadMeetings]
+    [loadMeetings, firebaseUser]
   );
 
   const deleteMeeting = useCallback(
     async (meetingId: string) => {
+      if (!firebaseUser) return;
       if (!confirm('Czy na pewno chcesz usunąć to spotkanie?')) return;
 
       try {
+        const token = await firebaseUser.getIdToken();
         const response = await fetch(`/api/admin/breeder-meetings/${meetingId}`, {
           method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -595,7 +698,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas usuwania spotkania:', error);
       }
     },
-    [loadMeetings]
+    [loadMeetings, firebaseUser]
   );
 
   // Effects
@@ -636,81 +739,96 @@ export default function AdminDashboard() {
 
   // Check admin access
   useEffect(() => {
-    if (user && user.role !== 'ADMIN') {
+    if (dbUser && dbUser.role !== 'ADMIN') {
       router.push('/dashboard');
     }
-  }, [user, router]);
+  }, [dbUser, router]);
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!firebaseUser || !dbUser || dbUser.role !== 'ADMIN') {
     return null;
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-white">
+    <div className="min-h-screen relative w-full">
+      <div className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 py-10 text-white">
         {/* Header */}
-        <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-white">Panel Administratora</h1>
-              <p className="text-white/70 mt-2">
-                Zarządzaj platformą, użytkownikami i transakcjami
+              <h1 className="text-5xl font-bold text-gradient bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent mb-2">
+                Panel Administratora
+              </h1>
+              <p className="text-white/70 mt-2 text-xl">
+                Kompleksowe zarządzanie platformą, użytkownikami, aukcjami i transakcjami
               </p>
             </div>
             <button
               onClick={() => router.push('/api/auth/signout')}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg backdrop-blur-sm transition-all duration-200 border border-red-500/30"
+              className="glass-nav-button flex items-center gap-2 px-6 py-3 text-white rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 border border-white/30"
             >
-              <LogOut className="w-4 h-4" />
-              Wyloguj
+              <LogOut className="w-5 h-5" />
+              <span>Wyloguj</span>
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="card hover-3d-lift">
+            <UnifiedCard variant="glass" className="sticky top-8">
               {/* Admin Info */}
-              <div className="text-center mb-6">
-                <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Settings className="w-10 h-10 text-white" />
-                </div>
-                <h2 className="text-xl font-semibold text-white mb-1">
-                  {user.displayName || 'Administrator'}
+              <div className="text-center mb-8 pb-8 border-b border-white/20">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: 'spring' }}
+                  className="w-32 h-32 bg-gradient-to-br from-red-500 via-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-red-500/40"
+                >
+                  <Shield className="w-16 h-16 text-white" />
+                </motion.div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {firebaseUser.displayName || `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim() || 'Administrator'}
                 </h2>
-                <p className="text-white/70 text-sm">{user.email}</p>
-                <div className="flex items-center justify-center gap-1 mt-2">
-                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                  <span className="text-red-400 text-sm">Administrator</span>
+                <p className="text-white/70 text-base mb-4">{firebaseUser.email || dbUser.email}</p>
+                <div className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse"></div>
+                  <span className="text-red-400 text-sm font-semibold">Administrator</span>
                 </div>
               </div>
 
               {/* Navigation */}
               <nav className="space-y-2">
-                {tabs.map(tab => {
+                {tabs.map((tab, index) => {
                   const Icon = tab.icon;
                   return (
-                    <button
+                    <motion.button
                       key={tab.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * index }}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300 ${
+                      className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 text-base ${
                         activeTab === tab.id
-                          ? 'bg-blue-600 text-white'
-                          : 'text-white/70 hover:text-white hover:bg-gray-700/50'
+                          ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105'
+                          : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 hover:scale-102'
                       }`}
                     >
-                      <Icon className="w-5 h-5" />
-                      {tab.label}
-                    </button>
+                      <Icon className="w-6 h-6" />
+                      <span className="font-semibold">{tab.label}</span>
+                    </motion.button>
                   );
                 })}
               </nav>
-            </div>
+            </UnifiedCard>
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-4">
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, x: 20 }}
@@ -779,8 +897,11 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'transactions' && (
-                <div className="card">
-                  <h3 className="text-xl font-semibold text-white mb-6">Transakcje</h3>
+                <UnifiedCard variant="glass" className="p-8">
+                  <h3 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                    <DollarSign className="w-8 h-8 text-yellow-400" />
+                    Zarządzanie Transakcjami
+                  </h3>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-white/70 mb-2">Status</label>
                     <select
@@ -893,13 +1014,16 @@ export default function AdminDashboard() {
                       </select>
                     </div>
                   </div>
-                </div>
+                </UnifiedCard>
               )}
 
               {activeTab === 'references' && (
-                <div className="card">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-semibold text-white">Zarządzanie referencjami</h3>
+                <UnifiedCard variant="glass" className="p-8">
+                  <div className="flex justify-between items-center mb-8">
+                    <h3 className="text-3xl font-bold text-white flex items-center gap-3">
+                      <Star className="w-8 h-8 text-purple-400" />
+                      Zarządzanie Referencjami
+                    </h3>
                     <div className="flex gap-2">
                       <button
                         onClick={() => setReferencesStatus('pending')}
@@ -1029,14 +1153,15 @@ export default function AdminDashboard() {
                       ))
                     )}
                   </div>
-                </div>
+                </UnifiedCard>
               )}
 
               {activeTab === 'meetings' && (
-                <div className="card">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-semibold text-white">
-                      Zarządzanie spotkaniami z hodowcami
+                <UnifiedCard variant="glass" className="p-8">
+                  <div className="flex justify-between items-center mb-8">
+                    <h3 className="text-3xl font-bold text-white flex items-center gap-3">
+                      <Camera className="w-8 h-8 text-pink-400" />
+                      Zarządzanie Spotkaniami z Hodowcami
                     </h3>
                     <div className="flex gap-2">
                       <button
@@ -1168,54 +1293,303 @@ export default function AdminDashboard() {
                       ))
                     )}
                   </div>
+                </UnifiedCard>
+              )}
+
+              {activeTab === 'metrics' && (
+                <div className="space-y-6">
+                  <UnifiedCard variant="glass">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-2xl font-semibold text-white flex items-center gap-3">
+                        <Activity className="w-6 h-6 text-blue-400" />
+                        Metryki Systemowe
+                      </h3>
+                      <a
+                        href="/api/metrics"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary flex items-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        Eksportuj
+                      </a>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      <div className="p-6 bg-blue-500/10 border border-blue-500/30 rounded-xl hover:bg-blue-500/15 transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-white/70 text-base font-medium">Prometheus</p>
+                          <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        </div>
+                        <p className="text-3xl font-bold text-white mb-2">Aktywny</p>
+                        <p className="text-white/60 text-sm mb-4">Zbieranie metryk w czasie rzeczywistym</p>
+                        <a
+                          href="http://localhost:9090"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 text-base font-semibold hover:underline inline-flex items-center gap-2"
+                        >
+                          Otwórz dashboard →
+                        </a>
+                      </div>
+                      <div className="p-6 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500/15 transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-white/70 text-base font-medium">Grafana</p>
+                          <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        </div>
+                        <p className="text-3xl font-bold text-white mb-2">Aktywny</p>
+                        <p className="text-white/60 text-sm mb-4">Wizualizacja metryk i dashboardy</p>
+                        <a
+                          href="http://localhost:4000"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-400 text-base font-semibold hover:underline inline-flex items-center gap-2"
+                        >
+                          Otwórz dashboard →
+                        </a>
+                      </div>
+                    </div>
+                    <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
+                      <p className="text-white/70 text-base font-medium mb-3">Endpoint metryk</p>
+                      <code className="text-white text-base bg-black/40 px-4 py-3 rounded-lg block font-mono">
+                        /api/metrics
+                      </code>
+                      <p className="text-white/60 text-sm mt-3">Dostępny w formacie Prometheus</p>
+                    </div>
+                  </UnifiedCard>
+
+                  <UnifiedCard variant="glass" className="p-8">
+                    <h4 className="text-2xl font-bold text-white mb-6">Metryki w czasie rzeczywistym</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-white/80 text-base font-medium">Żądania HTTP (24h)</span>
+                          <Activity className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <p className="text-3xl font-bold text-white mb-2">Ładowanie...</p>
+                        <p className="text-white/60 text-sm">Wszystkie requesty do API</p>
+                      </div>
+                      <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-white/80 text-base font-medium">Średni czas odpowiedzi</span>
+                          <Database className="w-5 h-5 text-green-400" />
+                        </div>
+                        <p className="text-3xl font-bold text-white mb-2">Ładowanie...</p>
+                        <p className="text-white/60 text-sm">Czas odpowiedzi API</p>
+                      </div>
+                      <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-white/80 text-base font-medium">Błędy (24h)</span>
+                          <AlertCircle className="w-5 h-5 text-red-400" />
+                        </div>
+                        <p className="text-3xl font-bold text-red-400 mb-2">Ładowanie...</p>
+                        <p className="text-white/60 text-sm">Błędy serwera i klienta</p>
+                      </div>
+                    </div>
+                  </UnifiedCard>
+                </div>
+              )}
+
+              {activeTab === 'logs' && (
+                <UnifiedCard variant="glass">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-2xl font-semibold text-white flex items-center gap-3">
+                      <FileText className="w-6 h-6 text-yellow-400" />
+                      Logi Systemowe
+                    </h3>
+                    <button className="btn-secondary flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4" />
+                      Odśwież
+                    </button>
+                  </div>
+                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                    <div className="p-4 bg-red-500/10 border-l-4 border-red-500 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-red-400 font-semibold text-sm">ERROR</span>
+                        <span className="text-white/50 text-xs">2025-11-15 10:18:17</span>
+                      </div>
+                      <p className="text-white/90 text-sm">
+                        PrismaClientKnownRequestError: The table `public.User` does not exist
+                      </p>
+                      <p className="text-white/60 text-xs mt-1">app/api/profile/route.ts:170</p>
+                    </div>
+                    <div className="p-4 bg-yellow-500/10 border-l-4 border-yellow-500 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-yellow-400 font-semibold text-sm">WARN</span>
+                        <span className="text-white/50 text-xs">2025-11-15 10:15:00</span>
+                      </div>
+                      <p className="text-white/90 text-sm">Rate limit warning: User approaching limit</p>
+                    </div>
+                    <div className="p-4 bg-blue-500/10 border-l-4 border-blue-500 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-blue-400 font-semibold text-sm">INFO</span>
+                        <span className="text-white/50 text-xs">2025-11-15 10:14:48</span>
+                      </div>
+                      <p className="text-white/90 text-sm">User sync completed: admin@palka-mtm.pl</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <select className="input-field flex-1">
+                      <option>Wszystkie poziomy</option>
+                      <option>ERROR</option>
+                      <option>WARN</option>
+                      <option>INFO</option>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="Szukaj w logach..."
+                      className="input-field flex-1"
+                    />
+                  </div>
+                </UnifiedCard>
+              )}
+
+              {activeTab === 'reports' && (
+                <div className="space-y-6">
+                  <UnifiedCard variant="glass">
+                    <h3 className="text-2xl font-semibold text-white mb-6 flex items-center gap-3">
+                      <TrendingUp className="w-6 h-6 text-green-400" />
+                      Raporty i Analizy
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <button className="p-6 bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                        <BarChart3 className="w-8 h-8 text-blue-400 mb-3" />
+                        <h4 className="text-white font-semibold mb-2">Raport Użytkowników</h4>
+                        <p className="text-white/70 text-sm">Analiza aktywności i rejestracji</p>
+                      </button>
+                      <button className="p-6 bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                        <DollarSign className="w-8 h-8 text-green-400 mb-3" />
+                        <h4 className="text-white font-semibold mb-2">Raport Finansowy</h4>
+                        <p className="text-white/70 text-sm">Przychody, prowizje, transakcje</p>
+                      </button>
+                      <button className="p-6 bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                        <Gavel className="w-8 h-8 text-purple-400 mb-3" />
+                        <h4 className="text-white font-semibold mb-2">Raport Aukcji</h4>
+                        <p className="text-white/70 text-sm">Statystyki aukcji i licytacji</p>
+                      </button>
+                      <button className="p-6 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                        <AlertTriangle className="w-8 h-8 text-yellow-400 mb-3" />
+                        <h4 className="text-white font-semibold mb-2">Raport Błędów</h4>
+                        <p className="text-white/70 text-sm">Analiza błędów i problemów</p>
+                      </button>
+                    </div>
+                  </UnifiedCard>
+
+                  <UnifiedCard variant="glass">
+                    <h4 className="text-xl font-semibold text-white mb-4">Eksport Danych</h4>
+                    <div className="space-y-3">
+                      <button className="w-full p-4 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-300 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Database className="w-5 h-5 text-blue-400" />
+                          <span className="text-white">Backup bazy danych</span>
+                        </div>
+                        <Download className="w-5 h-5 text-white/70" />
+                      </button>
+                      <button className="w-full p-4 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-300 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-5 h-5 text-green-400" />
+                          <span className="text-white">Eksport użytkowników (CSV)</span>
+                        </div>
+                        <Download className="w-5 h-5 text-white/70" />
+                      </button>
+                      <button className="w-full p-4 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-300 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <BarChart3 className="w-5 h-5 text-purple-400" />
+                          <span className="text-white">Eksport transakcji (CSV)</span>
+                        </div>
+                        <Download className="w-5 h-5 text-white/70" />
+                      </button>
+                    </div>
+                  </UnifiedCard>
                 </div>
               )}
 
               {activeTab === 'settings' && (
-                <div className="card">
-                  <h3 className="text-xl font-semibold text-white mb-6">Ustawienia platformy</h3>
+                <UnifiedCard variant="glass">
+                  <h3 className="text-2xl font-semibold text-white mb-6 flex items-center gap-3">
+                    <Settings className="w-6 h-6 text-blue-400" />
+                    Ustawienia Platformy
+                  </h3>
                   <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-white/70 mb-2">
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <label className="block text-sm font-medium text-white/90 mb-2">
                         Prowizja platformy (%)
                       </label>
                       <input
                         type="number"
-                        defaultValue="0"
-                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        defaultValue="5"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        className="input-field"
                         aria-label="Prowizja platformy w procentach"
                         title="Prowizja platformy w procentach"
                       />
+                      <p className="text-white/60 text-xs mt-1">
+                        Procent od każdej transakcji pobierany przez platformę
+                      </p>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white/70 mb-2">
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <label className="block text-sm font-medium text-white/90 mb-2">
                         Maksymalny czas trwania aukcji (dni)
                       </label>
                       <input
                         type="number"
                         defaultValue="30"
-                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        min="1"
+                        max="365"
+                        className="input-field"
                         aria-label="Maksymalny czas trwania aukcji w dniach"
                         title="Maksymalny czas trwania aukcji w dniach"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white/70 mb-2">
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <label className="block text-sm font-medium text-white/90 mb-2">
                         Minimalna cena wywoławcza (zł)
                       </label>
                       <input
                         type="number"
                         defaultValue="100"
-                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        min="0"
+                        step="10"
+                        className="input-field"
                         aria-label="Minimalna cena wywoławcza w złotych"
                         title="Minimalna cena wywoławcza w złotych"
                       />
                     </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
-                      Zapisz ustawienia
-                    </button>
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                      <label className="block text-sm font-medium text-white/90 mb-2 mb-3">
+                        Funkcje platformy
+                      </label>
+                      <div className="space-y-3">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" defaultChecked className="w-5 h-5 rounded" />
+                          <span className="text-white/90">Wymagana weryfikacja email</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" defaultChecked className="w-5 h-5 rounded" />
+                          <span className="text-white/90">Wymagana weryfikacja telefonu</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" className="w-5 h-5 rounded" />
+                          <span className="text-white/90">Automatyczna akceptacja aukcji</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" defaultChecked className="w-5 h-5 rounded" />
+                          <span className="text-white/90">Powiadomienia email</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <button className="btn-primary flex-1">
+                        Zapisz ustawienia
+                      </button>
+                      <button className="btn-secondary">
+                        <RefreshCw className="w-4 h-4" />
+                        Resetuj
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </UnifiedCard>
               )}
             </motion.div>
           </div>

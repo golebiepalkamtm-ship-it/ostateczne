@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
-import { NextRequest, NextResponse } from 'next/server';
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Endpoint aktualizuje status weryfikacji telefonu po pomyślnej weryfikacji przez Firebase Phone Auth.
@@ -60,7 +61,6 @@ export async function POST(request: NextRequest) {
       message: 'Numer telefonu został pomyślnie zweryfikowany.',
     });
   } catch (error) {
-    console.error('Error in check-verification endpoint:', error);
-    return NextResponse.json({ error: 'Wystąpił wewnętrzny błąd serwera.' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'phone/check-verification' });
   }
 }

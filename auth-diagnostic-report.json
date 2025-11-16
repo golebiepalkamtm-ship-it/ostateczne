@@ -1,0 +1,229 @@
+{
+  "timestamp": "2025-11-08T07:27:53.291Z",
+  "baseUrl": "http://localhost:3001",
+  "summary": {
+    "total": 14,
+    "passed": 7,
+    "failed": 7
+  },
+  "phases": {
+    "phase1": {
+      "total": 3,
+      "passed": 2,
+      "failed": 1
+    },
+    "phase2": {
+      "total": 3,
+      "passed": 0,
+      "failed": 3
+    },
+    "phase3": {
+      "total": 4,
+      "passed": 1,
+      "failed": 3
+    },
+    "oauth": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0
+    },
+    "api": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    }
+  },
+  "results": {
+    "phase1": [
+      {
+        "test": "1.1 - Rejestracja użytkownika",
+        "status": "PASS",
+        "details": {
+          "status": 201,
+          "ok": true,
+          "data": {
+            "message": "Rejestracja zakończona pomyślnie.",
+            "userId": "cmhpypc5l0001b30oj76wg2oh",
+            "emailVerificationLink": "localhost:3000?apiKey=AIzaSyCrGcWptUnRgcNnAQl01g5RjPdMfZ2tJCA&mode=verifyEmail&oobCode=SOaWfCk5uxAMIXzXzu1Q0JSIDFn7urFrVP0quK626AkAAAGaYl0Scg&continueUrl=http://localhost:3000/auth/verify-email&lang=pl",
+            "instructions": "Sprawdź swoją skrzynkę emailową (również folder SPAM) po link weryfikacyjny."
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:33.771Z"
+      },
+      {
+        "test": "1.2 - Blokada dostępu do profilu (bez weryfikacji)",
+        "status": "FAIL",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieautoryzowany dostęp"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:33.819Z"
+      },
+      {
+        "test": "1.3 - Blokada dostępu do aukcji (bez pełnej weryfikacji)",
+        "status": "PASS",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieprawidłowy lub wygasły token autoryzacji"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:34.332Z"
+      }
+    ],
+    "phase2": [
+      {
+        "test": "2.1 - Weryfikacja email",
+        "status": "FAIL",
+        "details": {
+          "status": 400,
+          "ok": false,
+          "data": {
+            "error": "Brak tokenu weryfikacji"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:35.087Z"
+      },
+      {
+        "test": "2.2 - Dostęp do profilu po weryfikacji",
+        "status": "FAIL",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieautoryzowany dostęp"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:35.124Z"
+      },
+      {
+        "test": "2.3 - Dostęp do aukcji nadal zablokowany (bez telefonu)",
+        "status": "FAIL",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieprawidłowy lub wygasły token autoryzacji"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:35.158Z"
+      }
+    ],
+    "phase3": [
+      {
+        "test": "3.1 - Aktualizacja profilu",
+        "status": "FAIL",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieautoryzowany dostęp"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:35.183Z"
+      },
+      {
+        "test": "3.2 - Wysłanie kodu SMS",
+        "status": "FAIL",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieautoryzowany dostęp"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:42.541Z"
+      },
+      {
+        "test": "3.3 - Weryfikacja kodu SMS",
+        "status": "PASS",
+        "details": {
+          "status": 400,
+          "ok": false,
+          "data": {
+            "error": "Missing required fields"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:43.184Z"
+      },
+      {
+        "test": "3.4 - Dostęp do aukcji po pełnej weryfikacji",
+        "status": "FAIL",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieprawidłowy lub wygasły token autoryzacji"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:43.223Z"
+      }
+    ],
+    "oauth": [],
+    "api": [
+      {
+        "test": "API - Health check",
+        "status": "PASS",
+        "details": {
+          "status": 200,
+          "ok": true,
+          "data": {
+            "status": "ok",
+            "timestamp": 1762586863250
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:43.252Z"
+      },
+      {
+        "test": "API - Auth test JSON",
+        "status": "PASS",
+        "details": {
+          "status": 405,
+          "ok": false,
+          "data": {},
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:43.743Z"
+      },
+      {
+        "test": "API - Profile API",
+        "status": "PASS",
+        "details": {
+          "status": 401,
+          "ok": false,
+          "data": {
+            "error": "Nieautoryzowany dostęp"
+          },
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:43.800Z"
+      },
+      {
+        "test": "API - Auctions list",
+        "status": "PASS",
+        "details": {
+          "status": 500,
+          "ok": false,
+          "data": {},
+          "headers": {}
+        },
+        "timestamp": "2025-11-08T07:27:53.290Z"
+      }
+    ]
+  }
+}

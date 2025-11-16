@@ -1,5 +1,7 @@
-import * as Sentry from '@sentry/nextjs'
-import { AppError, ErrorType } from './error-handling'
+// W development ten plik jest zastępowany przez webpack alias stubem
+// W production ładuj prawdziwy Sentry
+import * as Sentry from '@sentry/nextjs';
+import { AppError } from './error-handling';
 
 /**
  * Wysyła błąd do Sentry z kontekstem
@@ -7,22 +9,22 @@ import { AppError, ErrorType } from './error-handling'
 export function captureError(error: Error | AppError, context?: Record<string, unknown>) {
   // Nie loguj operacyjne błędy walidacji (400) do Sentry
   if (error instanceof AppError && error.isOperational && error.statusCode < 500) {
-    return
+    return;
   }
 
   Sentry.withScope(scope => {
     // Dodaj kontekst
     if (context) {
-      scope.setContext('additional', context)
+      scope.setContext('additional', context);
     }
 
     // Dodaj tagi dla lepszej kategoryzacji
     if (error instanceof AppError) {
-      scope.setTag('errorType', error.type)
-      scope.setTag('statusCode', error.statusCode.toString())
+      scope.setTag('errorType', error.type);
+      scope.setTag('statusCode', error.statusCode.toString());
       scope.setLevel(
         error.statusCode >= 500 ? 'error' : error.statusCode >= 400 ? 'warning' : 'info'
-      )
+      );
     }
 
     // Dodaj dodatkowe dane
@@ -30,12 +32,12 @@ export function captureError(error: Error | AppError, context?: Record<string, u
       const details =
         typeof error.details === 'object' && error.details !== null
           ? (error.details as Record<string, unknown>)
-          : { value: String(error.details) }
-      scope.setContext('errorDetails', details)
+          : { value: String(error.details) };
+      scope.setContext('errorDetails', details);
     }
 
-    Sentry.captureException(error)
-  })
+    Sentry.captureException(error);
+  });
 }
 
 /**
@@ -48,35 +50,35 @@ export function captureMessage(
 ) {
   Sentry.withScope(scope => {
     if (context) {
-      scope.setContext('messageContext', context)
+      scope.setContext('messageContext', context);
     }
-    scope.setLevel(level)
-    Sentry.captureMessage(message)
-  })
+    scope.setLevel(level);
+    Sentry.captureMessage(message);
+  });
 }
 
 /**
  * Dodaje kontekst użytkownika do Sentry
  */
 export function setUserContext(user: {
-  id: string
-  email?: string
-  username?: string
-  [key: string]: unknown
+  id: string;
+  email?: string;
+  username?: string;
+  [key: string]: unknown;
 }) {
   Sentry.setUser({
     ...user,
     id: user.id,
     email: user.email,
     username: user.username,
-  })
+  });
 }
 
 /**
  * Czyści kontekst użytkownika (np. po wylogowaniu)
  */
 export function clearUserContext() {
-  Sentry.setUser(null)
+  Sentry.setUser(null);
 }
 
 /**
@@ -94,7 +96,7 @@ export function addBreadcrumb(
     level,
     data,
     timestamp: Date.now() / 1000,
-  })
+  });
 }
 
 /**
@@ -111,21 +113,21 @@ export async function withSentrySpan<T>(
       op: operation,
     },
     callback
-  )
+  );
 }
 
 /**
  * Ustawia tag w Sentry (dla filtrowania)
  */
 export function setTag(key: string, value: string) {
-  Sentry.setTag(key, value)
+  Sentry.setTag(key, value);
 }
 
 /**
  * Ustawia kontekst w Sentry
  */
 export function setContext(key: string, context: Record<string, unknown>) {
-  Sentry.setContext(key, context)
+  Sentry.setContext(key, context);
 }
 
 /**
@@ -133,7 +135,6 @@ export function setContext(key: string, context: Record<string, unknown>) {
  */
 export function setLevel(level: 'debug' | 'info' | 'warning' | 'error' | 'fatal') {
   Sentry.withScope(scope => {
-    scope.setLevel(level)
-  })
+    scope.setLevel(level);
+  });
 }
-

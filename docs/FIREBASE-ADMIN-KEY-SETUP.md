@@ -1,6 +1,7 @@
 # 🔑 Instrukcja Konfiguracji Firebase Admin SDK
 
 ## Problem
+
 Link weryfikacyjny email nie działa, ponieważ `FIREBASE_PRIVATE_KEY` w pliku `.env` jest obcięty (tylko 129 znaków zamiast ~1700).
 
 ## Rozwiązanie Krok Po Kroku
@@ -76,19 +77,23 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFA
 ## ⚠️ WAŻNE WSKAZÓWKI
 
 ### ✅ POPRAWNIE:
+
 ```bash
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCqZQk...[1500+ znaków więcej]...3vTM+k9w==\n-----END PRIVATE KEY-----\n"
 ```
+
 - Klucz w cudzysłowach `"..."`
 - Zachowane `\n` (nie prawdziwe nowe linie!)
 - Od `-----BEGIN` do `-----END PRIVATE KEY-----\n`
 - Około **1700 znaków** w całości
 
 ### ❌ BŁĘDNIE:
+
 ```bash
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCD097Bba/5vqIu\nyI
 aaXqsK..."
 ```
+
 - Za krótki (tylko 129 znaków)
 - Obcięty w połowie
 
@@ -106,18 +111,21 @@ npm run dev
 Po restarcie serwera sprawdź logi w terminalu:
 
 ### ✅ POPRAWNIE - Powinieneś zobaczyć:
+
 ```
 info: 🔧 Initializing Firebase Admin SDK...
 info: ✅ Firebase Admin SDK initialized successfully
 ```
 
 ### ❌ BŁĘDNIE - Jeśli nadal widzisz:
+
 ```
 error: ❌ Firebase Admin SDK not initialized!
 error: Skonfiguruj FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY
 ```
 
 To znaczy że:
+
 - Klucz jest nadal obcięty
 - Lub zawiera błędny format
 - Lub serwer nie został zrestartowany
@@ -131,9 +139,11 @@ Po poprawnej konfiguracji:
 3. Powinno zadziałać! ✅
 
 Zamiast błędu:
+
 > ❌ Link weryfikacyjny jest nieprawidłowy lub wygasł
 
 Zobaczysz:
+
 > ✅ Email został pomyślnie zweryfikowany!
 
 ---
@@ -143,6 +153,7 @@ Zobaczysz:
 **NIGDY** nie commituj pliku `.env` do repozytorium!
 
 Upewnij się że `.gitignore` zawiera:
+
 ```
 .env
 .env.local
@@ -158,6 +169,7 @@ Klucz prywatny daje pełny dostęp administratora do Twojego projektu Firebase!
 Jeśli po wykonaniu wszystkich kroków nadal nie działa, sprawdź:
 
 ### 1. Długość klucza
+
 ```bash
 # W PowerShell w folderze projektu:
 (Get-Content .env | Select-String "FIREBASE_PRIVATE_KEY").Line.Length
@@ -166,37 +178,46 @@ Jeśli po wykonaniu wszystkich kroków nadal nie działa, sprawdź:
 Powinno zwrócić około **1700-1800** (nie 129!)
 
 ### 2. Format klucza
+
 Klucz musi:
+
 - Zaczynać się od `"-----BEGIN PRIVATE KEY-----\n`
 - Kończyć się na `\n-----END PRIVATE KEY-----\n"`
 - Mieć `\n` (nie prawdziwe nowe linie w środku)
 - Być w cudzysłowach
 
 ### 3. Logi serwera
+
 Sprawdź terminal po uruchomieniu `npm run dev`:
+
 ```
 debug: 🔧 Firebase Admin SDK initialization check:
 debug: - FIREBASE_PROJECT_ID: SET
-debug: - FIREBASE_CLIENT_EMAIL: SET  
+debug: - FIREBASE_CLIENT_EMAIL: SET
 debug: - FIREBASE_PRIVATE_KEY: SET
 info: 🔧 Initializing Firebase Admin SDK...
 info: ✅ Firebase Admin SDK initialized successfully
 ```
 
 ### 4. Test API
+
 Otwórz w przeglądarce narzędzia deweloperskie (F12) → Console
 
 Po zalogowaniu sprawdź:
+
 ```javascript
 fetch('/api/auth/sync', {
   method: 'POST',
   headers: {
-    'Authorization': 'Bearer ' + await firebase.auth().currentUser.getIdToken()
-  }
-}).then(r => r.json()).then(console.log)
+    Authorization: 'Bearer ' + (await firebase.auth().currentUser.getIdToken()),
+  },
+})
+  .then(r => r.json())
+  .then(console.log);
 ```
 
 Powinno zwrócić:
+
 ```json
 {
   "success": true,
@@ -205,6 +226,7 @@ Powinno zwrócić:
 ```
 
 Nie:
+
 ```json
 {
   "error": "Nieautoryzowany dostęp"
@@ -218,4 +240,3 @@ Nie:
 - [Firebase Admin SDK Setup](https://firebase.google.com/docs/admin/setup)
 - [Service Account Credentials](https://cloud.google.com/iam/docs/service-accounts)
 - [Environment Variables in Next.js](https://nextjs.org/docs/basic-features/environment-variables)
-

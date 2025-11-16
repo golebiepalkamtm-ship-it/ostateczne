@@ -1,10 +1,11 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-import { NextRequest, NextResponse } from 'next/server';
+import { handleApiError } from '@/lib/error-handling';
 import { createApiRoute } from '@/lib/api-middleware';
-import { prisma } from '@/lib/prisma';
 import { getAdminAuth } from '@/lib/firebase-admin';
+import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 async function handler(request: NextRequest) {
   try {
@@ -43,12 +44,7 @@ async function handler(request: NextRequest) {
 
     return NextResponse.json({ ok: true, uid: decoded.uid });
   } catch (error) {
-    const err = error as { errorInfo?: { code?: string }; code?: string };
-    const code = err?.errorInfo?.code || err?.code;
-    if (code === 'auth/id-token-expired') {
-      return NextResponse.json({ error: 'Token expired' }, { status: 401 });
-    }
-    return NextResponse.json({ error: 'Nieprawidłowy token' }, { status: 401 });
+    return handleApiError(error, request, { endpoint: 'auth/verify' });
   }
 }
 

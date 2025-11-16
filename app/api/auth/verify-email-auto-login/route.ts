@@ -1,4 +1,5 @@
 export const runtime = 'nodejs';
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminAuth } from '@/lib/firebase-admin';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -82,12 +83,6 @@ export async function POST(request: NextRequest) {
       email: user.email,
     });
   } catch (error) {
-    console.error('Błąd weryfikacji email i automatycznego logowania:', error);
-    return NextResponse.json(
-      {
-        error: 'Wystąpił błąd podczas automatycznego logowania',
-      },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'auth/verify-email-auto-login' });
   }
 }

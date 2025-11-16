@@ -1,0 +1,64 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - link "Pomiń nawigację (Skip to content)" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - alert [ref=e3]
+  - main [active] [ref=e4]:
+    - main [ref=e7]:
+      - link "Pałka M.T.M. Mistrzowie Sprintu" [ref=e9] [cursor=pointer]:
+        - /url: /
+        - img "Pałka M.T.M. Mistrzowie Sprintu" [ref=e11]
+      - navigation [ref=e12]:
+        - generic [ref=e13]:
+          - link " Strona Główna" [ref=e15] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e16]: 
+            - generic [ref=e17]: Strona Główna
+          - link " Aukcje" [ref=e19] [cursor=pointer]:
+            - /url: /auctions
+            - generic [ref=e20]: 
+            - generic [ref=e21]: Aukcje
+          - link " Osiągnięcia" [ref=e23] [cursor=pointer]:
+            - /url: /achievements
+            - generic [ref=e24]: 
+            - generic [ref=e25]: Osiągnięcia
+          - link " Championy" [ref=e27] [cursor=pointer]:
+            - /url: /champions
+            - generic [ref=e28]: 
+            - generic [ref=e29]: Championy
+          - link " Spotkania" [ref=e31] [cursor=pointer]:
+            - /url: /breeder-meetings
+            - generic [ref=e32]: 
+            - generic [ref=e33]: Spotkania
+          - link " Referencje" [ref=e35] [cursor=pointer]:
+            - /url: /references
+            - generic [ref=e36]: 
+            - generic [ref=e37]: Referencje
+          - link " Prasa" [ref=e39] [cursor=pointer]:
+            - /url: /press
+            - generic [ref=e40]: 
+            - generic [ref=e41]: Prasa
+          - link " O Nas" [ref=e43] [cursor=pointer]:
+            - /url: /about
+            - generic [ref=e44]: 
+            - generic [ref=e45]: O Nas
+          - link " Kontakt" [ref=e47] [cursor=pointer]:
+            - /url: /contact
+            - generic [ref=e48]: 
+            - generic [ref=e49]: Kontakt
+      - link "Zarejestruj się" [ref=e52] [cursor=pointer]:
+        - /url: /auth/register
+        - img [ref=e53]
+        - generic [ref=e56]: Zarejestruj się
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - heading "Pałka MTM" [level=1] [ref=e60]
+          - heading "Mistrzowie Sprintu" [level=2] [ref=e61]
+        - img "Animowany gołąb MTM Pałka" [ref=e65]
+  - generic [ref=e66]:
+    - img [ref=e68]
+    - button "Open Tanstack query devtools" [ref=e116] [cursor=pointer]:
+      - img [ref=e117]
+```

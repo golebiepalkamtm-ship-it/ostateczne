@@ -3,6 +3,7 @@
 ## ✅ CO MASZ JUŻ SKONFIGUROWANE:
 
 ### Firebase Admin SDK (✅ Gotowe):
+
 ```
 FIREBASE_PROJECT_ID="pigeon-aucion-41d68"
 FIREBASE_CLIENT_EMAIL="firebase-adminsdk-fbsvc@pigeon-aucion-41d68.iam.gserviceaccount.com"
@@ -22,6 +23,7 @@ FIREBASE_PRIVATE_KEY="..." (z pliku JSON)
 ### 2. Porównaj z `.env.local`:
 
 Sprawdź czy w `.env.local` są **dokładnie** te same wartości:
+
 - `NEXT_PUBLIC_FIREBASE_API_KEY` = powinno być z Firebase Console
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` = `pigeon-aucion-41d68.firebaseapp.com`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID` = `pigeon-aucion-41d68`
@@ -80,4 +82,3 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 1. Restart serwera: `npm run dev`
 2. Sprawdź logi w terminalu
 3. Przetestuj weryfikację telefonu w aplikacji
-

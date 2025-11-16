@@ -3,6 +3,7 @@
 import CreateAuctionForm from '@/components/auctions/CreateAuctionForm';
 import { FullscreenImageModal } from '@/components/ui/FullscreenImageModal';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppStore, useError, useFilteredAuctions, useLoading } from '@/store/useAppStore';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -10,7 +11,7 @@ import { Calendar, Gavel, Plus, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export function AuctionsPage() {
   const { user } = useAuth();
@@ -70,44 +71,44 @@ export function AuctionsPage() {
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
   const [fullscreenTitle, setFullscreenTitle] = useState('');
 
-  useEffect(() => {
-    // Load auctions data from API
-    const fetchAuctions = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('/api/auctions');
-        if (response.ok) {
-          const data = await response.json();
-          // Mapuj assets na images dla kompatybilności
-          const auctionsWithImages = (data.auctions || []).map(
-            (auction: {
-              assets?: Array<{ type: string; url: string }>;
-              [key: string]: unknown;
-            }) => ({
-              ...auction,
-              images:
-                auction.assets
-                  ?.filter((asset: { type: string; url: string }) => asset.type === 'IMAGE')
-                  .map((asset: { type: string; url: string }) => asset.url) || [],
-              documents:
-                auction.assets
-                  ?.filter((asset: { type: string; url: string }) => asset.type === 'DOCUMENT')
-                  .map((asset: { type: string; url: string }) => asset.url) || [],
-            })
-          );
-          setAuctions(auctionsWithImages);
-        } else {
-          setError('Błąd podczas ładowania aukcji');
-        }
-      } catch {
+  // Wydzielenie fetchAuctions jako osobna funkcja, którą można wywołać w innych miejscach
+  const fetchAuctions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/auctions');
+      if (response.ok) {
+        const data = await response.json();
+        // Mapuj assets na images dla kompatybilności
+        const auctionsWithImages = (data.auctions || []).map(
+          (auction: {
+            assets?: Array<{ type: string; url: string }>;
+            [key: string]: unknown;
+          }) => ({
+            ...auction,
+            images:
+              auction.assets
+                ?.filter((asset: { type: string; url: string }) => asset.type === 'IMAGE')
+                .map((asset: { type: string; url: string }) => asset.url) || [],
+            documents:
+              auction.assets
+                ?.filter((asset: { type: string; url: string }) => asset.type === 'DOCUMENT')
+                .map((asset: { type: string; url: string }) => asset.url) || [],
+          })
+        );
+        setAuctions(auctionsWithImages);
+      } else {
         setError('Błąd podczas ładowania aukcji');
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchAuctions();
+    } catch {
+      setError('Błąd podczas ładowania aukcji');
+    } finally {
+      setLoading(false);
+    }
   }, [setAuctions, setLoading, setError]);
+
+  useEffect(() => {
+    fetchAuctions();
+  }, [fetchAuctions]);
 
   // Live ticking for countdowns
   useEffect(() => {
@@ -182,11 +183,16 @@ export function AuctionsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center -mt-48">
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center">
+        <UnifiedCard
+          variant="glass"
+          glow={true}
+          hover={true}
+          className="p-8 text-center"
+        >
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <h2 className="text-xl font-bold text-white mb-2">Ładowanie aukcji...</h2>
           <p className="text-white/70">Przygotowujemy najlepsze oferty dla Ciebie</p>
-        </div>
+        </UnifiedCard>
       </div>
     );
   }
@@ -194,7 +200,12 @@ export function AuctionsPage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 -mt-48">
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center">
+        <UnifiedCard
+          variant="glass"
+          glow={true}
+          hover={true}
+          className="p-8 text-center"
+        >
           <p className="text-lg mb-4 text-red-400">{error}</p>
           <UnifiedButton
             variant="primary"
@@ -203,7 +214,7 @@ export function AuctionsPage() {
           >
             Spróbuj ponownie
           </UnifiedButton>
-        </div>
+        </UnifiedCard>
       </div>
     );
   }
@@ -229,7 +240,12 @@ export function AuctionsPage() {
               viewport={{ once: true }}
               className="mb-12"
             >
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+              <UnifiedCard
+                variant="glass"
+                glow={true}
+                hover={true}
+                className="p-6"
+              >
                 <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
                   {/* Search */}
                   <div className="relative flex-1 max-w-md group">
@@ -282,7 +298,7 @@ export function AuctionsPage() {
                     <span>Dodaj aukcję</span>
                   </button>
                 </div>
-              </div>
+              </UnifiedCard>
             </motion.section>
 
             {/* Auctions Grid */}
@@ -298,7 +314,12 @@ export function AuctionsPage() {
                     className="group"
                   >
                     <Link href={`/auctions/${auction.id}`} className="block h-full">
-                      <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden h-full flex flex-col cursor-pointer">
+                      <UnifiedCard
+                        variant="glass"
+                        glow={true}
+                        hover={true}
+                        className="overflow-hidden h-full flex flex-col cursor-pointer"
+                      >
                         {/* Image - Większe zdjęcie z możliwością fullscreen */}
                         <div
                           className="relative w-full h-64 bg-gray-100 overflow-hidden rounded-t-lg cursor-pointer group"
@@ -451,13 +472,18 @@ export function AuctionsPage() {
                             </div>
                           )}
                         </div>
-                      </div>
+                      </UnifiedCard>
                     </Link>
                   </motion.div>
                 ))
               ) : (
                 <div className="col-span-3 py-12">
-                  <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-12 border border-white/20 text-center">
+                  <UnifiedCard
+                    variant="glass"
+                    glow={true}
+                    hover={true}
+                    className="p-12 text-center"
+                  >
                     <Gavel className="w-16 h-16 text-white/30 mx-auto mb-4" />
                     <h3 className="text-2xl font-semibold mb-2">Brak aukcji</h3>
                     <p className="text-white/70 mb-6">
@@ -472,7 +498,7 @@ export function AuctionsPage() {
                     >
                       Wyczyść filtry
                     </UnifiedButton>
-                  </div>
+                  </UnifiedCard>
                 </div>
               )}
             </div>
@@ -480,29 +506,34 @@ export function AuctionsPage() {
         </div>
       </div>
 
-      {/* Create Auction Modal */}
+      {/* Modal aukcji w stylu panelu dashboardu */}
       <AnimatePresence>
         {showCreateForm && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-transparent backdrop-blur-sm z-[99999] flex items-center justify-center p-4"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 z-[99999]"
+            style={{ pointerEvents: 'auto' }}
           >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="w-full max-w-7xl h-[95vh] overflow-hidden"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="relative h-full overflow-auto">
+            {/* Overlay */}
+            <div
+              className="absolute inset-0 bg-black/30 backdrop-blur-sm pointer-events-auto"
+              onClick={() => setShowCreateForm(false)}
+            />
+            {/* Centered Form - only one container */}
+            <div className="absolute inset-0 flex items-center justify-center p-4 pointer-events-none overflow-y-auto">
+              <div className="relative z-10 w-full max-w-6xl my-auto pointer-events-auto">
                 <CreateAuctionForm
-                  onSuccess={() => setShowCreateForm(false)}
+                  showHeader={true}
+                  onSuccess={() => {
+                    setShowCreateForm(false);
+                    fetchAuctions(); // Odśwież listę aukcji po utworzeniu
+                  }}
                   onCancel={() => setShowCreateForm(false)}
                 />
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

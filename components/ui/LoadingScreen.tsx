@@ -146,7 +146,7 @@ export function LoadingScreen({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className={`min-h-screen flex items-center justify-center ${className}`}
+      className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 ${className}`}
     >
       <UnifiedCard
         variant="3d"
@@ -209,7 +209,7 @@ export function SequentialLoadingScreen({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`min-h-screen flex items-center justify-center ${className}`}
+      className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 ${className}`}
     >
       <UnifiedCard
         variant="3d"

@@ -27,6 +27,8 @@ export default defineConfig({
       '**/Extensions/**', // rozszerzenia chrome
       '**/goober*/**',
       '**/global/**',
+      '**/node_modules/**', // explicitly exclude all node_modules tests
+      'e2e/**', // exclude E2E tests from Vitest
     ],
     coverage: {
       reporter: ['text', 'json', 'html'],

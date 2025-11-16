@@ -47,11 +47,13 @@ export function SimpleChampionsList() {
         // Konwertuj dane z API na format Champion
         const championsList = championsData
           .map((championData: ChampionData) => {
+            // API zwraca images jako tablicę stringów
             const apiImages = Array.isArray(championData.images) ? championData.images : [];
             if (isDev) debug('Raw API images for champion', championData.id, ':', apiImages); // Debug
 
             const gallery = apiImages
               .map((img: string | { url?: string }) => {
+                // Obsługa zarówno stringów jak i obiektów (backward compatibility)
                 if (typeof img === 'string') return img;
                 if (typeof img === 'object' && img !== null) {
                   return String(img.url || '');
@@ -60,12 +62,10 @@ export function SimpleChampionsList() {
               })
               .filter(Boolean);
 
-            // Sprawdź czy champion ma dane pedigree z API
+            // Pobierz rodowód z danych API (skanowanie folderów już zwraca poprawne ścieżki)
             let pedigreeImage = '';
             const championWithPedigree = championData as {
               id: string;
-              name?: string;
-              ringNumber?: string;
               pedigree?: {
                 images?: string[];
               };
@@ -73,16 +73,19 @@ export function SimpleChampionsList() {
 
             if (isDev) debug('Champion data pedigree:', championWithPedigree.pedigree);
 
+            // Użyj pierwszego obrazu rodowodu z API (skanowanie folderów już go znalazło)
             if (
-              championWithPedigree.pedigree?.images &&
+              championWithPedigree.pedigree &&
+              typeof championWithPedigree.pedigree === 'object' &&
+              'images' in championWithPedigree.pedigree &&
+              Array.isArray(championWithPedigree.pedigree.images) &&
               championWithPedigree.pedigree.images.length > 0
             ) {
-              pedigreeImage = championWithPedigree.pedigree.images[0];
-              if (isDev) debug('Using API pedigree image:', pedigreeImage);
-            } else {
-              // Fallback do domyślnej ścieżki
-              pedigreeImage = `/champions/${championData.id}/pedigree/${championWithPedigree.ringNumber || 'pedigree'}.1.jpg`;
-              if (isDev) debug('Using fallback pedigree image:', pedigreeImage);
+              const firstImage = championWithPedigree.pedigree.images[0];
+              if (typeof firstImage === 'string' && firstImage.trim()) {
+                pedigreeImage = firstImage;
+                if (isDev) debug('Using scanned pedigree image:', pedigreeImage);
+              }
             }
 
             if (isDev)
@@ -157,12 +160,12 @@ export function SimpleChampionsList() {
         champions={champions}
         onImageClick={handleImageClick}
         onPedigreeClick={pedigreeImage => {
-          if (isDev) debug('=== onPedigreeClick CALLED ===');
-          if (isDev) debug('Pedigree image received:', pedigreeImage);
-          if (isDev) debug('Setting selectedPedigreeImage to:', pedigreeImage);
+          console.log('=== onPedigreeClick CALLED ===');
+          console.log('Pedigree image received:', pedigreeImage);
+          console.log('Setting selectedPedigreeImage to:', pedigreeImage);
           setSelectedPedigreeImage(pedigreeImage);
-          if (isDev) debug('selectedPedigreeImage set successfully');
-          if (isDev) debug('=== END onPedigreeClick ===');
+          console.log('selectedPedigreeImage set successfully');
+          console.log('=== END onPedigreeClick ===');
         }}
       />
 
@@ -202,7 +205,7 @@ export function SimpleChampionsList() {
         <ImageModal
           image={{ id: 'pedigree-image', src: selectedPedigreeImage, alt: 'Rodowód championa' }}
           onClose={() => {
-            if (isDev) debug('Closing pedigree modal');
+            console.log('Closing pedigree modal');
             setSelectedPedigreeImage(null);
           }}
         />
@@ -210,9 +213,15 @@ export function SimpleChampionsList() {
 
       {/* Debug info */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
+        <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50 max-w-xs">
           <div>Selected Pedigree: {selectedPedigreeImage || 'none'}</div>
           <div>Champions loaded: {champions.length}</div>
+          <div>Champions with pedigree: {champions.filter(c => c.pedigreeImage).length}</div>
+          {champions.length > 0 && (
+            <div className="mt-2">
+              First champion pedigree: {champions[0]?.pedigreeImage || 'none'}
+            </div>
+          )}
         </div>
       )}
     </>

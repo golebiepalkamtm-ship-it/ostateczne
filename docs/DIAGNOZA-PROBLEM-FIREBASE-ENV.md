@@ -3,6 +3,7 @@
 ## 📊 Stan Obecny
 
 ### ❌ Problem
+
 Firebase Admin SDK **NIE INICJALIZUJE SIĘ** - wszystkie zmienne środowiskowe są **PUSTE** podczas startu aplikacji.
 
 ```
@@ -76,6 +77,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...1755 znaków...\n-----END 
 **Problem:** Folder `.next/` zawierał stary cache z poprzednich uruchomień.
 
 **Rozwiązanie:**
+
 ```bash
 # Usunięto folder .next
 rm -rf .next
@@ -88,6 +90,7 @@ rm -rf .next
 **Problem:** Zmienne środowiskowe są ładowane tylko podczas **startu** aplikacji Next.js.
 
 **Wymagane Działanie:**
+
 1. Zatrzymaj serwer (`Ctrl+C`)
 2. Uruchom ponownie (`npm run dev`)
 
@@ -96,6 +99,7 @@ rm -rf .next
 #### C. **Virtual Environment Python** (Mniej Prawdopodobne)
 
 **Obserwacja:** W logach widoczne:
+
 ```
 PS C:\Users\manta\Desktop\palka mtm> & "c:/Users/manta/Desktop/palka mtm/.venv/Scripts/Activate.ps1"
 (.venv) PS C:\Users\manta\Desktop\palka mtm> npm run dev
@@ -104,6 +108,7 @@ PS C:\Users\manta\Desktop\palka mtm> & "c:/Users/manta/Desktop/palka mtm/.venv/S
 **Potencjalny Problem:** Virtual environment Python może izolować zmienne środowiskowe.
 
 **Weryfikacja:** Po restarcie, jeśli nadal nie działa, spróbuj uruchomić bez `.venv`:
+
 ```bash
 # Wyłącz venv
 deactivate
@@ -117,6 +122,7 @@ npm run dev
 **Weryfikacja:** Plik `.env.local` mógł być zapisany w złym kodowaniu przez PowerShell.
 
 **Rozwiązanie (jeśli A i B nie pomogą):**
+
 1. Otwórz `.env.local` w VSCode
 2. Na dole kliknij "UTF-8"
 3. Wybierz "Save with Encoding" → "UTF-8"
@@ -152,6 +158,7 @@ npm run dev
 Sprawdź pierwsze linie logów - powinieneś zobaczyć:
 
 #### ✅ SUKCES:
+
 ```
 debug: 🔧 Firebase Admin SDK initialization check:
 debug: - FIREBASE_PROJECT_ID: SET          ← Powinno być "SET"!
@@ -162,6 +169,7 @@ info: ✅ Firebase Admin SDK initialized successfully
 ```
 
 #### ❌ NADAL BŁĄD:
+
 ```
 debug: - FIREBASE_PROJECT_ID:              ← Nadal puste
 ```
@@ -202,6 +210,7 @@ const path = require('path');
 ```
 
 Następnie:
+
 ```bash
 npm install dotenv
 npm run dev
@@ -214,12 +223,15 @@ Dodaj tymczasowo do `lib/firebase-admin.ts` (linia 22):
 ```typescript
 if (isDev && !isTest && !isBuildTime) {
   console.log('=== DEBUG ENV ===');
-  console.log('All FIREBASE env vars:', Object.keys(process.env).filter(k => k.includes('FIREBASE')));
+  console.log(
+    'All FIREBASE env vars:',
+    Object.keys(process.env).filter(k => k.includes('FIREBASE'))
+  );
   console.log('PROJECT_ID:', projectId);
   console.log('CLIENT_EMAIL:', clientEmail);
   console.log('PRIVATE_KEY length:', privateKey?.length || 0);
   console.log('=================');
-  
+
   debug('🔧 Firebase Admin SDK initialization check:');
   // ...reszta kodu
 }
@@ -230,7 +242,7 @@ if (isDev && !isTest && !isBuildTime) {
 ## 📋 Checklist Diagnostyczna
 
 - [x] Plik `.env.local` istnieje
-- [x] Plik `.env.local` zawiera FIREBASE_* zmienne
+- [x] Plik `.env.local` zawiera FIREBASE\_\* zmienne
 - [x] `FIREBASE_PRIVATE_KEY` ma pełną długość (1755 znaków)
 - [x] Cache Next.js wyczyszczony (folder `.next` usunięty)
 - [ ] Serwer zrestartowany **PO** wyczyszczeniu cache
@@ -284,4 +296,3 @@ POST /api/auth/verify-email-auto-login 200 ✅  (zamiast 503 ❌)
 **Data diagnozy:** 31 października 2025, 12:27  
 **Status:** CZEKA NA RESTART SERWERA PRZEZ UŻYTKOWNIKA  
 **Priorytet:** 🔴 KRYTYCZNY
-

@@ -99,13 +99,14 @@ async function scanChampionFolder(
       updatedAt: championData.updatedAt || new Date().toISOString(),
     };
 
-    // Skanuj folder gallery
+    // Skanuj folder gallery - zdjęcia gołębia
     const galleryPath = join(folderPath, 'gallery');
     try {
       await fs.access(galleryPath);
       const galleryFiles = await fs.readdir(galleryPath);
       const galleryImages = galleryFiles
         .filter((file: string) => /\.(jpg|jpeg|png|webp)$/i.test(file))
+        .sort()
         .map((file: string, index: number) => ({
           url: `/champions/${folderId}/gallery/${file}`,
           alt: `Champion ${folderId} - zdjęcie ${index + 1}`,
@@ -114,6 +115,7 @@ async function scanChampionFolder(
       champion.images = galleryImages;
     } catch {
       // Folder gallery nie istnieje
+      champion.images = [];
     }
 
     // Skanuj folder videos
@@ -133,14 +135,14 @@ async function scanChampionFolder(
       // Folder videos nie istnieje
     }
 
-    // Skanuj folder pedigree
+    // Skanuj folder pedigree - zdjęcie rodowodu
     const pedigreePath = join(folderPath, 'pedigree');
     try {
       await fs.access(pedigreePath);
       const pedigreeFiles = await fs.readdir(pedigreePath);
-      const pedigreeImages = pedigreeFiles.filter((file: string) =>
-        /\.(jpg|jpeg|png|webp)$/i.test(file)
-      );
+      const pedigreeImages = pedigreeFiles
+        .filter((file: string) => /\.(jpg|jpeg|png|webp)$/i.test(file))
+        .sort();
 
       if (pedigreeImages.length > 0) {
         champion.pedigree = {
@@ -149,6 +151,7 @@ async function scanChampionFolder(
       }
     } catch {
       // Folder pedigree nie istnieje
+      champion.pedigree = null;
     }
 
     return champion;

@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
+import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 import { Twilio } from 'twilio';
 
 // Inicjalizacja klienta Twilio
@@ -46,7 +47,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Kod weryfikacyjny został wysłany.' });
   } catch (error) {
-    console.error('Błąd wysyłania SMS:', error);
-    return NextResponse.json({ error: 'Nie udało się wysłać kodu weryfikacyjnego.' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'auth/send-verification-sms' });
   }
 }

@@ -273,7 +273,7 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
     return (
       <UnifiedLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center">
+          <div className="p-8 text-center card-glass">
             <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <h1 className="text-2xl font-bold text-white mb-4">Ładowanie...</h1>
             <p className="text-white/70 mb-6">Pobieranie danych aukcji...</p>
@@ -376,18 +376,18 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 pt-24 pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 relative z-20">
           {/* Główna zawartość */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-3 space-y-8">
             {/* Galeria zdjęć */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              className="card-glass p-4"
             >
               <div
-                className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-900 cursor-pointer group"
+                className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-900 cursor-pointer group"
                 onClick={() => auction.images && auction.images[0] && openFullscreen(0)}
               >
                 {auction.images && auction.images[0] ? (
@@ -396,7 +396,7 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
                       src={auction.images[0]}
                       alt={auction.title}
                       fill
-                      className="object-contain transition-transform group-hover:scale-105"
+                      className="object-contain"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority
                       onError={e => {
@@ -451,7 +451,7 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
                         src={image}
                         alt={`${auction.title} ${index + 2}`}
                         fill
-                        className="object-contain transition-transform group-hover:scale-110"
+                        className="object-contain"
                         sizes="200px"
                       />
                       {/* Overlay z ikoną powiększenia */}
@@ -483,9 +483,9 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              className="card-glass p-6"
             >
-              <h1 className="text-2xl font-bold text-white mb-4">{auction.title}</h1>
+              <h1 className="text-3xl font-bold text-white mb-6">{auction.title}</h1>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="flex items-center gap-2 text-sm text-white/80">
@@ -516,9 +516,9 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              className="card-glass p-6"
             >
-              <h2 className="text-xl font-semibold text-white mb-4">Rodowód</h2>
+              <h2 className="text-2xl font-bold text-white mb-6">Rodowód</h2>
               <div
                 className="relative w-full h-96 border border-white/30 rounded-md overflow-hidden bg-gray-900 cursor-pointer group"
                 onClick={() =>
@@ -531,7 +531,7 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
                       src={auction.documents[0]}
                       alt={`${auction.title} pedigree`}
                       fill
-                      className="object-contain transition-transform group-hover:scale-105"
+                      className="object-contain"
                       sizes="(max-width: 768px) 100vw, 800px"
                     />
                     {/* Overlay z ikoną powiększenia */}
@@ -570,9 +570,9 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              className="card-glass p-6"
             >
-              <h2 className="text-xl font-semibold text-white mb-4">Historia licytacji</h2>
+              <h2 className="text-2xl font-bold text-white mb-6">Historia licytacji</h2>
 
               <div className="space-y-3">
                 {auction.bids.map((bid, index) => (
@@ -606,26 +606,26 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
           </div>
 
           {/* Prawa kolumna */}
-          <div className="space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Panel licytacji + Odliczanie */}
             {auction.status !== 'ended' && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
-                className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+                className="card-glass p-6"
               >
                 {/* Countdown */}
-                <div className="text-center mb-6">
-                  <div className="text-sm text-white/80">Pozostało czasu</div>
+                <div className="text-center mb-8">
+                  <div className="text-base text-white/80 mb-2">Pozostało czasu</div>
                   <div
-                    className={`text-2xl font-bold ${auction.status === 'ending' ? 'text-red-400' : 'text-white'}`}
+                    className={`text-3xl font-bold ${auction.status === 'ending' ? 'text-red-400' : 'text-white'}`}
                   >
                     {timeLeft || '—'}
                   </div>
                 </div>
 
-                <h3 className="text-lg font-semibold text-white mb-4">Złóż ofertę</h3>
+                <h3 className="text-xl font-bold text-white mb-6">Złóż ofertę</h3>
                 <div className="space-y-4">
                   <div>
                     <label
@@ -673,9 +673,9 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.05 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              className="card-glass p-6"
             >
-              <h3 className="text-lg font-semibold text-white mb-4">Oferty</h3>
+              <h3 className="text-xl font-bold text-white mb-6">Oferty</h3>
               <div className="space-y-4">
                 {auction.bids.slice(0, 5).map(bid => (
                   <div key={bid.id} className="flex items-start gap-3">
@@ -702,9 +702,9 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              className="card-glass p-6"
             >
-              <h4 className="text-sm font-semibold text-white">Breeder(s)</h4>
+              <h4 className="text-lg font-bold text-white">Breeder(s)</h4>
               <p className="text-sm text-white/80 mt-1">{`${auction.seller.firstName} ${auction.seller.lastName}`}</p>
               <div className="h-px bg-white/20 my-4" />
               <h4 className="text-sm font-semibold text-white">Supplier(s)</h4>
@@ -716,10 +716,10 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+              className="card-glass p-6"
             >
-              <h4 className="text-sm font-semibold text-white mb-3">Charakterystyka</h4>
-              <div className="text-sm divide-y divide-white/20 mb-4">
+              <h4 className="text-xl font-bold text-white mb-6">Charakterystyka</h4>
+              <div className="text-base divide-y divide-white/20 mb-6">
                 {[
                   ['Płeć', auction.sex === 'male' ? 'Samiec' : 'Samica'],
                   ['Kolor oka', 'żółty'],
@@ -738,20 +738,20 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
                   ['Balans', 'zbalansowany'],
                   ['Plecy', 'przeciętny'],
                 ].map(([label, value]) => (
-                  <div key={label as string} className="flex items-center justify-between py-1.5">
-                    <span className="text-white/60">{label as string}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-white/80 font-medium">{value as string}</span>
-                      <span className="h-3 w-3 rounded-full bg-blue-400" aria-hidden="true" />
+                  <div key={label as string} className="flex items-center justify-between py-3">
+                    <span className="text-white/70 font-medium text-base">{label as string}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-white font-semibold text-base">{value as string}</span>
+                      <span className="h-4 w-4 rounded-full bg-blue-400" aria-hidden="true" />
                     </div>
                   </div>
                 ))}
               </div>
 
-              <h5 className="text-xs font-semibold text-white/60 uppercase tracking-wide mb-2">
+              <h5 className="text-base font-bold text-white/80 uppercase tracking-wide mb-4 mt-8">
                 Opis skrzydła
               </h5>
-              <div className="text-sm divide-y divide-white/20">
+              <div className="text-base divide-y divide-white/20">
                 {[
                   ['Pióra rozpłodowe', 'za młody'],
                   ['Lotki', 'długi, normalny'],
@@ -760,19 +760,19 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
                   ['Lotki II-go rzędu', 'normalny'],
                   ['Elastyczność', 'bardzo giętki'],
                 ].map(([label, value]) => (
-                  <div key={label as string} className="flex items-center justify-between py-1.5">
-                    <span className="text-white/60">{label as string}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-white/80 font-medium">{value as string}</span>
-                      <span className="h-3 w-3 rounded-full bg-blue-400" aria-hidden="true" />
+                  <div key={label as string} className="flex items-center justify-between py-3">
+                    <span className="text-white/70 font-medium text-base">{label as string}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-white font-semibold text-base">{value as string}</span>
+                      <span className="h-4 w-4 rounded-full bg-blue-400" aria-hidden="true" />
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-4 pt-3 border-t border-white/20 text-xs text-white/60 flex items-center justify-between">
-                <span>Data aukcji</span>
-                <span className="text-white/80 font-medium">
+              <div className="mt-6 pt-4 border-t border-white/20 text-sm text-white/60 flex items-center justify-between">
+                <span className="font-medium">Data aukcji</span>
+                <span className="text-white/80 font-semibold">
                   {format(new Date(), 'dd/MM/yyyy HH:mm', { locale: pl })}
                 </span>
               </div>

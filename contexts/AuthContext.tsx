@@ -25,7 +25,7 @@ interface DbUser {
   city: string;
   postalCode: string;
   phoneNumber: string;
-  role: 'USER' | 'ADMIN';
+  role: 'USER_REGISTERED' | 'USER_EMAIL_VERIFIED' | 'USER_FULL_VERIFIED' | 'ADMIN';
   isActive: boolean;
   isPhoneVerified: boolean;
   isProfileVerified: boolean;
@@ -72,10 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (isDev) debug('AuthContext: Syncing user with database:', firebaseUser.email);
 
     try {
-      // Użyj getIdToken(false) aby uniknąć automatycznego odświeżania, które może powodować błędy
-      const token = await firebaseUser.getIdToken(false).catch(
-        () => firebaseUser.getIdToken(true) // Fallback do wymuszenia odświeżenia tylko jeśli pierwsze nie powiodło się
-      );
+      // Pobierz token (Firebase user jest już aktualny z onAuthStateChanged)
+      const token = await firebaseUser.getIdToken(true);
 
       const response = await fetch('/api/auth/sync', {
         method: 'POST',
@@ -108,6 +106,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const refetchDbUser = useCallback(async () => {
+    if (user) {
+      setLoading(true);
+      await fetchAndSyncUser(user);
+      setLoading(false);
+    }
+  }, [user, fetchAndSyncUser]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
       setUser(firebaseUser);
@@ -133,8 +139,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [fetchAndSyncUser]);
+    // Nasłuchuj na zmiany w localStorage (komunikacja między kartami)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'email-verified' && user) {
+        info('AuthContext: Email verified event detected from another tab - refreshing user');
+        // Odśwież użytkownika po weryfikacji w innej karcie
+        refetchDbUser();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [fetchAndSyncUser, user, refetchDbUser]);
 
   const signOut = async () => {
     try {
@@ -148,14 +168,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       error('Error signing out:', err instanceof Error ? err.message : err);
     }
   };
-
-  const refetchDbUser = useCallback(async () => {
-    if (user) {
-      setLoading(true);
-      await fetchAndSyncUser(user);
-      setLoading(false);
-    }
-  }, [user, fetchAndSyncUser]);
 
   return (
     <AuthContext.Provider value={{ user, dbUser, loading, signOut, refetchDbUser }}>

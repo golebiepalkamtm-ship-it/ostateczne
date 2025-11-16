@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -78,11 +79,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       message: 'Aukcja została zaktualizowana',
     });
   } catch (error) {
-    console.error('Błąd podczas aktualizacji aukcji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas aktualizacji aukcji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'admin/auctions/[id]', method: 'PATCH' });
   }
 }
 
@@ -125,7 +122,6 @@ export async function DELETE(
       message: `Aukcja "${auction.title}" została usunięta`,
     });
   } catch (error) {
-    console.error('Błąd podczas usuwania aukcji:', error);
-    return NextResponse.json({ error: 'Wystąpił błąd podczas usuwania aukcji' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'admin/auctions/[id]', method: 'DELETE' });
   }
 }

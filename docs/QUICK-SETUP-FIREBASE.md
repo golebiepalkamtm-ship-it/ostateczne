@@ -59,7 +59,8 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY
 ```
 
 **⚠️ UWAGA dla `FIREBASE_PRIVATE_KEY`:**
-- Jeśli w JSON jest: `"private_key": "-----BEGIN PRIVATE KEY-----\\n..."` 
+
+- Jeśli w JSON jest: `"private_key": "-----BEGIN PRIVATE KEY-----\\n..."`
 - W `.env.local` użyj: `"-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n"`
 - Albo zamień wszystkie `\\n` na `\n` (bez podwójnego backslasha)
 
@@ -91,6 +92,7 @@ npm run dev
 ## ✅ Gotowe!
 
 Sprawdź w terminalu czy widzisz:
+
 ```
 ✅ Firebase Admin SDK initialized successfully
 ```
@@ -102,15 +104,18 @@ Jeśli nie - sprawdź `.env.local` i restart serwera.
 ## 🆘 Problemy?
 
 ### "Firebase Admin SDK not initialized"
+
 - Sprawdź czy `.env.local` istnieje w `wwwwww/`
 - Sprawdź czy wszystkie 3 zmienne Admin SDK są ustawione
 - Sprawdź format `FIREBASE_PRIVATE_KEY` (musi mieć `\n`)
 
 ### "Invalid API key"
+
 - Sprawdź `NEXT_PUBLIC_FIREBASE_API_KEY`
 - Restart serwera po zmianie `.env.local`
 
 ### SMS nie przychodzą
+
 - Sprawdź czy Phone Auth jest włączone
 - Sprawdź Authorized domains
 - Sprawdź plan Firebase (Blaze dla produkcji)
@@ -118,4 +123,3 @@ Jeśli nie - sprawdź `.env.local` i restart serwera.
 ---
 
 **Szczegółowa dokumentacja:** `docs/KROK-PO-KROKU-FIREBASE-PHONE.md`
-

@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
@@ -21,7 +22,6 @@ export async function GET(request: NextRequest) {
       isAdmin: user?.role === 'ADMIN',
     });
   } catch (error) {
-    console.error('Błąd sprawdzania statusu administratora:', error);
-    return NextResponse.json({ error: 'Błąd serwera' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'admin/check-admin' });
   }
 }

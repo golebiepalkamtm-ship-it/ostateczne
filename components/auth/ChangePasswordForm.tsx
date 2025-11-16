@@ -134,7 +134,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20"
+      className="card-glass p-6"
     >
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
@@ -177,6 +177,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               }}
               className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="Wprowadź obecne hasło"
+              autoComplete="current-password"
               required
             />
             <button
@@ -203,6 +204,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               }}
               className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="Wprowadź nowe hasło"
+              autoComplete="new-password"
               required
             />
             <button
@@ -229,6 +231,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               }}
               className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="Potwierdź nowe hasło"
+              autoComplete="new-password"
               required
             />
             <button

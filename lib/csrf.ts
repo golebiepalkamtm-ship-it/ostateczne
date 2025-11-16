@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { redis } from './redis';
+import { getRedisClient } from './redis';
 import { debug, error, isDev } from './logger';
 
 // Interface dla różnych implementacji store
@@ -43,14 +43,15 @@ class MemoryCSRFTokenStore implements CSRFTokenStore {
   }
 }
 
-// Redis store dla production (placeholder)
+// Redis store dla production z lazy connection
 class RedisCSRFTokenStore implements CSRFTokenStore {
   // Use redisManager if available, otherwise fallback to in-memory
   private fallbackStore = new MemoryCSRFTokenStore();
 
   async get(key: string): Promise<{ token: string; expires: number } | null> {
     try {
-      if (redis.isOpen) {
+      const redis = await getRedisClient();
+      if (redis) {
         const val = await redis.get(key);
         if (!val) return null;
         const data = JSON.parse(val) as { token: string; expires: number };
@@ -73,7 +74,8 @@ class RedisCSRFTokenStore implements CSRFTokenStore {
 
   async set(key: string, value: { token: string; expires: number }, ttl: number) {
     try {
-      if (redis.isOpen) {
+      const redis = await getRedisClient();
+      if (redis) {
         // Store JSON with TTL
         await redis.set(key, JSON.stringify(value), { EX: ttl });
         return;
@@ -86,7 +88,8 @@ class RedisCSRFTokenStore implements CSRFTokenStore {
 
   async delete(key: string) {
     try {
-      if (redis.isOpen) {
+      const redis = await getRedisClient();
+      if (redis) {
         await redis.del(key);
         return;
       }
@@ -99,7 +102,8 @@ class RedisCSRFTokenStore implements CSRFTokenStore {
   async cleanup() {
     // Redis has TTL; memory fallback needs cleanup
     try {
-      if (redis.isOpen) return;
+      const redis = await getRedisClient();
+      if (redis) return;
       return this.fallbackStore.cleanup();
     } catch (err) {
       if (isDev) debug('RedisCSRFTokenStore.cleanup error:', err);
@@ -169,8 +173,19 @@ export function withCSRF(handler: Function) {
     // Sprawdź czy to POST, PUT, DELETE request
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
       try {
-        const body = await request.json();
-        const csrfToken = body.csrfToken;
+        let csrfToken: string | null = null;
+
+        const contentType = request.headers.get('content-type') || '';
+
+        if (contentType.includes('application/json')) {
+          const clonedRequest = request.clone();
+          const body = await clonedRequest.json();
+          csrfToken = body.csrfToken;
+        } else if (contentType.includes('multipart/form-data')) {
+          const clonedRequest = request.clone();
+          const formData = await clonedRequest.formData();
+          csrfToken = formData.get('csrfToken') as string;
+        }
 
         if (!csrfToken || !(await validateCSRFToken(request, csrfToken))) {
           return NextResponse.json({ error: 'Nieprawidłowy CSRF token' }, { status: 403 });

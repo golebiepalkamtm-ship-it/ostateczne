@@ -1,6 +1,7 @@
-import { requireFirebaseAuth } from '@/lib/firebase-auth';
-import { getAdminAuth } from '@/lib/firebase-admin';
+import { handleApiError } from '@/lib/error-handling';
 import { requireAdminAuth } from '@/lib/admin-auth';
+import { getAdminAuth } from '@/lib/firebase-admin';
+import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Force dynamic rendering
@@ -32,8 +33,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Custom claims zostały ustawione' });
   } catch (error) {
-    console.error('Błąd ustawiania custom claims:', error);
-    return NextResponse.json({ error: 'Nie udało się ustawić custom claims' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'firebase/user', method: 'POST' });
   }
 }
 
@@ -80,7 +80,6 @@ export async function GET(request: NextRequest) {
       photoURL: userRecord.photoURL,
     });
   } catch (error) {
-    console.error('Błąd pobierania danych użytkownika:', error);
-    return NextResponse.json({ error: 'Nie udało się pobrać danych użytkownika' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'firebase/user', method: 'GET' });
   }
 }

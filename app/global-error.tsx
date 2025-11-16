@@ -7,7 +7,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
   useEffect(() => {
     // Only capture errors in production when Sentry is enabled
     if (process.env.NODE_ENV === 'production') {
-      import('@sentry/nextjs').then((Sentry) => {
+      import('@sentry/nextjs').then(Sentry => {
         Sentry.captureException(error);
       });
     }

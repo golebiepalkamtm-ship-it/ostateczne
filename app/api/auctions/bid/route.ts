@@ -1,4 +1,5 @@
 export const runtime = 'nodejs';
+import { handleApiError } from '@/lib/error-handling';
 import { getActiveUser } from '@/lib/firebase-auth-helpers';
 import { requirePhoneVerification } from '@/lib/phone-verification';
 import { prisma } from '@/lib/prisma';
@@ -104,7 +105,6 @@ export async function POST(request: NextRequest) {
       message: 'Oferta została złożona pomyślnie',
     });
   } catch (error) {
-    console.error('Błąd składania oferty:', error);
-    return NextResponse.json({ error: 'Wystąpił błąd podczas składania oferty' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'auctions/bid' });
   }
 }

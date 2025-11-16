@@ -1,10 +1,14 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireAdminAuth } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   const authResult = await requireAdminAuth(request);
-  if (authResult instanceof Response) {
+  if (authResult instanceof NextResponse) {
     return authResult;
   }
 
@@ -23,7 +27,6 @@ export async function GET(request: NextRequest) {
       disputes,
     });
   } catch (e) {
-    console.error('Admin stats error', e);
-    return NextResponse.json({ error: 'Błąd serwera' }, { status: 500 });
+    return handleApiError(e, request, { endpoint: 'admin/stats' });
   }
 }

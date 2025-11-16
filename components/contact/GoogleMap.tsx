@@ -1,5 +1,6 @@
 'use client';
 
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { motion } from 'framer-motion';
 import { ExternalLink, MapPin, Navigation } from 'lucide-react';
 
@@ -40,7 +41,12 @@ export default function GoogleMap() {
 
         {/* Informacje o dojeździe */}
         <div className="space-y-6">
-          <div className="p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 text-center lg:text-left">
+          <UnifiedCard
+            variant="glass"
+            glow={true}
+            hover={true}
+            className="p-6 text-center lg:text-left"
+          >
             <h3 className="text-2xl font-bold text-white mb-4 flex items-center justify-center lg:justify-start">
               <MapPin className="w-6 h-6 mr-2 text-slate-300" />
               Jak do nas trafić
@@ -49,39 +55,58 @@ export default function GoogleMap() {
               Nasza hodowla znajduje się w Lubaniu, w sercu Dolnego Śląska. Zapraszamy do
               odwiedzenia nas po wcześniejszym umówieniu.
             </p>
-          </div>
+          </UnifiedCard>
 
           {/* Przyciski akcji */}
           <div className="space-y-4">
-            <motion.a
-              href={googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+            <UnifiedCard
+              variant="glass"
+              glow={true}
+              hover={true}
+              className=""
             >
-              <div className="flex items-center justify-center">
-                <MapPin className="w-5 h-5 mr-3 text-slate-300" />
-                <span className="text-white font-medium">Zobacz na mapie</span>
-                <ExternalLink className="w-4 h-4 ml-2 text-slate-300" />
-              </div>
-            </motion.a>
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full p-4"
+              >
+                <div className="flex items-center justify-center">
+                  <MapPin className="w-5 h-5 mr-3 text-slate-300" />
+                  <span className="text-white font-medium">Zobacz na mapie</span>
+                  <ExternalLink className="w-4 h-4 ml-2 text-slate-300" />
+                </div>
+              </a>
+            </UnifiedCard>
 
-            <motion.a
-              href={directionsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+            <UnifiedCard
+              variant="glass"
+              glow={true}
+              hover={true}
+              className=""
             >
-              <div className="flex items-center justify-center">
-                <Navigation className="w-5 h-5 mr-3 text-slate-300" />
-                <span className="text-white font-medium">Pobierz trasę</span>
-                <ExternalLink className="w-4 h-4 ml-2 text-slate-300" />
-              </div>
-            </motion.a>
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full p-4"
+              >
+                <div className="flex items-center justify-center">
+                  <Navigation className="w-5 h-5 mr-3 text-slate-300" />
+                  <span className="text-white font-medium">Pobierz trasę</span>
+                  <ExternalLink className="w-4 h-4 ml-2 text-slate-300" />
+                </div>
+              </a>
+            </UnifiedCard>
           </div>
 
           {/* Dodatkowe informacje */}
-          <div className="mt-8 p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+          <UnifiedCard
+            variant="glass"
+            glow={true}
+            hover={true}
+            className="mt-8 p-6"
+          >
             <h4 className="text-lg font-semibold text-white mb-4">Wskazówki dojazdu</h4>
             <ul className="space-y-2 text-slate-200 text-sm">
               <li>• Z centrum Lubania: 5 minut samochodem</li>
@@ -90,7 +115,7 @@ export default function GoogleMap() {
               <li>• Parking dostępny na miejscu</li>
               <li>• Wizyty tylko po wcześniejszym umówieniu</li>
             </ul>
-          </div>
+          </UnifiedCard>
         </div>
       </div>
     </motion.section>

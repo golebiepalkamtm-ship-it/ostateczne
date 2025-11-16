@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Endpoint aktualizuje numer telefonu w profilu użytkownika.
@@ -58,7 +59,6 @@ export async function POST(request: NextRequest) {
       message: 'Numer telefonu został zaktualizowany.',
     });
   } catch (error) {
-    console.error('Error in send-verification endpoint:', error);
-    return NextResponse.json({ error: 'Wystąpił wewnętrzny błąd serwera.' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'phone/send-verification' });
   }
 }

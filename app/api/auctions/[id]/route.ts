@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getActiveUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -95,8 +96,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       category: auction.category, // Mapowanie category
     });
   } catch (error) {
-    console.error('Błąd podczas pobierania aukcji:', error);
-    return NextResponse.json({ error: 'Wystąpił błąd podczas pobierania aukcji' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'auctions/[id]', method: 'GET' });
   }
 }
 
@@ -219,19 +219,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       auction: updatedAuction,
     });
   } catch (error) {
-    console.error('Błąd podczas aktualizacji aukcji:', error);
-
-    if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        { error: 'Nieprawidłowe dane', details: error.message },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas aktualizacji aukcji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'auctions/[id]', method: 'PATCH' });
   }
 }
 
@@ -292,7 +280,6 @@ export async function DELETE(
       message: 'Aukcja została usunięta',
     });
   } catch (error) {
-    console.error('Błąd podczas usuwania aukcji:', error);
-    return NextResponse.json({ error: 'Wystąpił błąd podczas usuwania aukcji' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'auctions/[id]', method: 'DELETE' });
   }
 }

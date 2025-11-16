@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { getAdminUser } from '@/lib/firebase-auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -51,11 +52,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       reference: updatedReference,
     });
   } catch (error) {
-    console.error('Błąd podczas aktualizacji referencji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas aktualizacji referencji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'admin/references/[id]', method: 'PATCH' });
   }
 }
 
@@ -97,10 +94,6 @@ export async function DELETE(
       message: 'Referencja została usunięta',
     });
   } catch (error) {
-    console.error('Błąd podczas usuwania referencji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas usuwania referencji' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'admin/references/[id]', method: 'DELETE' });
   }
 }

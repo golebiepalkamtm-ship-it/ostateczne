@@ -20,24 +20,24 @@ Sentry jest już skonfigurowane w projekcie. Ten przewodnik pokazuje jak używa�
 ### Import helperów
 
 ```typescript
-import { captureError, captureMessage, setUserContext } from '@/lib/sentry-helpers'
-import * as Sentry from '@sentry/nextjs'
+import { captureError, captureMessage, setUserContext } from '@/lib/sentry-helpers';
+import * as Sentry from '@sentry/nextjs';
 ```
 
 ### Wysyłanie błędów
 
 ```typescript
 // Automatycznie przez ErrorLogger (w API routes)
-import { errorLogger } from '@/lib/error-handling'
+import { errorLogger } from '@/lib/error-handling';
 
 try {
   // kod
 } catch (error) {
-  errorLogger.log(error, { userId: '123', action: 'create-auction' })
+  errorLogger.log(error, { userId: '123', action: 'create-auction' });
 }
 
 // Ręcznie
-import { captureError } from '@/lib/sentry-helpers'
+import { captureError } from '@/lib/sentry-helpers';
 
 try {
   // kod
@@ -46,27 +46,27 @@ try {
     userId: user.id,
     auctionId: auction.id,
     action: 'bid-placement',
-  })
+  });
 }
 ```
 
 ### Wysyłanie wiadomości (logi)
 
 ```typescript
-import { captureMessage } from '@/lib/sentry-helpers'
+import { captureMessage } from '@/lib/sentry-helpers';
 
 // Logowanie zdarzeń
 captureMessage('User completed profile verification', 'info', {
   userId: user.id,
   timestamp: new Date().toISOString(),
-})
+});
 
 // Ostrzeżenia
 captureMessage('Rate limit approaching threshold', 'warning', {
   userId: user.id,
   requestsCount: 95,
   limit: 100,
-})
+});
 ```
 
 ---
@@ -76,45 +76,42 @@ captureMessage('Rate limit approaching threshold', 'warning', {
 ### Automatyczne przez middleware
 
 ```typescript
-import { withErrorHandling } from '@/lib/error-handling'
-import { NextRequest, NextResponse } from 'next/server'
+import { withErrorHandling } from '@/lib/error-handling';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = withErrorHandling(async (request: NextRequest) => {
   // Wszystkie błędy są automatycznie logowane do Sentry
-  const data = await fetchData()
-  return NextResponse.json(data)
-})
+  const data = await fetchData();
+  return NextResponse.json(data);
+});
 ```
 
 ### Ręczne użycie
 
 ```typescript
-import { captureError, addBreadcrumb } from '@/lib/sentry-helpers'
-import { NextRequest, NextResponse } from 'next/server'
+import { captureError, addBreadcrumb } from '@/lib/sentry-helpers';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
     // Dodaj breadcrumb przed ważną operacją
     addBreadcrumb('Starting auction creation', 'api', 'info', {
       userId: user.id,
-    })
+    });
 
-    const body = await request.json()
-    const auction = await createAuction(body)
+    const body = await request.json();
+    const auction = await createAuction(body);
 
-    return NextResponse.json(auction)
+    return NextResponse.json(auction);
   } catch (error) {
     // Wysyłaj do Sentry z pełnym kontekstem
     captureError(error as Error, {
       endpoint: '/api/auctions/create',
       userId: user?.id,
       requestBody: body,
-    })
+    });
 
-    return NextResponse.json(
-      { error: 'Failed to create auction' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create auction' }, { status: 500 });
   }
 }
 ```
@@ -122,29 +119,29 @@ export async function POST(request: NextRequest) {
 ### Z walidacją
 
 ```typescript
-import { withErrorHandling } from '@/lib/error-handling'
-import { AppErrors, handleZodError } from '@/lib/error-handling'
-import { z } from 'zod'
+import { withErrorHandling } from '@/lib/error-handling';
+import { AppErrors, handleZodError } from '@/lib/error-handling';
+import { z } from 'zod';
 
 const schema = z.object({
   title: z.string().min(1),
   price: z.number().positive(),
-})
+});
 
 export const POST = withErrorHandling(async (request: NextRequest) => {
-  const body = await request.json()
-  
+  const body = await request.json();
+
   try {
-    const validated = schema.parse(body)
+    const validated = schema.parse(body);
     // ... kod
   } catch (error) {
     if (error instanceof z.ZodError) {
       // Błędy walidacji są automatycznie obsługiwane
-      throw handleZodError(error)
+      throw handleZodError(error);
     }
-    throw error
+    throw error;
   }
-})
+});
 ```
 
 ---
@@ -163,7 +160,7 @@ export default async function AuctionPage({ params }: { params: { id: string } }
       page: 'auction',
       auctionId: params.id,
     })
-    
+
     return <div>Error loading auction</div>
   }
 }
@@ -184,7 +181,7 @@ export function BidButton({ auctionId }: { auctionId: string }) {
 
   async function handleBid() {
     setLoading(true)
-    
+
     try {
       addBreadcrumb('User clicked bid button', 'user-action', 'info', {
         auctionId,
@@ -204,7 +201,7 @@ export function BidButton({ auctionId }: { auctionId: string }) {
         auctionId,
         action: 'bid',
       })
-      
+
       alert('Failed to place bid')
     } finally {
       setLoading(false)
@@ -226,37 +223,29 @@ Błędy w Client Components są automatycznie przechwytywane przez `app/global-e
 ### Śledzenie operacji
 
 ```typescript
-import { withSentrySpan } from '@/lib/sentry-helpers'
+import { withSentrySpan } from '@/lib/sentry-helpers';
 
 // W API Route
 export async function GET(request: NextRequest) {
-  return withSentrySpan(
-    'fetch-auctions',
-    'db.query',
-    async () => {
-      const auctions = await prisma.auction.findMany()
-      return NextResponse.json(auctions)
-    }
-  )
+  return withSentrySpan('fetch-auctions', 'db.query', async () => {
+    const auctions = await prisma.auction.findMany();
+    return NextResponse.json(auctions);
+  });
 }
 ```
 
 ### Śledzenie żądań API
 
 ```typescript
-'use client'
+'use client';
 
-import { withSentrySpan } from '@/lib/sentry-helpers'
+import { withSentrySpan } from '@/lib/sentry-helpers';
 
 async function fetchUserData(userId: string) {
-  return withSentrySpan(
-    'fetch-user-data',
-    'http.client',
-    async () => {
-      const response = await fetch(`/api/users/${userId}`)
-      return response.json()
-    }
-  )
+  return withSentrySpan('fetch-user-data', 'http.client', async () => {
+    const response = await fetch(`/api/users/${userId}`);
+    return response.json();
+  });
 }
 ```
 
@@ -267,7 +256,7 @@ async function fetchUserData(userId: string) {
 ### Ustawienie kontekstu po zalogowaniu
 
 ```typescript
-import { setUserContext } from '@/lib/sentry-helpers'
+import { setUserContext } from '@/lib/sentry-helpers';
 
 // Po zalogowaniu
 function onLoginSuccess(user: User) {
@@ -275,17 +264,17 @@ function onLoginSuccess(user: User) {
     id: user.id,
     email: user.email,
     username: user.displayName,
-  })
+  });
 }
 ```
 
 ### Czyszczenie kontekstu po wylogowaniu
 
 ```typescript
-import { clearUserContext } from '@/lib/sentry-helpers'
+import { clearUserContext } from '@/lib/sentry-helpers';
 
 function onLogout() {
-  clearUserContext()
+  clearUserContext();
 }
 ```
 
@@ -293,21 +282,21 @@ function onLogout() {
 
 ```typescript
 // lib/auth-middleware.ts
-import { setUserContext } from '@/lib/sentry-helpers'
+import { setUserContext } from '@/lib/sentry-helpers';
 
 export async function withAuth(handler: Function) {
   return async (request: NextRequest) => {
-    const user = await getCurrentUser(request)
-    
+    const user = await getCurrentUser(request);
+
     if (user) {
       setUserContext({
         id: user.id,
         email: user.email,
-      })
+      });
     }
 
-    return handler(request)
-  }
+    return handler(request);
+  };
 }
 ```
 
@@ -318,19 +307,19 @@ export async function withAuth(handler: Function) {
 Breadcrumbs pomagają zrozumieć sekwencję zdarzeń prowadzących do błędu.
 
 ```typescript
-import { addBreadcrumb } from '@/lib/sentry-helpers'
+import { addBreadcrumb } from '@/lib/sentry-helpers';
 
 // Przy ważnych akcjach
 addBreadcrumb('User started checkout', 'checkout', 'info', {
   userId: user.id,
   cartItems: cart.items.length,
-})
+});
 
 addBreadcrumb('Payment method selected', 'checkout', 'info', {
   paymentMethod: 'credit-card',
-})
+});
 
-addBreadcrumb('Payment processing started', 'checkout', 'info')
+addBreadcrumb('Payment processing started', 'checkout', 'info');
 
 // Jeśli wystąpi błąd, Sentry zobaczy całą sekwencję
 ```
@@ -342,27 +331,27 @@ async function placeBid(auctionId: string, amount: number) {
   addBreadcrumb('Bid placement started', 'auction', 'info', {
     auctionId,
     amount,
-  })
+  });
 
-  const auction = await getAuction(auctionId)
+  const auction = await getAuction(auctionId);
   addBreadcrumb('Auction fetched', 'auction', 'info', {
     currentBid: auction.currentBid,
-  })
+  });
 
   if (amount <= auction.currentBid) {
     addBreadcrumb('Bid amount too low', 'auction', 'warning', {
       amount,
       currentBid: auction.currentBid,
-    })
-    throw new Error('Bid too low')
+    });
+    throw new Error('Bid too low');
   }
 
-  const bid = await createBid(auctionId, amount)
+  const bid = await createBid(auctionId, amount);
   addBreadcrumb('Bid created successfully', 'auction', 'info', {
     bidId: bid.id,
-  })
+  });
 
-  return bid
+  return bid;
 }
 ```
 
@@ -373,17 +362,17 @@ async function placeBid(auctionId: string, amount: number) {
 Tagi pozwalają filtrować błędy w Sentry dashboard.
 
 ```typescript
-import { setTag, setContext } from '@/lib/sentry-helpers'
+import { setTag, setContext } from '@/lib/sentry-helpers';
 
 // W API route
 export async function GET(request: NextRequest) {
-  setTag('environment', process.env.NODE_ENV)
-  setTag('api-version', 'v1')
-  
+  setTag('environment', process.env.NODE_ENV);
+  setTag('api-version', 'v1');
+
   setContext('request', {
     path: request.nextUrl.pathname,
     method: request.method,
-  })
+  });
 
   // ... kod
 }
@@ -392,6 +381,7 @@ export async function GET(request: NextRequest) {
 ### Automatyczne tagi przez captureError
 
 `captureError` automatycznie dodaje tagi:
+
 - `errorType` - typ błędu (VALIDATION_ERROR, DATABASE_ERROR, etc.)
 - `statusCode` - kod HTTP
 
@@ -402,35 +392,33 @@ export async function GET(request: NextRequest) {
 ### 1. API Route z pełnym monitoringiem
 
 ```typescript
-import { withErrorHandling } from '@/lib/error-handling'
-import { addBreadcrumb, withSentrySpan } from '@/lib/sentry-helpers'
-import { NextRequest, NextResponse } from 'next/server'
+import { withErrorHandling } from '@/lib/error-handling';
+import { addBreadcrumb, withSentrySpan } from '@/lib/sentry-helpers';
+import { NextRequest, NextResponse } from 'next/server';
 
-export const POST = withErrorHandling(
-  async (request: NextRequest) => {
-    const body = await request.json()
+export const POST = withErrorHandling(async (request: NextRequest) => {
+  const body = await request.json();
 
-    addBreadcrumb('Auction creation started', 'api', 'info', {
-      userId: user.id,
-    })
+  addBreadcrumb('Auction creation started', 'api', 'info', {
+    userId: user.id,
+  });
 
-    return withSentrySpan('create-auction', 'db.write', async () => {
-      const auction = await prisma.auction.create({
-        data: {
-          title: body.title,
-          price: body.price,
-          userId: user.id,
-        },
-      })
+  return withSentrySpan('create-auction', 'db.write', async () => {
+    const auction = await prisma.auction.create({
+      data: {
+        title: body.title,
+        price: body.price,
+        userId: user.id,
+      },
+    });
 
-      addBreadcrumb('Auction created', 'api', 'info', {
-        auctionId: auction.id,
-      })
+    addBreadcrumb('Auction created', 'api', 'info', {
+      auctionId: auction.id,
+    });
 
-      return NextResponse.json(auction)
-    })
-  }
-)
+    return NextResponse.json(auction);
+  });
+});
 ```
 
 ### 2. Client Component z error handling
@@ -557,4 +545,3 @@ Użyj `tracesSampleRate` w konfiguracji Sentry (już ustawione na 1.0 - możesz 
 - [Dokumentacja Sentry Next.js](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
 - [Dashboard projektu](https://mtmpalka.sentry.io/issues/?project=4510277341151312)
 - [Przykładowa strona testowa](/sentry-example-page)
-

@@ -5,6 +5,7 @@ import { FullscreenImageModal } from '@/components/ui/FullscreenImageModal';
 import { SmartImage } from '@/components/ui/SmartImage';
 import { Text3D } from '@/components/ui/Text3D';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Camera, CheckCircle, Upload, X } from 'lucide-react';
@@ -151,12 +152,17 @@ export default function BreederMeetingsPage() {
     return (
       <UnifiedLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center">
+          <UnifiedCard
+            variant="glass"
+            glow={true}
+            hover={true}
+            className="p-8 text-center"
+          >
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
             <Text3D variant="glow" intensity="medium" className="text-lg">
               Ładowanie zdjęć...
             </Text3D>
-          </div>
+          </UnifiedCard>
         </div>
       </UnifiedLayout>
     );
@@ -195,7 +201,12 @@ export default function BreederMeetingsPage() {
             viewport={{ once: true }}
             className="mb-20"
           >
-            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
+            <UnifiedCard
+              variant="glass"
+              glow={true}
+              hover={true}
+              className="p-8"
+            >
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold mb-4 text-white">Dodaj Zdjęcia ze Spotkania</h2>
                 <p className="text-white/80 text-lg">
@@ -406,7 +417,7 @@ export default function BreederMeetingsPage() {
                   </UnifiedButton>
                 </div>
               )}
-            </div>
+            </UnifiedCard>
           </motion.section>
 
           {/* Breeder Meetings Grid */}
@@ -426,53 +437,64 @@ export default function BreederMeetingsPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6"
                   >
-                    {/* Meeting Title */}
-                    <div className="champion-profile-card-header">
-                      <h3 className="champion-profile-card-title text-center">{meeting.name}</h3>
-                    </div>
-
-                    {/* Gallery Grid */}
-                    <div className="champion-profile-card-content">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {meeting.images.map((image, imageIndex) => (
-                          <motion.div
-                            key={imageIndex}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.5, delay: imageIndex * 0.05 }}
-                            viewport={{ once: true }}
-                            className="relative h-48 overflow-hidden rounded-xl cursor-pointer group"
-                            onClick={() => handleImageClick(meeting.id, imageIndex)}
-                          >
-                            <SmartImage
-                              src={image}
-                              alt={`${meeting.name} - zdjęcie ${imageIndex + 1}`}
-                              width={300}
-                              height={192}
-                              fitMode="contain"
-                              aspectRatio="landscape"
-                              className="w-full h-full transition-transform duration-500 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                              <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">
-                                  {imageIndex + 1}
-                                </span>
-                              </div>
-                            </div>
-                          </motion.div>
-                        ))}
+                    <UnifiedCard
+                      variant="glass"
+                      glow={true}
+                      hover={true}
+                      className="p-6"
+                    >
+                      {/* Meeting Title */}
+                      <div className="champion-profile-card-header">
+                        <h3 className="champion-profile-card-title text-center">{meeting.name}</h3>
                       </div>
-                    </div>
+
+                      {/* Gallery Grid */}
+                      <div className="champion-profile-card-content">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                          {meeting.images.map((image, imageIndex) => (
+                            <motion.div
+                              key={imageIndex}
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              whileInView={{ opacity: 1, scale: 1 }}
+                              transition={{ duration: 0.5, delay: imageIndex * 0.05 }}
+                              viewport={{ once: true }}
+                              className="relative h-48 overflow-hidden rounded-xl cursor-pointer group"
+                              onClick={() => handleImageClick(meeting.id, imageIndex)}
+                            >
+                              <SmartImage
+                                src={image}
+                                alt={`${meeting.name} - zdjęcie ${imageIndex + 1}`}
+                                width={300}
+                                height={192}
+                                fitMode="contain"
+                                aspectRatio="landscape"
+                                className="w-full h-full transition-transform duration-500 group-hover:scale-110"
+                              />
+                              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                                  <span className="text-white text-xs font-bold">
+                                    {imageIndex + 1}
+                                  </span>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </UnifiedCard>
                   </motion.div>
                 ))}
             </div>
 
             {/* Empty State */}
             {breederMeetings.length === 0 && (
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-12 border border-white/20 text-center">
+              <UnifiedCard
+                variant="glass"
+                glow={true}
+                hover={true}
+                className="p-12 text-center"
+              >
                 <Text3D variant="gradient" intensity="medium" className="text-2xl font-bold mb-4">
                   Brak spotkań
                 </Text3D>
@@ -488,7 +510,7 @@ export default function BreederMeetingsPage() {
                     Dodaj Pierwsze Zdjęcie
                   </UnifiedButton>
                 )}
-              </div>
+              </UnifiedCard>
             )}
           </motion.section>
         </div>

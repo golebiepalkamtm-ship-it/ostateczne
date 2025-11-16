@@ -106,7 +106,7 @@ export default function AddBreederMeetingForm() {
   if (loading || verificationLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center">
+        <div className="card-glass p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-lg text-white">Sprawdzanie autoryzacji...</p>
         </div>
@@ -116,7 +116,7 @@ export default function AddBreederMeetingForm() {
 
   return (
     <div className="min-h-screen py-12 px-4">
-      <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
+      <div className="max-w-4xl mx-auto card-glass p-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4 text-white">Dodaj Zdjęcia ze Spotkania</h1>
           <p className="text-white/80 text-lg">

@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { requirePhoneVerification } from '@/lib/phone-verification';
 import { prisma } from '@/lib/prisma';
@@ -84,8 +85,7 @@ export async function GET() {
 
     return NextResponse.json(references);
   } catch (error) {
-    console.error('Error fetching references:', error);
-    return NextResponse.json({ error: 'Nie udało się pobrać referencji' }, { status: 500 });
+    return handleApiError(error, undefined, { endpoint: 'references', method: 'GET' });
   }
 }
 
@@ -132,10 +132,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.issues[0].message }, { status: 400 });
-    }
-    console.error('Error creating reference:', error);
-    return NextResponse.json({ error: 'Nie udało się dodać referencji' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'references' });
   }
 }

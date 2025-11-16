@@ -1,6 +1,7 @@
 'use client';
 
 import { SmartImage } from '@/components/ui/SmartImage';
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
@@ -196,7 +197,12 @@ export function ReferencesPage() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-4xl mx-auto mb-8"
       >
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
+        <UnifiedCard
+          variant="glass"
+          glow={true}
+          hover={true}
+          className="p-8"
+        >
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4 text-white">Dodaj Opinię o Gołębiach</h2>
             <p className="text-white/80 text-lg">
@@ -429,7 +435,7 @@ export function ReferencesPage() {
               </button>
             </div>
           )}
-        </div>
+        </UnifiedCard>
       </motion.div>
 
       {/* References Grid */}
@@ -445,7 +451,12 @@ export function ReferencesPage() {
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                  <UnifiedCard
+                    variant="glass"
+                    glow={true}
+                    hover={true}
+                    className="p-6"
+                  >
                     <div className="flex items-start mb-4">
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
@@ -491,7 +502,7 @@ export function ReferencesPage() {
                     <div className="text-sm text-gray-400">
                       {new Date(reference.createdAt).toLocaleDateString('pl-PL')}
                     </div>
-                  </div>
+                  </UnifiedCard>
                 </motion.div>
               ))}
             </div>

@@ -10,7 +10,6 @@ interface UnifiedCardProps {
   glow?: boolean;
   hover?: boolean;
   delay?: number;
-  intensity?: 'low' | 'medium' | 'high';
 }
 
 export const UnifiedCard = memo(function UnifiedCard({
@@ -20,8 +19,7 @@ export const UnifiedCard = memo(function UnifiedCard({
   glow = false,
   hover = true,
   delay = 0,
-  intensity = 'medium',
-}: UnifiedCardProps) {
+}: Omit<UnifiedCardProps, 'intensity'>) {
   const variantClasses = {
     default: 'card',
     glass: 'card-glass',
@@ -30,26 +28,14 @@ export const UnifiedCard = memo(function UnifiedCard({
     gradient: 'card-gradient',
   };
 
-  const intensityMap = {
-    low: { scale: 1.01, y: -2 },
-    medium: { scale: 1.02, y: -4 },
-    high: { scale: 1.05, y: -6 },
-  };
-
-  const currentIntensity = intensityMap[intensity];
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, scale: 0.9, rotateX: -10 }}
-      animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
       whileHover={
         hover
           ? {
-              scale: currentIntensity.scale,
-              y: currentIntensity.y,
-              rotateX: 5,
-              rotateY: 5,
-              transition: { duration: 0.3, type: 'spring' as const, stiffness: 300 },
+              transition: { duration: 0.3 },
             }
           : {}
       }
@@ -62,8 +48,6 @@ export const UnifiedCard = memo(function UnifiedCard({
       className={`
         ${variantClasses[variant]}
         ${glow ? 'animate-glow3D' : ''}
-        ${hover ? 'hover-3d-lift' : ''}
-        transform-3d perspective-1000
         ${className}
       `}
     >

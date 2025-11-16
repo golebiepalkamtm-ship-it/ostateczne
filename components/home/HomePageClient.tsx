@@ -1,6 +1,5 @@
 'use client';
 
-import { BentoGrid } from '@/components/home/BentoGrid';
 import { FeaturedChampions } from '@/components/home/FeaturedChampions';
 import { HeroSection } from '@/components/home/HeroSection';
 import { PhilosophySection } from '@/components/home/PhilosophySection';
@@ -88,21 +87,6 @@ export default function HomePageClient() {
           style={{ transformStyle: 'preserve-3d' }}
         >
           <HeroSection />
-        </motion.div>
-
-        {/* Bento Grid with staggered 3D animations */}
-        <motion.div
-          initial={{ opacity: 0, y: 150, rotateY: -45 }}
-          whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-          transition={{
-            duration: 1.5,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            delay: 0.4,
-          }}
-          viewport={{ once: true, margin: '-100px' }}
-          style={{ transformStyle: 'preserve-3d' }}
-        >
-          <BentoGrid />
         </motion.div>
 
         {/* Featured Champions with 3D card effects */}

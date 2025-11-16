@@ -7,51 +7,70 @@ import { applyActionCode, signInWithCustomToken, checkActionCode } from 'firebas
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
+
+// 🔒 GLOBALNA FLAGA - przetrwa re-renderingi i React Strict Mode
+let globalVerificationExecuted = false;
 
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const verificationStartedRef = useRef(false);
 
   useEffect(() => {
     const oobCode = searchParams.get('oobCode');
 
+    console.log('🔍 DEBUG: oobCode z URL:', oobCode);
+    console.log('🔍 DEBUG: Wszystkie search params:', Object.fromEntries(searchParams.entries()));
+
     if (!oobCode) {
       setStatus('error');
       setMessage('Brak kodu weryfikacyjnego w linku');
+      console.error('❌ Brak parametru oobCode w URL');
       return;
     }
 
-    // Zapobiegaj wielokrotnemu wykonywaniu
-    if (isProcessing) return;
+    // 🔒 KRYTYCZNE: Sprawdź globalną flagę PRZED lokalną
+    if (globalVerificationExecuted) {
+      console.log('⚠️ Weryfikacja już została wykonana globalnie - pomijam');
+      return;
+    }
 
-    setIsProcessing(true);
+    // Lokalny ref jako dodatkowa ochrona
+    if (verificationStartedRef.current) {
+      console.log('⚠️ Weryfikacja już wystartowała w tym komponencie - pomijam');
+      return;
+    }
 
-    // Rozpocznij proces weryfikacji
+    verificationStartedRef.current = true;
+    globalVerificationExecuted = true;
+
     const verifyEmail = async () => {
       try {
+        console.log('🔍 Rozpoczynam weryfikację z kodem:', oobCode);
+        console.log('🔍 Długość kodu:', oobCode.length);
+
         // Najpierw sprawdź kod weryfikacyjny aby wyciągnąć email
+        console.log('🔍 Wywołuję checkActionCode...');
         const actionCodeInfo = await checkActionCode(auth, oobCode);
+        console.log('✅ checkActionCode sukces:', actionCodeInfo);
         const email = actionCodeInfo.data.email;
 
         if (!email) {
           throw new Error('Nie można wyciągnąć email z kodu weryfikacyjnego');
         }
 
-        // Zweryfikuj email
+        console.log('📧 Email z kodu:', email);
+
+        // Zweryfikuj email w Firebase
+        console.log('🔍 Wywołuję applyActionCode...');
         await applyActionCode(auth, oobCode);
-
-        // Natychmiast ustaw status sukcesu
-        setStatus('success');
-        setMessage('✅ Email został pomyślnie zweryfikowany!');
-
-        // Dodaj krótkie opóźnienie aby użytkownik zobaczył komunikat sukcesu
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('✅ applyActionCode zakończone pomyślnie');
 
         // Wywołaj API endpoint który stworzy custom token dla użytkownika z tym emailem
+        console.log('🔐 Wysyłam request do /api/auth/verify-email-auto-login');
         const verifyResponse = await fetch('/api/auth/verify-email-auto-login', {
           method: 'POST',
           headers: {
@@ -62,20 +81,24 @@ function VerifyEmailContent() {
 
         if (!verifyResponse.ok) {
           const errorData = await verifyResponse.json();
+          console.error('❌ Błąd API verify-email-auto-login:', errorData);
           throw new Error(errorData.error || 'Błąd automatycznego logowania');
         }
 
         const { customToken } = await verifyResponse.json();
+        console.log('🎟️ Otrzymano custom token, logowanie...');
 
         // Zaloguj użytkownika używając custom token
         const userCredential = await signInWithCustomToken(auth, customToken);
         const user = userCredential.user;
+        console.log('👤 Użytkownik zalogowany:', user.email);
 
-        // Odśwież token i zsynchronizuj z bazą
-        await user.reload();
-        const token = await user.getIdToken(true);
+        // Pobierz token (Firebase automatycznie ma już zaktualizowane claims po signInWithCustomToken)
+        const token = await user.getIdToken();
+        console.log('✅ Token uzyskany, emailVerified:', user.emailVerified);
 
         // Zsynchronizuj użytkownika z bazą danych
+        console.log('🔄 Synchronizacja z bazą danych...');
         const syncResponse = await fetch('/api/auth/sync', {
           method: 'POST',
           headers: {
@@ -85,43 +108,68 @@ function VerifyEmailContent() {
 
         if (!syncResponse.ok) {
           const syncError = await syncResponse.json();
-          console.error('Błąd synchronizacji po weryfikacji:', syncError);
+          console.error('❌ Błąd synchronizacji po weryfikacji:', syncError);
+          // Nie przerywaj - kontynuuj nawet jeśli sync się nie powiódł
+        } else {
+          const syncData = await syncResponse.json();
+          console.log('✅ Synchronizacja zakończona:', syncData);
         }
 
         // Zapisz token w cookie
         document.cookie = `firebase-auth-token=${token}; path=/; max-age=3600; SameSite=Lax`;
-        // UX cookie: poziom 2 odblokowany
         document.cookie = `level2-ok=1; path=/; max-age=86400; SameSite=Lax`;
 
-        // Przekieruj do /profile/edit zgodnie z wymaganiami
-        setTimeout(() => {
-          router.push('/profile/edit?verification=success');
-        }, 1500);
+        // Wyślij event do innych kart przez localStorage
+        localStorage.setItem('email-verified', Date.now().toString());
 
-      } catch (error: any) {
-        console.error('Verification error:', error);
+        // ✅✅✅ KRYTYCZNE: TYLKO TUTAJ ustawiamy sukces - na samym końcu!
+        console.log('✅✅✅ USTAWIAM STATUS SUCCESS');
+        setStatus('success');
+        setMessage(
+          '✅ Email zweryfikowany! Zostałeś automatycznie zalogowany. Uzupełnij dane i zweryfikuj telefon.'
+        );
+
+        // Komunikat zostaje widoczny bez automatycznego przekierowania
+      } catch (error: unknown) {
+        const err = error as { code?: string; message?: string };
+        console.error('❌ Verification error:', error);
+        console.error('❌ Error code:', err.code);
+        console.error('❌ Error message:', err.message);
+        console.error('❌ Full error object:', JSON.stringify(error, null, 2));
+        console.log('❌❌❌ USTAWIAM STATUS ERROR');
 
         // Sprawdź czy to błąd związany z kodem weryfikacyjnym
-        if (error.code === 'auth/invalid-action-code' || error.code === 'auth/expired-action-code') {
+        if (err.code === 'auth/invalid-action-code') {
           setStatus('error');
-          if (error.code === 'auth/invalid-action-code') {
-            setMessage('❌ Link weryfikacyjny jest nieprawidłowy lub wygasł');
-          } else if (error.code === 'auth/expired-action-code') {
-            setMessage('❌ Link weryfikacyjny wygasł. Wyślij nowy email weryfikacyjny');
-          }
+          setMessage(`❌ Link weryfikacyjny został już użyty lub jest nieprawidłowy. 
+          
+🔍 DEBUG INFO:
+- Kod z URL: ${searchParams.get('oobCode')?.substring(0, 20)}...
+- Długość: ${searchParams.get('oobCode')?.length}
+- Error: ${err.message}
+
+Jeśli to pierwszy raz gdy klikasz link, sprawdź czy Twój klient email nie modyfikuje linków. W przeciwnym razie zaloguj się do konta.`);
+        } else if (err.code === 'auth/expired-action-code') {
+          setStatus('error');
+          setMessage(
+            '❌ Link weryfikacyjny wygasł. Zaloguj się do swojego konta i wyślij nowy link weryfikacyjny.'
+          );
         } else {
-          // To błąd automatycznego logowania - email został zweryfikowany, ale logowanie się nie powiodło
-          // Nie zmieniaj statusu na error, zachowaj success ale zmień komunikat
-          setMessage('✅ Email został zweryfikowany. Zaloguj się aby kontynuować.');
-          setTimeout(() => {
-            router.push('/auth/register?verified=true&emailVerified=true');
-          }, 3000);
+          // Inny błąd
+          setStatus('error');
+          setMessage(`❌ Wystąpił błąd podczas weryfikacji: ${err.message || 'Nieznany błąd'}. 
+          
+Error code: ${err.code || 'brak'}
+
+Spróbuj zalogować się do konta.`);
         }
+
+        // Komunikat zostaje widoczny bez automatycznego przekierowania
       }
     };
 
     verifyEmail();
-  }, [searchParams, router, isProcessing]);
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -135,25 +183,41 @@ function VerifyEmailContent() {
             <>
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-6"></div>
               <h2 className="text-2xl font-bold text-white mb-2">Weryfikacja emaila...</h2>
-              <p className="text-white/70">Proszę czekać</p>
+              <p className="text-white/70">Proszę czekać, trwa weryfikacja Twojego adresu email</p>
             </>
           )}
 
           {status === 'success' && (
             <>
-              <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
                 <CheckCircle className="w-10 h-10 text-green-400" />
               </div>
-              <h2 className="text-3xl font-bold text-white mb-4">{message}</h2>
-              <p className="text-white/70 mb-6">
-                Twoje konto zostało aktywowane. Za chwilę zostaniesz przekierowany do panelu, aby
-                dokończyć konfigurację konta.
-              </p>
-              <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
-                <p className="text-green-300 text-sm">
-                  Następny krok: uzupełnienie danych profilowych.
+              <h2 className="text-3xl font-bold text-white mb-4">🎉 Email zweryfikowany!</h2>
+              <p className="text-white/90 mb-6 text-lg">{message}</p>
+              <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-6 mb-6">
+                <p className="text-green-300 text-base mb-3">
+                  ✅ Twoje konto zostało częściowo aktywowane!
+                </p>
+                <p className="text-green-200 text-sm mb-2">
+                  Możesz teraz przejść do panelu użytkownika. Aby uzyskać pełny dostęp do platformy,
+                  musisz:
+                </p>
+                <ul className="text-green-200 text-sm list-disc list-inside mt-2 space-y-1">
+                  <li>Uzupełnić swój profil hodowcy (imię, nazwisko, adres)</li>
+                  <li>Zweryfikować numer telefonu</li>
+                </ul>
+                <p className="text-green-100 text-sm mt-3 font-semibold">
+                  💡 Dopiero po weryfikacji telefonu będziesz mógł tworzyć aukcje, licytować i
+                  dodawać treści.
                 </p>
               </div>
+
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold px-6 py-4 rounded-xl transition-all text-lg"
+              >
+                Przejdź do panelu teraz →
+              </button>
             </>
           )}
 
@@ -162,8 +226,9 @@ function VerifyEmailContent() {
               <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <XCircle className="w-10 h-10 text-red-400" />
               </div>
-              <h2 className="text-3xl font-bold text-white mb-4">{message}</h2>
-              
+              <h2 className="text-3xl font-bold text-white mb-4">Problem z weryfikacją</h2>
+              <p className="text-white/70 mb-4">{message}</p>
+
               <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
                 <p className="text-yellow-300 text-sm mb-2">
                   💡 <strong>Co możesz zrobić?</strong>
@@ -171,7 +236,7 @@ function VerifyEmailContent() {
                 <ol className="text-yellow-300 text-sm list-decimal list-inside space-y-1">
                   <li>Zaloguj się do swojego konta</li>
                   <li>Przejdź do panelu użytkownika</li>
-                  <li>Kliknij przycisk &quot;Wyślij ponownie email weryfikacyjny&quot;</li>
+                  <li>Jeśli potrzebujesz, wyślij ponownie email weryfikacyjny</li>
                 </ol>
               </div>
 
@@ -182,12 +247,12 @@ function VerifyEmailContent() {
                 >
                   Przejdź do logowania
                 </button>
-                
+
                 <button
                   onClick={() => router.push('/dashboard')}
                   className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold px-6 py-3 rounded-xl transition-all"
                 >
-                  Przejdź do panelu (jeśli jesteś zalogowany)
+                  Przejdź do panelu użytkownika
                 </button>
               </div>
             </>

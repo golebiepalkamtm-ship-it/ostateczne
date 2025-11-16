@@ -146,7 +146,10 @@ export async function requireEmailVerification(request: NextRequest) {
     }
 
     // Poziom 2: USER_EMAIL_VERIFIED lub wyższy
-    const hasLevel2Access = user.role === 'USER_EMAIL_VERIFIED' || user.role === 'USER_FULL_VERIFIED' || user.role === 'ADMIN';
+    const hasLevel2Access =
+      user.role === 'USER_EMAIL_VERIFIED' ||
+      user.role === 'USER_FULL_VERIFIED' ||
+      user.role === 'ADMIN';
 
     if (!hasLevel2Access) {
       return NextResponse.json(
@@ -205,7 +208,8 @@ export async function requireFullVerification(request: NextRequest) {
     if (!hasLevel3Access) {
       return NextResponse.json(
         {
-          error: 'Uzupełnij profil i zweryfikuj telefon, aby brać udział w aukcjach i dodawać treści.',
+          error:
+            'Uzupełnij profil i zweryfikuj telefon, aby brać udział w aukcjach i dodawać treści.',
           requiresFullVerification: true,
           role: user.role,
           isPhoneVerified: user.isPhoneVerified,

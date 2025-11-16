@@ -3,6 +3,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { getAdminAuth } from '@/lib/firebase-admin';
+import { handleApiError } from '@/lib/error-handling';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
 import { NextRequest, NextResponse } from 'next/server';
@@ -277,7 +278,7 @@ export async function POST(request: NextRequest) {
               ? validatedData.phoneNumber
               : null,
           isActive: false,
-          role: 'USER',
+          role: 'USER_REGISTERED', // Poziom 1 - tylko logowanie
           emailVerified: null,
           isPhoneVerified: false,
           isProfileVerified: false,
@@ -303,51 +304,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('❌ [REGISTER] Błąd rejestracji:', error);
-
-    // Log szczegółowy błąd
-    if (error instanceof Error) {
-      console.error('❌ [REGISTER] Błąd message:', error.message);
-      console.error('❌ [REGISTER] Błąd stack:', error.stack);
-    }
-
-    // Zod validation errors
-    if (error instanceof z.ZodError) {
-      console.error('❌ [REGISTER] Zod validation error:', error.issues);
-      return NextResponse.json({ error: error.issues[0].message }, { status: 400 });
-    }
-
-    // Firebase errors
-    const firebaseError = error as { code?: string; message?: string };
-    if (
-      firebaseError.code === 'auth/email-already-in-use' ||
-      firebaseError.code === 'auth/email-already-exists'
-    ) {
-      return NextResponse.json({ error: 'Użytkownik z tym emailem już istnieje' }, { status: 400 });
-    }
-
-    if (firebaseError.code === 'auth/weak-password') {
-      return NextResponse.json({ error: 'Hasło jest zbyt słabe' }, { status: 400 });
-    }
-
-    // Prisma errors
-    const prismaError = error as { code?: string; meta?: unknown };
-    if (prismaError.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Użytkownik z tym emailem lub numerem telefonu już istnieje' },
-        { status: 400 }
-      );
-    }
-
-    // Generic error response
-    return NextResponse.json(
-      {
-        error: 'Wystąpił błąd podczas rejestracji',
-        ...(process.env.NODE_ENV === 'development' && {
-          details: error instanceof Error ? error.message : String(error),
-        }),
-      },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'register' });
   }
 }

@@ -1,72 +1,38 @@
 'use client';
 
-import { LocationAutocomplete } from '@/components/ui/LocationAutocomplete';
-import { useAuth } from '@/contexts/AuthContext';
-import { useProfileVerification } from '@/hooks/useProfileVerification';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { FileText, Image as LucideImage, RotateCcw, Video, X } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { debug, error, isDev } from '@/lib/logger';
-import { useDropzone } from 'react-dropzone';
+import React, { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useDropzone } from 'react-dropzone';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import Link from 'next/link';
+import Image from 'next/image';
+import { X, LucideImage, Video, FileText } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { UnifiedCard } from '@/components/ui/UnifiedCard';
+import { auctionCreateSchema } from '@/lib/validations/schemas';
+import { debug, error, isDev } from '@/lib/logger';
 
-const createAuctionSchema = z
-  .object({
-    category: z.enum(['Pigeon', 'Supplements', 'Accessories']),
-    title: z.string().min(5, 'Tytuł musi mieć co najmniej 5 znaków'),
-    description: z.string().min(20, 'Opis musi mieć co najmniej 20 znaków'),
+// Typ dla danych formularza aukcji
+type CreateAuctionFormData = z.infer<typeof auctionCreateSchema>;
 
-    // Pola specyficzne dla gołębi
-    ringNumber: z.string().optional(),
-    bloodline: z.string().optional(),
-    sex: z.enum(['male', 'female']).optional(),
-    pedigreeFile: z.any().optional(),
-    eyeColor: z.string().optional(),
-    featherColor: z.string().optional(),
-    purpose: z.array(z.string()).optional(),
-
-    // Dodatkowe szczegóły gołębia
-    size: z.string().optional(),
-    bodyStructure: z.string().optional(),
-    vitality: z.string().optional(),
-    colorDensity: z.string().optional(),
-    length: z.string().optional(),
-    endurance: z.string().optional(),
-
-    // Cena
-    startingPrice: z.number().min(0, 'Cena wywoławcza nie może być ujemna').optional(),
-    buyNowPrice: z.number().optional(),
-
-    // Czas trwania aukcji
-    duration: z.number().min(1).max(30),
-
-    // Lokalizacja
-    location: z.string().min(2, 'Wybierz lokalizację z listy').optional(),
-  })
-  .refine(
-    data => {
-      // Sprawdź czy przynajmniej jedna cena jest podana
-      return data.startingPrice || data.buyNowPrice;
-    },
-    {
-      message: 'Musisz podać przynajmniej jedną cenę (wywoławczą lub Kup teraz)',
-      path: ['startingPrice'],
-    }
-  );
-
-type CreateAuctionFormData = z.infer<typeof createAuctionSchema>;
-
+// Typy dla plików
 interface MediaFile {
   id: string;
   file: File;
   preview: string;
   type: 'image' | 'video' | 'document';
-  category: 'pigeon_images' | 'videos' | 'pedigree';
 }
+
+// Funkcja pomocnicza do tworzenia MediaFile
+const createMediaFile = (file: File, type: 'image' | 'video' | 'document'): MediaFile => ({
+  id: `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  file,
+  preview: type === 'image' ? URL.createObjectURL(file) : '',
+  type,
+});
 
 interface CreateAuctionFormProps {
   onSuccess?: () => void;
@@ -79,13 +45,10 @@ export default function CreateAuctionForm({
   onCancel,
   showHeader = true,
 }: CreateAuctionFormProps) {
-  const { user, loading } = useAuth();
-  const {
-    canCreateAuctions,
-    missingFields,
-    loading: verificationLoading,
-  } = useProfileVerification();
+  const { user, dbUser, loading: authLoading } = useAuth();
   const router = useRouter();
+
+  // Stan komponentu
   const [pigeonImages, setPigeonImages] = useState<MediaFile[]>([]);
   const [videos, setVideos] = useState<MediaFile[]>([]);
   const [pedigreeFiles, setPedigreeFiles] = useState<MediaFile[]>([]);
@@ -108,6 +71,7 @@ export default function CreateAuctionForm({
     };
   } | null>(null);
 
+  // Hook formularza
   const {
     register,
     handleSubmit,
@@ -115,48 +79,34 @@ export default function CreateAuctionForm({
     setValue,
     formState: { errors },
   } = useForm<CreateAuctionFormData>({
-    resolver: zodResolver(createAuctionSchema),
+    resolver: zodResolver(auctionCreateSchema),
     mode: 'onChange',
   });
 
   const watchedCategory = watch('category');
 
-  // Funkcje do obsługi różnych typów plików
-  const createMediaFile = (
-    file: File,
-    category: 'pigeon_images' | 'videos' | 'pedigree'
-  ): MediaFile => {
-    const fileType = file.type.startsWith('video/')
-      ? 'video'
-      : file.type.startsWith('image/')
-        ? 'image'
-        : 'document';
-
-    return {
-      id: Math.random().toString(36).substr(2, 9),
-      file,
-      preview: URL.createObjectURL(file),
-      type: fileType,
-      category,
-    };
-  };
-
-  const onDropPigeonImages = (acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map(file => createMediaFile(file, 'pigeon_images'));
+  // Funkcje obsługi dropzone
+  const onDropPigeonImages = useCallback((acceptedFiles: File[]) => {
+    const newFiles = acceptedFiles.map(file => createMediaFile(file, 'image'));
     setPigeonImages(prev => [...prev, ...newFiles]);
-  };
+  }, []);
 
-  const onDropVideos = (acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map(file => createMediaFile(file, 'videos'));
+  const onDropVideos = useCallback((acceptedFiles: File[]) => {
+    const newFiles = acceptedFiles.map(file => createMediaFile(file, 'video'));
     setVideos(prev => [...prev, ...newFiles]);
-  };
+  }, []);
 
-  const onDropPedigree = (acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map(file => createMediaFile(file, 'pedigree'));
+  const onDropPedigree = useCallback((acceptedFiles: File[]) => {
+    const newFiles = acceptedFiles.map(file => {
+      // Wykryj typ pliku na podstawie MIME type
+      const isImage = file.type.startsWith('image/');
+      const fileType = isImage ? 'image' : 'document';
+      return createMediaFile(file, fileType);
+    });
     setPedigreeFiles(prev => [...prev, ...newFiles]);
-  };
+  }, []);
 
-  // Dropzone hooks dla różnych typów plików
+  // Hooki dropzone
   const {
     getRootProps: getPigeonImagesRootProps,
     getInputProps: getPigeonImagesInputProps,
@@ -195,56 +145,82 @@ export default function CreateAuctionForm({
   });
 
   // Funkcje usuwania plików
-  const removePigeonImage = (id: string) => {
+  const removePigeonImage = useCallback((id: string) => {
     setPigeonImages(prev => prev.filter(file => file.id !== id));
-  };
+  }, []);
 
-  const removeVideo = (id: string) => {
+  const removeVideo = useCallback((id: string) => {
     setVideos(prev => prev.filter(file => file.id !== id));
-  };
+  }, []);
 
-  const removePedigreeFile = (id: string) => {
+  const removePedigreeFile = useCallback((id: string) => {
     setPedigreeFiles(prev => prev.filter(file => file.id !== id));
-  };
+  }, []);
 
-  const openPreview = (imageUrl: string) => {
+  const openPreview = useCallback((imageUrl: string) => {
     setPreviewImage(imageUrl);
-  };
+  }, []);
 
-  const closePreview = () => {
+  const closePreview = useCallback(() => {
     setPreviewImage(null);
-  };
+  }, []);
 
-  const refreshForm = () => {
+  const _refreshForm = useCallback(() => {
     // Resetuj tylko pola formularza, zachowaj pliki i stan checkboxów
     setValue('title', '');
     setValue('description', '');
     setValue('category', 'Pigeon');
-    setValue('ringNumber', '');
-    setValue('bloodline', '');
-    setValue('sex', undefined);
-    setValue('eyeColor', '');
-    setValue('featherColor', '');
-    setValue('purpose', []);
     setValue('startingPrice', undefined);
     setValue('buyNowPrice', undefined);
     setValue('location', '');
-    setValue('duration', 7);
+    setValue('pigeon.ringNumber', '');
+    setValue('pigeon.bloodline', '');
+    setValue('pigeon.sex', undefined);
+    setValue('pigeon.eyeColor', '');
+    setValue('pigeon.featherColor', '');
 
     // Resetuj lokalizację
     setSelectedLocation(null);
 
     // Zachowaj checkboxy i pliki
     // hasStartingPrice, hasBuyNowPrice, pigeonImages, videos, pedigreeFiles pozostają
-  };
+  }, [setValue]);
+
+  // Sprawdź czy użytkownik może tworzyć aukcje - wymagany pełny poziom weryfikacji
+  const canCreateAuctions = dbUser && ['USER_FULL_VERIFIED', 'ADMIN'].includes(dbUser.role);
+  const missingFields: string[] = [];
 
   const onSubmit = async (data: CreateAuctionFormData) => {
     if (isDev) debug('🚀 ONSUBMIT STARTED!');
     if (isDev) debug('📝 Form data:', data);
 
+    // Sprawdź wymagane pliki
+    if (pigeonImages.length === 0) {
+      toast.error('Dodaj przynajmniej jedno zdjęcie aukcji');
+      return;
+    }
+
+    if (watchedCategory === 'Pigeon' && pedigreeFiles.length === 0) {
+      toast.error('Dla aukcji gołębia wymagany jest rodowód');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      toast.loading('Przygotowywanie aukcji...', { id: 'auction-submit' });
+
+      // Pobierz Firebase token dla autoryzacji (wymuś odświeżenie)
+      const token = await user!.getIdToken(true);
+      toast.loading('Pobieranie tokenów bezpieczeństwa...', { id: 'auction-submit' });
+
+      // Pobierz CSRF token
+      const csrfResponse = await fetch('/api/csrf');
+      if (!csrfResponse.ok) {
+        throw new Error('Nie udało się pobrać tokenu CSRF');
+      }
+      const { csrfToken } = await csrfResponse.json();
+
       // Upload files by category
       let uploadedImages: string[] = [];
       let uploadedVideos: string[] = [];
@@ -252,74 +228,96 @@ export default function CreateAuctionForm({
 
       // Upload pigeon images
       if (pigeonImages.length > 0) {
+        toast.loading('Przesyłanie zdjęć...', { id: 'auction-submit' });
         const imageFormData = new FormData();
         imageFormData.append('type', 'image');
+        imageFormData.append('csrfToken', csrfToken);
         pigeonImages.forEach(file => {
           imageFormData.append('files', file.file);
         });
 
         const imageResponse = await fetch('/api/upload', {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: imageFormData,
         });
 
         if (imageResponse.ok) {
           const imageResult = await imageResponse.json();
           uploadedImages = imageResult.files || [];
+          toast.loading('Zdjęcia przesłane pomyślnie', { id: 'auction-submit' });
         } else {
           const error = await imageResponse.json();
           error('Błąd uploadu obrazów:', error);
+          throw new Error(`Błąd przesyłu zdjęć: ${error.message || 'Nieznany błąd'}`);
         }
       }
 
       // Upload videos
       if (videos.length > 0) {
+        toast.loading('Przesyłanie filmów...', { id: 'auction-submit' });
         const videoFormData = new FormData();
         videoFormData.append('type', 'video');
+        videoFormData.append('csrfToken', csrfToken);
         videos.forEach(file => {
           videoFormData.append('files', file.file);
         });
 
         const videoResponse = await fetch('/api/upload', {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: videoFormData,
         });
 
         if (videoResponse.ok) {
           const videoResult = await videoResponse.json();
           uploadedVideos = videoResult.files || [];
+          toast.loading('Filmy przesłane pomyślnie', { id: 'auction-submit' });
         } else {
           const error = await videoResponse.json();
           error('Błąd uploadu filmów:', error);
+          throw new Error(`Błąd przesyłu filmów: ${error.message || 'Nieznany błąd'}`);
         }
       }
 
       // Upload pedigree documents
       if (pedigreeFiles.length > 0) {
+        toast.loading('Przesyłanie dokumentów...', { id: 'auction-submit' });
         const pedigreeFormData = new FormData();
         pedigreeFormData.append('type', 'document');
+        pedigreeFormData.append('csrfToken', csrfToken);
         pedigreeFiles.forEach(file => {
           pedigreeFormData.append('files', file.file);
         });
 
         const pedigreeResponse = await fetch('/api/upload', {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: pedigreeFormData,
         });
 
         if (pedigreeResponse.ok) {
           const pedigreeResult = await pedigreeResponse.json();
           uploadedDocuments = pedigreeResult.files || [];
+          toast.loading('Dokumenty przesłane pomyślnie', { id: 'auction-submit' });
         } else {
           const error = await pedigreeResponse.json();
           error('Błąd uploadu dokumentów:', error);
+          throw new Error(`Błąd przesyłu dokumentów: ${error.message || 'Nieznany błąd'}`);
         }
       }
 
       const now = new Date();
-      const endTime = new Date(now.getTime() + (data.duration || 7) * 24 * 60 * 60 * 1000);
+      const endTime = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Domyślnie 7 dni
 
       const requestData = {
+        csrfToken,
         title: data.title,
         description: data.description,
         category: data.category,
@@ -347,27 +345,26 @@ export default function CreateAuctionForm({
           : null,
         // Dane specyficzne dla gołębi
         ...(data.category === 'Pigeon' && {
-          pigeon: {
-            ringNumber: data.ringNumber,
-            bloodline: data.bloodline,
-            sex: data.sex,
-            eyeColor: data.eyeColor,
-            featherColor: data.featherColor,
-            purpose: data.purpose || [],
-            size: data.size,
-            bodyStructure: data.bodyStructure,
-            vitality: data.vitality,
-            colorDensity: data.colorDensity,
-            length: data.length,
-            endurance: data.endurance,
-          },
+          pigeon: data.pigeon
+            ? {
+                ringNumber: data.pigeon.ringNumber,
+                bloodline: data.pigeon.bloodline,
+                sex: data.pigeon.sex,
+                eyeColor: data.pigeon.eyeColor,
+                featherColor: data.pigeon.featherColor,
+                purpose: data.pigeon.purpose || [],
+              }
+            : undefined,
         }),
       };
+
+      toast.loading('Tworzenie aukcji...', { id: 'auction-submit' });
 
       const response = await fetch('/api/auctions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestData),
       });
@@ -375,7 +372,11 @@ export default function CreateAuctionForm({
       if (response.ok) {
         const result = await response.json();
         if (isDev) debug('✅ Aukcja utworzona pomyślnie:', result);
-        alert('✅ Aukcja została utworzona pomyślnie!');
+
+        toast.success('🎉 Aukcja została utworzona pomyślnie!', {
+          id: 'auction-submit',
+          duration: 5000,
+        });
 
         if (onSuccess) {
           onSuccess();
@@ -390,17 +391,22 @@ export default function CreateAuctionForm({
       } else {
         const error = await response.json();
         error('❌ Błąd API:', error);
-        alert('❌ Wystąpił błąd podczas tworzenia aukcji: ' + (error.message || 'Nieznany błąd'));
+        throw new Error(error.message || 'Wystąpił błąd podczas tworzenia aukcji');
       }
     } catch (err) {
-      error('❌ Błąd podczas tworzenia aukcji:', err instanceof Error ? err.message : err);
-      alert('❌ Wystąpił błąd podczas tworzenia aukcji');
+      const errorMessage = err instanceof Error ? err.message : 'Wystąpił nieoczekiwany błąd';
+      error('❌ Błąd podczas tworzenia aukcji:', err);
+
+      toast.error(`❌ ${errorMessage}`, {
+        id: 'auction-submit',
+        duration: 6000,
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (loading || verificationLoading) {
+  if (authLoading) {
     return (
       <div className="flex justify-center items-center p-8">
         <p>Ładowanie...</p>
@@ -465,373 +471,590 @@ export default function CreateAuctionForm({
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-xl border-2 border-white rounded-2xl shadow-[0_0_14px_3px_rgba(255,255,255,0.55)] max-h-[95vh] overflow-y-auto text-black relative">
-      {/* Przyciski na górze */}
-      <div className="absolute top-3 right-3 flex gap-2 z-10">
+    <div className="relative">
+      {/* Przycisk zamknięcia - poza UnifiedCard */}
+      {onCancel && (
         <button
-          onClick={refreshForm}
-          className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors"
-          title="Odśwież formularz"
+          type="button"
+          onClick={onCancel}
+          className="absolute -top-2 -right-2 z-[200] p-2 rounded-full bg-red-600 hover:bg-red-700 transition-colors text-white shadow-lg"
+          aria-label="Zamknij formularz"
         >
-          <RotateCcw className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
-        <button
-          onClick={() => {
-            if (onCancel) {
-              onCancel();
-            } else {
-              // Jeśli nie ma callback, przekieruj do aukcji
-              router.push('/auctions');
+      )}
+      <UnifiedCard
+        variant="glass"
+        glow={true}
+        hover={true}
+        className="p-4 max-w-6xl min-h-[400px] w-full mx-auto text-white relative"
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit, errors => {
+            if (Object.keys(errors).length > 0) {
+              toast.error('Wypełnij wszystkie wymagane pola formularza');
+              console.error('Form validation errors:', errors);
             }
-          }}
-          className="w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-          title="Zamknij"
+          })}
+          className="p-1"
         >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="p-4">
-        {showHeader && (
-          <div className="mb-4">
-            <h1 className="text-xl font-bold text-black mb-1">Utwórz nową aukcję</h1>
-            <p className="text-black/90 text-sm">
-              Wypełnij wszystkie wymagane pola i opublikuj swoją aukcję
-            </p>
-          </div>
-        )}
-
-        {/* Kategoria */}
-        <h2 className="text-sm font-semibold text-black mb-2">Kategoria *</h2>
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          {[
-            { value: 'Pigeon', label: 'Gołąb Pocztowy', icon: '🐦' },
-            { value: 'Supplements', label: 'Suplementy', icon: '💊' },
-            { value: 'Accessories', label: 'Akcesoria', icon: '🏠' },
-          ].map(category => (
-            <label
-              key={category.value}
-              className={`relative flex flex-col items-center p-2 border-2 rounded-lg cursor-pointer transition-colors ${
-                watchedCategory === category.value
-                  ? 'border-white bg-white/20'
-                  : 'border-white/30 bg-white/10 hover:border-white/50 hover:bg-white/15'
-              }`}
-            >
-              <input
-                type="radio"
-                value={category.value}
-                {...register('category')}
-                className="sr-only"
-              />
-              <span className="text-xl mb-1">{category.icon}</span>
-              <span className="text-xs font-medium text-black">{category.label}</span>
-            </label>
-          ))}
-        </div>
-        {errors.category && <p className="text-red-600 text-xs mb-3">{errors.category.message}</p>}
-
-        {/* Podstawowe informacje */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-          <div>
-            <label className="block text-sm font-medium text-black mb-2">Tytuł aukcji *</label>
-            <input
-              type="text"
-              {...register('title')}
-              className="w-full px-3 py-2 bg-white/50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-black placeholder-gray-500"
-            />
-            {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-black mb-2">Lokalizacja *</label>
-            <LocationAutocomplete
-              value={watch('location') || ''}
-              onChange={value => {
-                setValue('location', value);
-              }}
-              onLocationSelect={location => {
-                setSelectedLocation(location);
-              }}
-              error={errors.location?.message}
-            />
-          </div>
-        </div>
-
-        {/* Opis */}
-        <div className="mb-3">
-          <label className="block text-xs font-medium text-black mb-1">Opis *</label>
-          <textarea
-            {...register('description')}
-            rows={2}
-            className="w-full px-2 py-1 text-sm bg-white/50 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black placeholder-gray-500"
-          />
-          {errors.description && (
-            <p className="text-red-600 text-xs mt-1">{errors.description.message}</p>
+          {showHeader && (
+            <div className="mb-1">
+              <h1 className="text-xl font-bold text-white mb-0">Utwórz nową aukcję</h1>
+              <p className="text-white/70 text-sm">
+                Wypełnij wszystkie wymagane pola i opublikuj swoją aukcję
+              </p>
+            </div>
           )}
-        </div>
 
-        {/* Szczegóły gołębia (tylko dla kategorii Pigeon) */}
-        {watchedCategory === 'Pigeon' && (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2">
-              <div>
-                <label className="block text-xs font-medium text-black mb-1">Numer obrączki</label>
-                <input
-                  type="text"
-                  {...register('ringNumber')}
-                  className="w-full px-2 py-1 text-sm bg-white/50 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black placeholder-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-black mb-1">Linia krwi</label>
-                <input
-                  type="text"
-                  {...register('bloodline')}
-                  className="w-full px-2 py-1 text-sm bg-white/50 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black placeholder-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-black mb-1">Płeć</label>
-                <select
-                  {...register('sex')}
-                  className="w-full px-2 py-1 text-sm bg-white/50 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black"
-                >
-                  <option value="">Wybierz</option>
-                  <option value="male">Samiec</option>
-                  <option value="female">Samica</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-black mb-1">Kolor oczu</label>
-                <select
-                  {...register('eyeColor')}
-                  className="w-full px-2 py-1 text-sm bg-white/50 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black"
-                >
-                  <option value="">Wybierz</option>
-                  <option value="yellow">Żółte</option>
-                  <option value="red">Czerwone</option>
-                  <option value="glass">Szklane</option>
-                  <option value="mixed">Mieszane</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-black mb-1">
-                  Kolor upierzenia
-                </label>
-                <select
-                  {...register('featherColor')}
-                  className="w-full px-2 py-1 text-sm bg-white/50 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black"
-                >
-                  <option value="">Wybierz</option>
-                  <option value="speckled">Nakrapiany</option>
-                  <option value="blue">Niebieski</option>
-                  <option value="blue_white_flight">Niebieski białolot</option>
-                  <option value="speckled_white_flight">Nakrapiany białolot</option>
-                  <option value="red">Czerwony</option>
-                  <option value="dun">Płowy</option>
-                  <option value="dark">Ciemny</option>
-                  <option value="mottled">Pstry</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-black mb-1">
-                  Czas trwania aukcji
-                </label>
-                <select
-                  {...register('duration', { valueAsNumber: true })}
-                  className="w-full px-2 py-1 text-sm bg-white/50 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black"
-                >
-                  <option value={1}>1 dzień</option>
-                  <option value={3}>3 dni</option>
-                  <option value={7}>7 dni</option>
-                  <option value={14}>14 dni</option>
-                  <option value={30}>30 dni</option>
-                </select>
-              </div>
+          {/* Pola formularza w jednej linii, wyrównane */}
+          <div className="space-y-1 mb-2">
+            <div className="flex flex-row items-center gap-3">
+              <label className="w-40 text-base font-semibold text-white/80">Tytuł aukcji *</label>
+              <input
+                type="text"
+                {...register('title')}
+                className="flex-1 px-3 py-1.5 text-lg font-semibold bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-white/50"
+                placeholder="np. Młody gołąb wyścigowy"
+              />
+              {errors.title && <p className="text-red-400 text-sm ml-2">{errors.title.message}</p>}
             </div>
+            <div className="flex flex-row items-center gap-3">
+              <label className="w-40 text-base font-semibold text-white/80">Opis *</label>
+              <textarea
+                {...register('description')}
+                rows={1}
+                className="flex-1 px-3 py-1.5 text-lg font-semibold bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-white/50 resize-none"
+                placeholder="Opisz szczegóły aukcji..."
+              />
+              {errors.description && (
+                <p className="text-red-400 text-sm ml-2">{errors.description.message}</p>
+              )}
+            </div>
+            <div className="flex flex-row items-center gap-3">
+              <label className="w-40 text-base font-semibold text-white/80">Kategoria *</label>
+              <select
+                {...register('category')}
+                className="flex-1 px-3 py-2 text-base bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              >
+                <option value="Pigeon" className="bg-gray-800 text-white">
+                  Gołąb
+                </option>
+                <option value="Equipment" className="bg-gray-800 text-white">
+                  Sprzęt
+                </option>
+                <option value="Other" className="bg-gray-800 text-white">
+                  Inne
+                </option>
+              </select>
+              {errors.category && (
+                <p className="text-red-400 text-sm ml-2">{errors.category.message}</p>
+              )}
+            </div>
+          </div>
 
-            {/* Przeznaczenie */}
-            <div className="mb-2">
-              <label className="block text-xs font-medium text-black mb-1">Przeznaczenie</label>
-              <div className="grid grid-cols-3 gap-1">
-                {['Krótki dystans', 'Średni dystans', 'Długi dystans'].map(purpose => (
-                  <label key={purpose} className="flex items-center space-x-1 text-black text-xs">
-                    <input
-                      type="checkbox"
-                      value={purpose}
-                      {...register('purpose')}
-                      className="rounded border-gray-300 bg-white/50 text-black focus:ring-gray-400"
-                    />
-                    <span>{purpose}</span>
+          {/* Szczegóły dla gołębia */}
+          {watchedCategory === 'Pigeon' && (
+            <>
+              <div className="grid grid-cols-2 gap-1.5 mb-1">
+                <div>
+                  <label className="block text-sm font-semibold text-white/80 mb-0.5">
+                    Numer obrączki *
                   </label>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Cena */}
-        <div className="grid grid-cols-2 gap-2 mb-2">
-          <div>
-            <div className="flex items-center space-x-2 mb-1">
-              <input
-                type="checkbox"
-                checked={hasStartingPrice}
-                onChange={e => setHasStartingPrice(e.target.checked)}
-                className="text-gray-600 focus:ring-gray-500"
-                title="Zaznacz aby włączyć licytację"
-              />
-              <label className="text-xs font-medium text-black">Cena wywoławcza (zł)</label>
-            </div>
-            <input
-              type="number"
-              {...register('startingPrice', { valueAsNumber: true })}
-              disabled={!hasStartingPrice}
-              className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black placeholder-gray-500 ${
-                !hasStartingPrice ? 'bg-gray-200' : 'bg-white/50'
-              }`}
-            />
-            {errors.startingPrice && (
-              <p className="text-red-600 text-xs mt-1">{errors.startingPrice.message}</p>
-            )}
-          </div>
-
-          <div>
-            <div className="flex items-center space-x-2 mb-1">
-              <input
-                type="checkbox"
-                checked={hasBuyNowPrice}
-                onChange={e => setHasBuyNowPrice(e.target.checked)}
-                className="text-gray-600 focus:ring-gray-500"
-                title="Zaznacz aby włączyć opcję Kup teraz"
-              />
-              <label className="text-xs font-medium text-black">Cena Kup teraz (zł)</label>
-            </div>
-            <input
-              type="number"
-              {...register('buyNowPrice', { valueAsNumber: true })}
-              disabled={!hasBuyNowPrice}
-              className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 text-black placeholder-gray-500 ${
-                !hasBuyNowPrice ? 'bg-gray-200' : 'bg-white/50'
-              }`}
-            />
-            {errors.buyNowPrice && (
-              <p className="text-red-600 text-xs mt-1">{errors.buyNowPrice.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Upload plików */}
-        <div className="mb-2">
-          <h2 className="text-sm font-medium text-black mb-2">Pliki *</h2>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* Lewa kolumna - zdjęcia i filmy */}
-            <div>
-              <h2 className="text-sm font-medium text-black mb-2">Zdjęcia i filmy *</h2>
-              <div className="grid grid-cols-2 gap-2">
-                {/* Zdjęcia gołębia */}
-                <div
-                  {...getPigeonImagesRootProps()}
-                  className={`border border-dashed rounded p-2 text-center cursor-pointer transition-colors ${
-                    isPigeonImagesDragActive
-                      ? 'border-gray-400 bg-white/70'
-                      : 'border-gray-300 bg-white/50 hover:border-gray-400 hover:bg-white/60'
-                  }`}
-                >
-                  <input {...getPigeonImagesInputProps()} />
-                  <LucideImage className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-                  <p className="text-xs text-black">Zdjęcia</p>
-                  <p className="text-xs text-black/60">({pigeonImages.length}/8)</p>
+                  <input
+                    type="text"
+                    {...register('pigeon.ringNumber')}
+                    className="w-full px-2 py-1 text-lg font-semibold bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-white/50"
+                    placeholder="np. PL-12345-2023"
+                  />
+                  {errors.pigeon?.ringNumber && (
+                    <p className="text-red-400 text-sm mt-0.5">
+                      {errors.pigeon.ringNumber.message}
+                    </p>
+                  )}
                 </div>
 
-                {/* Filmy */}
-                <div
-                  {...getVideosRootProps()}
-                  className={`border border-dashed rounded p-2 text-center cursor-pointer transition-colors ${
-                    isVideosDragActive
-                      ? 'border-gray-400 bg-white/70'
-                      : 'border-gray-300 bg-white/50 hover:border-gray-400 hover:bg-white/60'
-                  }`}
-                >
-                  <input {...getVideosInputProps()} />
-                  <Video className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-                  <p className="text-xs text-black">Filmy</p>
-                  <p className="text-xs text-black/60">({videos.length}/3)</p>
+                <div>
+                  <label className="block text-sm font-semibold text-white/80 mb-0.5">
+                    Linia krwi *
+                  </label>
+                  <input
+                    type="text"
+                    {...register('pigeon.bloodline')}
+                    className="w-full px-2 py-1 text-lg font-semibold bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-white/50"
+                    placeholder="np. Van den Bulck"
+                  />
+                  {errors.pigeon?.bloodline && (
+                    <p className="text-red-400 text-sm mt-0.5">{errors.pigeon.bloodline.message}</p>
+                  )}
                 </div>
               </div>
 
-              {/* Miniaturki zdjęć gołębia */}
-              {pigeonImages.length > 0 && (
-                <div className="mt-2">
-                  <div className="space-y-1">
-                    {pigeonImages.map(file => (
-                      <div key={file.id} className="relative group flex items-center space-x-2">
-                        <div
-                          className="w-8 h-8 relative rounded overflow-hidden bg-gray-100 flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => openPreview(file.preview)}
-                          title="Kliknij aby powiększyć"
-                        >
-                          <Image
-                            src={file.preview}
-                            alt="Preview"
-                            width={100}
-                            height={100}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <span className="text-xs text-black truncate flex-1">{file.file.name}</span>
-                        <button
-                          onClick={() => removePigeonImage(file.id)}
-                          className="w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                          title="Usuń"
-                        >
-                          <X className="w-2 h-2" />
-                        </button>
-                      </div>
-                    ))}
+              <div className="grid grid-cols-3 gap-1.5 mb-1">
+                <div>
+                  <label className="block text-sm font-semibold text-white/80 mb-0.5">Płeć *</label>
+                  <select
+                    {...register('pigeon.sex')}
+                    className="w-full px-2 py-1.5 text-base bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                  >
+                    <option value="" className="bg-gray-800 text-white">
+                      Wybierz
+                    </option>
+                    <option value="male" className="bg-gray-800 text-white">
+                      Samiec
+                    </option>
+                    <option value="female" className="bg-gray-800 text-white">
+                      Samica
+                    </option>
+                  </select>
+                  {errors.pigeon?.sex && (
+                    <p className="text-red-400 text-sm mt-0.5">{errors.pigeon.sex.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-0.5">
+                    Kolor oczu
+                  </label>
+                  <select
+                    {...register('pigeon.eyeColor')}
+                    className="w-full px-2 py-1 text-sm bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                  >
+                    <option value="" className="bg-gray-800 text-white">
+                      Wybierz
+                    </option>
+                    <option value="pearl" className="bg-gray-800 text-white">
+                      Perłowy
+                    </option>
+                    <option value="bull" className="bg-gray-800 text-white">
+                      Byczy
+                    </option>
+                    <option value="dark" className="bg-gray-800 text-white">
+                      Ciemny
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-0.5">
+                    Kolor upierzenia
+                  </label>
+                  <select
+                    {...register('pigeon.featherColor')}
+                    className="w-full px-2 py-1 text-sm bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                  >
+                    <option value="" className="bg-gray-800 text-white">
+                      Wybierz
+                    </option>
+                    <option value="blue" className="bg-gray-800 text-white">
+                      Niebieska
+                    </option>
+                    <option value="blue_speckled" className="bg-gray-800 text-white">
+                      Niebieska nakrapiana
+                    </option>
+                    <option value="dark_speckled" className="bg-gray-800 text-white">
+                      Ciemna nakrapiana
+                    </option>
+                    <option value="dark" className="bg-gray-800 text-white">
+                      Ciemna
+                    </option>
+                    <option value="black" className="bg-gray-800 text-white">
+                      Czarna
+                    </option>
+                    <option value="red_speckled" className="bg-gray-800 text-white">
+                      Czerwona nakrapiana
+                    </option>
+                    <option value="red" className="bg-gray-800 text-white">
+                      Czerwona
+                    </option>
+                    <option value="dun" className="bg-gray-800 text-white">
+                      Płowa
+                    </option>
+                    <option value="white" className="bg-gray-800 text-white">
+                      Biała
+                    </option>
+                    <option value="pied" className="bg-gray-800 text-white">
+                      Szpakowata
+                    </option>
+                    <option value="blue_pied" className="bg-gray-800 text-white">
+                      Niebieska pstra
+                    </option>
+                    <option value="blue_speckled_pied" className="bg-gray-800 text-white">
+                      Niebieska nakrapiana pstra
+                    </option>
+                    <option value="dark_speckled_pied" className="bg-gray-800 text-white">
+                      Ciemna nakrapiana pstra
+                    </option>
+                    <option value="dark_pied" className="bg-gray-800 text-white">
+                      Ciemna pstra
+                    </option>
+                    <option value="black_pied" className="bg-gray-800 text-white">
+                      Czarna pstra
+                    </option>
+                    <option value="red_speckled_pied" className="bg-gray-800 text-white">
+                      Czerwona nakrapiana pstra
+                    </option>
+                    <option value="red_pied" className="bg-gray-800 text-white">
+                      Czerwona pstra
+                    </option>
+                    <option value="dun_pied" className="bg-gray-800 text-white">
+                      Płowa pstra
+                    </option>
+                    <option value="pied_pied" className="bg-gray-800 text-white">
+                      Szpakowata pstra
+                    </option>
+                    <option value="red_pied_mix" className="bg-gray-800 text-white">
+                      Czerwona szpakowata
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Charakterystyka - Sekcja rozwijana */}
+              <div className="mb-1 mt-1">
+                <h3 className="text-base font-semibold text-white/80 mb-1 border-b border-white/20 pb-0.5">
+                  Charakterystyka gołębia
+                </h3>
+
+                <div className="grid grid-cols-3 gap-1.5">
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-1">
+                      Kolor oczu
+                    </label>
+                    <select
+                      {...register('pigeon.eyeColor')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="orange_yellow" className="bg-gray-800 text-white">
+                        Pomarańczowy/żółty
+                      </option>
+                      <option value="dark_red" className="bg-gray-800 text-white">
+                        Ciemnoczerwony
+                      </option>
+                      <option value="pearl_glass" className="bg-gray-800 text-white">
+                        Perłowy ("glass")
+                      </option>
+                      <option value="dark" className="bg-gray-800 text-white">
+                        Ciemny
+                      </option>
+                      <option value="amber" className="bg-gray-800 text-white">
+                        Bursztynowy
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">
+                      Witalność
+                    </label>
+                    <select
+                      {...register('pigeon.vitality')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="weak" className="bg-gray-800 text-white">
+                        Słaby
+                      </option>
+                      <option value="average" className="bg-gray-800 text-white">
+                        Przeciętny
+                      </option>
+                      <option value="strong" className="bg-gray-800 text-white">
+                        Silny
+                      </option>
+                      <option value="very_strong" className="bg-gray-800 text-white">
+                        Bardzo silny
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">
+                      Długość
+                    </label>
+                    <select
+                      {...register('pigeon.length')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="short" className="bg-gray-800 text-white">
+                        Krótki
+                      </option>
+                      <option value="medium" className="bg-gray-800 text-white">
+                        Średni
+                      </option>
+                      <option value="long" className="bg-gray-800 text-white">
+                        Długi
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">
+                      Wytrzymałość
+                    </label>
+                    <select
+                      {...register('pigeon.endurance')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="weak" className="bg-gray-800 text-white">
+                        Słaby
+                      </option>
+                      <option value="average" className="bg-gray-800 text-white">
+                        Przeciętny
+                      </option>
+                      <option value="strong" className="bg-gray-800 text-white">
+                        Silny
+                      </option>
+                      <option value="very_strong" className="bg-gray-800 text-white">
+                        Bardzo silny
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">
+                      Siła widełek
+                    </label>
+                    <select
+                      {...register('pigeon.forkStrength')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="weak" className="bg-gray-800 text-white">
+                        Słaby
+                      </option>
+                      <option value="average" className="bg-gray-800 text-white">
+                        Przeciętny
+                      </option>
+                      <option value="strong" className="bg-gray-800 text-white">
+                        Silny
+                      </option>
+                      <option value="very_strong" className="bg-gray-800 text-white">
+                        Bardzo silny
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">
+                      Układ widełek
+                    </label>
+                    <select
+                      {...register('pigeon.forkAlignment')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="closed" className="bg-gray-800 text-white">
+                        Zamknięty
+                      </option>
+                      <option value="slightly_open" className="bg-gray-800 text-white">
+                        Lekko otwarty
+                      </option>
+                      <option value="open" className="bg-gray-800 text-white">
+                        Otwarty
+                      </option>
+                      <option value="very_open" className="bg-gray-800 text-white">
+                        Bardzo otwarty
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">
+                      Mięśnie
+                    </label>
+                    <select
+                      {...register('pigeon.muscles')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="soft" className="bg-gray-800 text-white">
+                        Miękki
+                      </option>
+                      <option value="flexible" className="bg-gray-800 text-white">
+                        Giętki
+                      </option>
+                      <option value="firm" className="bg-gray-800 text-white">
+                        Jędrny
+                      </option>
+                      <option value="hard" className="bg-gray-800 text-white">
+                        Twardy
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">Balans</label>
+                    <select
+                      {...register('pigeon.balance')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="poor" className="bg-gray-800 text-white">
+                        Słaby
+                      </option>
+                      <option value="average" className="bg-gray-800 text-white">
+                        Przeciętny
+                      </option>
+                      <option value="balanced" className="bg-gray-800 text-white">
+                        Zbalansowany
+                      </option>
+                      <option value="excellent" className="bg-gray-800 text-white">
+                        Doskonały
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white/70 mb-0.5">Plecy</label>
+                    <select
+                      {...register('pigeon.back')}
+                      className="w-full px-2 py-1 text-base bg-white/10 border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                    >
+                      <option value="" className="bg-gray-800 text-white">
+                        Wybierz
+                      </option>
+                      <option value="weak" className="bg-gray-800 text-white">
+                        Słaby
+                      </option>
+                      <option value="average" className="bg-gray-800 text-white">
+                        Przeciętny
+                      </option>
+                      <option value="strong" className="bg-gray-800 text-white">
+                        Silny
+                      </option>
+                      <option value="very_strong" className="bg-gray-800 text-white">
+                        Bardzo silny
+                      </option>
+                    </select>
                   </div>
                 </div>
+              </div>
+            </>
+          )}
+
+          {/* Cena */}
+          <div className="grid grid-cols-2 gap-1.5 mb-1 mt-1">
+            <div>
+              <div className="flex items-center space-x-2 mb-0.5">
+                <input
+                  type="checkbox"
+                  checked={hasStartingPrice}
+                  onChange={e => setHasStartingPrice(e.target.checked)}
+                  className="text-blue-600 focus:ring-blue-500"
+                  title="Zaznacz aby włączyć licytację"
+                />
+                <label className="text-sm font-medium text-white/70">Cena wywoławcza (zł)</label>
+              </div>
+              <input
+                type="number"
+                {...register('startingPrice', { valueAsNumber: true })}
+                disabled={!hasStartingPrice}
+                className={`w-full px-2 py-1 text-lg font-semibold border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white placeholder-white/50 ${
+                  !hasStartingPrice ? 'bg-white/5' : 'bg-white/10'
+                }`}
+              />
+              {errors.startingPrice && (
+                <p className="text-red-400 text-sm mt-1">{errors.startingPrice.message}</p>
               )}
             </div>
 
-            {/* Prawa kolumna - rodowód */}
             <div>
-              <h2 className="text-sm font-medium text-black mb-2">Rodowód *</h2>
-              {watchedCategory === 'Pigeon' && (
-                <div
-                  {...getPedigreeRootProps()}
-                  className={`border border-dashed rounded p-2 text-center cursor-pointer transition-colors ${
-                    isPedigreeDragActive
-                      ? 'border-gray-400 bg-white/70'
-                      : 'border-gray-300 bg-white/50 hover:border-gray-400 hover:bg-white/60'
-                  }`}
-                >
-                  <input {...getPedigreeInputProps()} />
-                  <FileText className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-                  <p className="text-xs text-black">Rodowód</p>
-                  <p className="text-xs text-black/60">({pedigreeFiles.length}/2)</p>
-                </div>
+              <div className="flex items-center space-x-2 mb-0.5">
+                <input
+                  type="checkbox"
+                  checked={hasBuyNowPrice}
+                  onChange={e => setHasBuyNowPrice(e.target.checked)}
+                  className="text-blue-600 focus:ring-blue-500"
+                  title="Zaznacz aby włączyć opcję Kup teraz"
+                />
+                <label className="text-sm font-medium text-white/70">Cena Kup teraz (zł)</label>
+              </div>
+              <input
+                type="number"
+                {...register('buyNowPrice', { valueAsNumber: true })}
+                disabled={!hasBuyNowPrice}
+                className={`w-full px-2 py-1 text-lg font-semibold border border-white/20 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white placeholder-white/50 ${
+                  !hasBuyNowPrice ? 'bg-white/5' : 'bg-white/10'
+                }`}
+              />
+              {errors.buyNowPrice && (
+                <p className="text-red-400 text-sm mt-1">{errors.buyNowPrice.message}</p>
               )}
+            </div>
+          </div>
 
-              {/* Miniaturki rodowodu */}
-              {pedigreeFiles.length > 0 && watchedCategory === 'Pigeon' && (
-                <div className="mt-2">
-                  <div className="space-y-1">
-                    {pedigreeFiles.map(file => (
-                      <div key={file.id} className="relative group flex items-center space-x-2">
-                        <div
-                          className={`w-8 h-8 relative rounded overflow-hidden bg-gray-100 flex-shrink-0 ${file.type === 'image' ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
-                          onClick={
-                            file.type === 'image' ? () => openPreview(file.preview) : undefined
-                          }
-                          title={file.type === 'image' ? 'Kliknij aby powiększyć' : undefined}
-                        >
-                          {file.type === 'image' ? (
+          {/* Czas trwania aukcji - usunięty, domyślnie 7 dni */}
+
+          {/* Upload plików */}
+          <div className="mb-1">
+            <h2 className="text-sm font-medium text-white/70 mb-1">Pliki *</h2>
+
+            <div className="grid grid-cols-2 gap-2">
+              {/* Lewa kolumna - zdjęcia i filmy */}
+              <div>
+                <h2 className="text-sm font-medium text-white/70 mb-1">Zdjęcia i filmy *</h2>
+                <div className="flex gap-1.5">
+                  {/* Zdjęcia gołębia */}
+                  <div
+                    {...getPigeonImagesRootProps()}
+                    className={`flex-1 border-2 border-dashed rounded-lg p-1.5 text-center cursor-pointer transition-all duration-200 ${
+                      isPigeonImagesDragActive
+                        ? 'border-blue-400 bg-blue-500/20'
+                        : 'border-white/20 bg-white/5 hover:border-blue-400 hover:bg-blue-500/10'
+                    }`}
+                  >
+                    <input {...getPigeonImagesInputProps()} />
+                    <LucideImage className="w-5 h-5 text-blue-400 mx-auto mb-1" />
+                    <p className="text-xs text-white/70 font-medium">Zdjęcia</p>
+                    <p className="text-xs text-white/50">({pigeonImages.length}/8)</p>
+                  </div>
+
+                  {/* Filmy */}
+                  <div
+                    {...getVideosRootProps()}
+                    className={`flex-1 border-2 border-dashed rounded-lg p-1.5 text-center cursor-pointer transition-all duration-200 ${
+                      isVideosDragActive
+                        ? 'border-blue-400 bg-blue-500/20'
+                        : 'border-white/20 bg-white/5 hover:border-blue-400 hover:bg-blue-500/10'
+                    }`}
+                  >
+                    <input {...getVideosInputProps()} />
+                    <Video className="w-5 h-5 text-blue-400 mx-auto mb-1" />
+                    <p className="text-xs text-white/70 font-medium">Filmy</p>
+                    <p className="text-xs text-white/50">({videos.length}/3)</p>
+                  </div>
+                </div>
+
+                {/* Miniaturki zdjęć gołębia */}
+                {pigeonImages.length > 0 && (
+                  <div className="mt-1">
+                    <div className="space-y-1">
+                      {pigeonImages.map(file => (
+                        <div key={file.id} className="relative group flex items-center space-x-2">
+                          <div
+                            className="w-8 h-8 relative rounded overflow-hidden bg-white/10 flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => openPreview(file.preview)}
+                            title="Kliknij aby powiększyć"
+                          >
                             <Image
                               src={file.preview}
                               alt="Preview"
@@ -839,41 +1062,102 @@ export default function CreateAuctionForm({
                               height={100}
                               className="w-full h-full object-cover"
                             />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-gray-500 text-xs">PDF</span>
-                            </div>
-                          )}
+                          </div>
+                          <span className="text-xs text-white/70 truncate flex-1">
+                            {file.file.name}
+                          </span>
+                          <button
+                            onClick={() => removePigeonImage(file.id)}
+                            className="w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                            title="Usuń"
+                          >
+                            <X className="w-2 h-2" />
+                          </button>
                         </div>
-                        <span className="text-xs text-black truncate flex-1">{file.file.name}</span>
-                        <button
-                          onClick={() => removePedigreeFile(file.id)}
-                          className="w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                          title="Usuń"
-                        >
-                          <X className="w-2 h-2" />
-                        </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
+                )}
+              </div>
 
-          {/* Podgląd plików */}
-          {videos.length > 0 && (
-            <div className="mt-3 space-y-2">
-              {videos.length > 0 && (
+              {/* Prawa kolumna - rodowód */}
+              <div>
+                <h2 className="text-sm font-medium text-white/70 mb-1">Rodowód *</h2>
+                {watchedCategory === 'Pigeon' && (
+                  <div
+                    {...getPedigreeRootProps()}
+                    className={`border-2 border-dashed rounded-lg p-1.5 text-center cursor-pointer transition-all duration-200 ${
+                      isPedigreeDragActive
+                        ? 'border-blue-400 bg-blue-500/20'
+                        : 'border-white/20 bg-white/5 hover:border-blue-400 hover:bg-blue-500/10'
+                    }`}
+                  >
+                    <input {...getPedigreeInputProps()} />
+                    <FileText className="w-5 h-5 text-blue-400 mx-auto mb-1" />
+                    <p className="text-xs text-white/70 font-medium">Rodowód</p>
+                    <p className="text-xs text-white/50">({pedigreeFiles.length}/2)</p>
+                  </div>
+                )}
+
+                {/* Miniaturki rodowodu */}
+                {pedigreeFiles.length > 0 && watchedCategory === 'Pigeon' && (
+                  <div className="mt-1">
+                    <div className="space-y-1">
+                      {pedigreeFiles.map(file => (
+                        <div key={file.id} className="relative group flex items-center space-x-2">
+                          <div
+                            className={`w-8 h-8 relative rounded overflow-hidden bg-white/10 flex-shrink-0 ${file.type === 'image' ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                            onClick={
+                              file.type === 'image' ? () => openPreview(file.preview) : undefined
+                            }
+                            title={file.type === 'image' ? 'Kliknij aby powiększyć' : undefined}
+                          >
+                            {file.type === 'image' ? (
+                              <Image
+                                src={file.preview}
+                                alt="Preview"
+                                width={100}
+                                height={100}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <span className="text-white/50 text-xs">PDF</span>
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-xs text-white/70 truncate flex-1">
+                            {file.file.name}
+                          </span>
+                          <button
+                            onClick={() => removePedigreeFile(file.id)}
+                            className="w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                            title="Usuń"
+                          >
+                            <X className="w-2 h-2" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Podgląd plików */}
+            {videos.length > 0 && (
+              <div className="mt-1 space-y-1">
                 <div>
-                  <p className="text-xs text-black/60 mb-1">Filmy:</p>
+                  <p className="text-xs text-white/50 mb-1">Filmy:</p>
                   <div className="space-y-1">
                     {videos.map(file => (
                       <div key={file.id} className="relative group flex items-center space-x-2">
-                        <div className="w-8 h-8 relative rounded overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
-                          <Video className="w-4 h-4 text-gray-500" />
+                        <div className="w-8 h-8 relative rounded overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0">
+                          <Video className="w-4 h-4 text-white/50" />
                         </div>
-                        <span className="text-xs text-black truncate flex-1">{file.file.name}</span>
+                        <span className="text-xs text-white/70 truncate flex-1">
+                          {file.file.name}
+                        </span>
                         <button
                           onClick={() => removeVideo(file.id)}
                           className="w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
@@ -885,48 +1169,48 @@ export default function CreateAuctionForm({
                     ))}
                   </div>
                 </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Submit button */}
-        <div className="flex justify-end mt-8 pt-6 border-t border-white/20">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg font-medium"
-          >
-            {isSubmitting ? 'Publikuję...' : 'Opublikuj aukcję'}
-          </button>
-        </div>
-      </form>
-
-      {/* Modal z podglądem obrazu */}
-      {previewImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-          onClick={closePreview}
-        >
-          <div className="relative max-w-4xl max-h-4xl p-4">
-            <button
-              onClick={closePreview}
-              className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-10"
-              title="Zamknij"
-            >
-              <X className="w-4 h-4" />
-            </button>
-            <Image
-              src={previewImage}
-              alt="Podgląd"
-              width={800}
-              height={600}
-              className="max-w-full max-h-full object-contain rounded-lg"
-              onClick={e => e.stopPropagation()}
-            />
+              </div>
+            )}
           </div>
-        </div>
-      )}
+
+          {/* Submit button */}
+          <div className="flex justify-end mt-2 pt-2 border-t border-white/10">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+            >
+              {isSubmitting ? 'Publikuję...' : 'Opublikuj aukcję'}
+            </button>
+          </div>
+        </form>
+
+        {/* Modal z podglądem obrazu */}
+        {previewImage && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+            onClick={closePreview}
+          >
+            <div className="relative max-w-4xl max-h-4xl p-4">
+              <button
+                onClick={closePreview}
+                className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-10"
+                title="Zamknij"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <Image
+                src={previewImage}
+                alt="Podgląd"
+                width={800}
+                height={600}
+                className="max-w-full max-h-full object-contain rounded-lg"
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+          </div>
+        )}
+      </UnifiedCard>
     </div>
   );
 }

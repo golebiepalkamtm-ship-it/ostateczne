@@ -1,7 +1,8 @@
 export const runtime = 'nodejs';
+import { handleApiError } from '@/lib/error-handling';
+import { getAdminAuth } from '@/lib/firebase-admin';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
-import { getAdminAuth } from '@/lib/firebase-admin';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -60,7 +61,6 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Błąd weryfikacji email:', error);
-    return NextResponse.json({ error: 'Wystąpił błąd podczas weryfikacji email' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'auth/verify-email' });
   }
 }

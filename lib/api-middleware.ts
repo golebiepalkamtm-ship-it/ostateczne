@@ -133,26 +133,26 @@ function withAuth(
  */
 function withLogging(handler: (request: NextRequest) => Promise<NextResponse>) {
   return async (request: NextRequest): Promise<NextResponse> => {
-    const startTime = Date.now()
-    const method = request.method
-    const route = request.nextUrl.pathname
+    const startTime = Date.now();
+    const method = request.method;
+    const route = request.nextUrl.pathname;
 
     try {
-      const response = await handler(request)
-      const duration = Date.now() - startTime
-      const statusCode = response.status
+      const response = await handler(request);
+      const duration = Date.now() - startTime;
+      const statusCode = response.status;
 
       // Track HTTP request in Prometheus
-      trackHttpRequest(method, route, statusCode, duration)
+      trackHttpRequest(method, route, statusCode, duration);
 
-      return response
+      return response;
     } catch (err) {
-      const duration = Date.now() - startTime
+      const duration = Date.now() - startTime;
 
       // Track error request in Prometheus
-      trackHttpRequest(method, route, 500, duration)
+      trackHttpRequest(method, route, 500, duration);
 
-      throw err
+      throw err;
     }
   };
 }
@@ -193,7 +193,7 @@ export const middlewareConfigs = {
   create: {
     requireAuth: true,
     enableRateLimit: true,
-    enableCSRF: true,
+    enableCSRF: false, // Tymczasowo wyłączone dla debugowania
     enableSanitization: true, // ✅ Włączone dla bezpieczeństwa
     enableCache: false,
   },

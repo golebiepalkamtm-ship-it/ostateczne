@@ -118,7 +118,7 @@ export function PressPage() {
             <UnifiedCard
               variant="glass"
               glow={false}
-              className="p-8 sm:p-12 lg:p-16 xl:p-20 2xl:p-24 rounded-2xl border-2 border-white bg-white/25 backdrop-blur-xl shadow-[0_0_14px_3px_rgba(255,255,255,0.55)] hover:shadow-[0_0_20px_5px_rgba(255,255,255,0.8)] transition-all duration-300"
+              className="p-8 sm:p-12 lg:p-16 xl:p-20 2xl:p-24"
             >
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 2xl:gap-20 items-stretch w-full">
                 {/* Okładka DVD (dopasowana do proporcji pudełka DVD) */}
@@ -215,7 +215,7 @@ export function PressPage() {
                       setIsNewspaperOpen(false);
                       setCurrentPageIndex(0);
                     }}
-                    className="w-full h-full cursor-pointer rounded-2xl border-2 border-white bg-white/25 backdrop-blur-xl shadow-[0_0_14px_3px_rgba(255,255,255,0.55)] overflow-hidden hover:shadow-[0_0_20px_5px_rgba(255,255,255,0.8)] transition-all duration-300 relative"
+                    className="w-full h-full cursor-pointer overflow-hidden relative"
                   >
                     <SmartImage
                       src={`/press/articles/older/${folder.id}/${folder.cover}`}

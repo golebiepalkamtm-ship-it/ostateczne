@@ -44,11 +44,16 @@ export async function requirePhoneVerification(request: NextRequest) {
   try {
     const user = await prisma.user.findFirst({
       where: { firebaseUid: decodedToken.uid },
-      select: { isPhoneVerified: true, phoneNumber: true },
+      select: { isPhoneVerified: true, phoneNumber: true, role: true },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
+    }
+
+    // Admin nie wymaga weryfikacji telefonu
+    if (user.role === 'ADMIN') {
+      return null;
     }
 
     if (!user.isPhoneVerified) {

@@ -62,7 +62,7 @@ export default function PasswordResetForm() {
           transition={{ duration: 0.8 }}
           className="w-full max-w-md"
         >
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl text-center">
+          <div className="card-glass p-8 shadow-2xl text-center">
             <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-8 h-8 text-green-400" />
             </div>
@@ -110,7 +110,7 @@ export default function PasswordResetForm() {
         transition={{ duration: 0.8 }}
         className="w-full max-w-md"
       >
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-2xl">
+        <div className="card-glass p-8 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail className="w-8 h-8 text-blue-400" />
@@ -137,6 +137,7 @@ export default function PasswordResetForm() {
                   setEmail(e.target.value);
                   setError('');
                 }}
+                autoComplete="email"
                 placeholder="Twój adres email"
                 className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />

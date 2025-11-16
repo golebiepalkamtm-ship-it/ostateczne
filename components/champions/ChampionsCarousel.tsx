@@ -118,9 +118,40 @@ export function ChampionsCarousel({
 
   return (
     <div className="relative w-full max-w-[1600px] mx-auto px-4">
+      {/* Przycisk Rodowód nad karuzelą */}
+      <div className="flex justify-center mb-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const centerImage = visibleImages.find(v => v.position === 0);
+            const currentChampion = centerImage
+              ? champions[centerImage.championIndex]
+              : champions[0];
+            
+            console.log('=== RODOWÓD CLICKED ===');
+            console.log('Current champion:', currentChampion);
+            console.log('Pedigree image:', currentChampion?.pedigreeImage);
+            
+            // Użyj pedigreeImage z championa (z danych API)
+            const pedigreeImage = currentChampion?.pedigreeImage;
+            
+            if (pedigreeImage) {
+              console.log('Calling onPedigreeClick with:', pedigreeImage);
+              onPedigreeClick(pedigreeImage);
+            } else {
+              console.warn('Brak rodowodu dla championa:', currentChampion?.id);
+              console.warn('Champion data:', currentChampion);
+            }
+          }}
+          className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-7 py-3.5 rounded-lg text-lg sm:text-xl font-bold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border-2 border-white/20"
+        >
+          RODOWÓD
+        </button>
+      </div>
+
       {/* Carousel Container */}
       <div
-        className="relative h-[580px] sm:h-[660px] overflow-hidden pb-8"
+        className="relative h-[480px] sm:h-[560px] overflow-hidden pb-8"
         style={{ perspective: '1200px' }}
       >
         <AnimatePresence>
@@ -150,7 +181,7 @@ export function ChampionsCarousel({
             >
               {/* Champion Card */}
               <motion.div
-                className={`relative bg-white/10 backdrop-blur-sm rounded-2xl border-2 border-white overflow-hidden shadow-2xl cursor-pointer ${
+                className={`relative overflow-hidden shadow-2xl cursor-pointer ${
                   position === 0
                     ? 'w-[612px] h-[460px]'
                     : position === -1 || position === 1
@@ -189,26 +220,6 @@ export function ChampionsCarousel({
             </motion.div>
           ))}
         </AnimatePresence>
-
-        {/* Dots Indicator removed */}
-
-        {/* Przycisk Rodowód pod karuzelą */}
-        <div className="mt-[500px] flex justify-center">
-          <button
-            onClick={() => {
-              const centerImage = visibleImages.find(v => v.position === 0);
-              const currentChampion = centerImage
-                ? champions[centerImage.championIndex]
-                : champions[0];
-              const pedigreeImage =
-                currentChampion?.pedigreeImage || '/champions/1/pedigree/DV-02906-11-98.1.jpg';
-              onPedigreeClick(pedigreeImage);
-            }}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 border-2 border-white/20"
-          >
-            RODOWÓD
-          </button>
-        </div>
       </div>
 
       {/* Navigation Arrows */}

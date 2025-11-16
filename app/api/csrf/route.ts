@@ -1,7 +1,8 @@
+import { handleApiError } from '@/lib/error-handling';
 import { generateCSRFToken, setCSRFCookie } from '@/lib/csrf';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const token = generateCSRFToken();
     const response = NextResponse.json({ csrfToken: token });
@@ -10,10 +11,6 @@ export async function GET() {
 
     return response;
   } catch (error) {
-    console.error('Błąd podczas generowania CSRF token:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas generowania CSRF token' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'csrf' });
   }
 }

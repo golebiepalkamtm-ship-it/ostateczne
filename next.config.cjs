@@ -218,16 +218,61 @@ finalConfig.webpack = (config, options) => {
 
   // --- POCZĄTEK NASZYCH MODYFIKACJI ---
 
-  // 1. Ignoruj ostrzeżenia o krytycznych zależnościach (Sentry, Prisma, OpenTelemetry)
+  // 1. W development - zignoruj moduły instrumentation używając IgnorePlugin
+  // To eliminuje webpack warnings poprzez całkowite pominięcie tych modułów
+  if (options.dev && options.isServer) {
+    const webpack = require('webpack');
+    
+    // Ignoruj moduły instrumentation - całkowicie pomija ich kompilację
+    config.plugins = [
+      ...(config.plugins || []),
+      // Ignoruj Prisma instrumentation i jego zależności
+      new webpack.IgnorePlugin({
+        resourceRegExp: /@prisma\/instrumentation/,
+      }),
+      // Ignoruj require-in-the-middle
+      new webpack.IgnorePlugin({
+        resourceRegExp: /require-in-the-middle/,
+      }),
+      // Ignoruj OpenTelemetry instrumentation
+      new webpack.IgnorePlugin({
+        resourceRegExp: /@opentelemetry\/instrumentation/,
+      }),
+      // Ignoruj Sentry integrations które używają instrumentation (prisma, postgresjs)
+      new webpack.IgnorePlugin({
+        resourceRegExp: /@sentry\/node\/.*\/integrations\/tracing\/(prisma|postgresjs)/,
+      }),
+    ];
+
+    // Dodatkowo zastąp aliasami jako fallback
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      // Zastąp cały sentry-helpers stubem w development (eliminuje wszystkie warnings)
+      '@/lib/sentry-helpers': path.resolve(__dirname, 'lib/stubs/sentry-helpers-stub.ts'),
+      // Zastąp Sentry stubem w development (eliminuje wszystkie warnings z instrumentation)
+      '@sentry/nextjs': path.resolve(__dirname, 'lib/stubs/sentry-stub.ts'),
+      '@sentry/node': path.resolve(__dirname, 'lib/stubs/sentry-stub.ts'),
+      // Zastąp Prisma instrumentation pustym stubem w development
+      '@prisma/instrumentation': path.resolve(__dirname, 'lib/stubs/prisma-instrumentation-stub.ts'),
+      // Zastąp require-in-the-middle pustym stubem
+      'require-in-the-middle': path.resolve(__dirname, 'lib/stubs/require-in-the-middle-stub.ts'),
+      // Zastąp OpenTelemetry instrumentation pustym stubem
+      '@opentelemetry/instrumentation': path.resolve(__dirname, 'lib/stubs/opentelemetry-instrumentation-stub.ts'),
+    };
+  }
+
+  // 2. Ignoruj pozostałe ostrzeżenia (tylko jako fallback)
   config.ignoreWarnings = [
     ...(config.ignoreWarnings || []),
+    // Wycisz wszystkie ostrzeżenia o critical dependencies z OpenTelemetry/Prisma instrumentation
     { module: /@prisma\/instrumentation/ },
     { module: /require-in-the-middle/ },
     { module: /@opentelemetry\/instrumentation/ },
     { message: /Critical dependency: the request of a dependency is an expression/ },
+    { message: /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/ },
   ];
 
-  // 2. Napraw błędy Watchpack na Windows przez ignorowanie plików systemowych
+  // 3. Napraw błędy Watchpack na Windows przez ignorowanie plików systemowych
   if (options.dev) {
     config.watchOptions = {
       ...config.watchOptions,
@@ -243,7 +288,7 @@ finalConfig.webpack = (config, options) => {
     };
   }
 
-  // 3. Zachowaj pozostałe, ważne części oryginalnej konfiguracji webpack
+  // 4. Zachowaj pozostałe, ważne części oryginalnej konfiguracji webpack
   if (!options.isServer) {
     config.resolve.fallback = {
       ...config.resolve.fallback,

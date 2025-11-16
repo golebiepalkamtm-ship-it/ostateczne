@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { apiRateLimit } from '@/lib/rate-limit';
 import { scanChampionFolders } from '@/utils/getChampionImages';
 import { NextRequest, NextResponse } from 'next/server';
@@ -52,7 +53,13 @@ export async function GET(request: NextRequest) {
       name: champion.name,
       ringNumber: champion.ringNumber,
       bloodline: champion.bloodline,
-      images: champion.images,
+      // Konwertuj images z obiektów { url, alt } na stringi (url)
+      images: Array.isArray(champion.images)
+        ? champion.images.map((img: { url?: string; alt?: string } | string) =>
+            typeof img === 'string' ? img : img?.url || ''
+          )
+        : [],
+      // Zwróć pedigree bez zmian (już zawiera images jako tablicę stringów)
       pedigree: champion.pedigree,
     }));
 
@@ -66,10 +73,6 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Błąd podczas pobierania danych championów:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas pobierania danych championów' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'champions/images' });
   }
 }

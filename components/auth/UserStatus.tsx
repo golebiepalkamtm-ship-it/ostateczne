@@ -1,31 +1,48 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, Mail, Phone, Shield, User } from 'lucide-react';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { LogOut, Mail, Phone, Shield, Settings, User } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState } from 'react';
 
+const navItemVariants = {
+  hidden: { opacity: 0, x: -50, rotate: -90 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    rotate: 0,
+    transition: { duration: 1.5, ease: [0.4, 0, 0.2, 1] as const },
+  },
+};
+
 export function UserStatus() {
   const { user, loading, signOut } = useAuth();
+  const { isAdmin } = useAdminAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   // console.log('UserStatus render:', { user: user?.email, loading })
 
   // Usuń długotrwały loader - jeśli loading trwa, pokaż po prostu ikonę logowania
   if (loading) {
     return (
-      <Link href="/auth/register" className="glass-nav-button" title="Zarejestruj się">
-        <User className="relative z-10 w-8 h-8" />
-        <span className="relative z-10 text-sm">Zarejestruj się</span>
-      </Link>
+      <motion.div variants={navItemVariants} initial="hidden" animate="visible">
+        <Link href="/auth/register" className="glass-nav-button" title="Zarejestruj się">
+          <User className="relative z-10 w-8 h-8" />
+          <span className="relative z-10 text-sm">Zarejestruj się</span>
+        </Link>
+      </motion.div>
     );
   }
 
   if (!user) {
     return (
-      <Link href="/auth/register" className="glass-nav-button" title="Zarejestruj się">
-        <User className="relative z-10 w-8 h-8" />
-        <span className="relative z-10 text-sm">Zarejestruj się</span>
-      </Link>
+      <motion.div variants={navItemVariants} initial="hidden" animate="visible">
+        <Link href="/auth/register" className="glass-nav-button" title="Zarejestruj się">
+          <User className="relative z-10 w-8 h-8" />
+          <span className="relative z-10 text-sm">Zarejestruj się</span>
+        </Link>
+      </motion.div>
     );
   }
 
@@ -104,14 +121,26 @@ export function UserStatus() {
             {/* Akcje */}
             <div className="space-y-2">
               {user?.emailVerified ? (
-                <Link
-                  href="/dashboard"
-                  className="flex items-center gap-3 w-full px-3 py-2 text-white hover:bg-white/10 rounded-lg transition-all duration-300"
-                  onClick={() => setShowUserMenu(false)}
-                >
-                  <User className="w-4 h-4" />
-                  <span>Panel Użytkownika</span>
-                </Link>
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-3 w-full px-3 py-2 text-white hover:bg-white/10 rounded-lg transition-all duration-300"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Panel Użytkownika</span>
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin/dashboard"
+                      className="flex items-center gap-3 w-full px-3 py-2 text-white hover:bg-red-500/20 rounded-lg transition-all duration-300 border border-red-500/30"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <Settings className="w-4 h-4 text-red-400" />
+                      <span className="text-red-400 font-semibold">Panel Administratora</span>
+                    </Link>
+                  )}
+                </>
               ) : (
                 <div className="p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
                   <div className="flex items-center gap-2 text-yellow-300 text-sm mb-2">

@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -58,7 +59,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ users });
   } catch (error) {
-    console.error('Error searching users:', error);
-    return NextResponse.json({ error: 'Nie udało się wyszukać użytkowników' }, { status: 500 });
+    return handleApiError(error, request, { endpoint: 'users/search' });
   }
 }

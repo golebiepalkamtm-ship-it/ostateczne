@@ -1,3 +1,4 @@
+import { AppErrors, handleApiError } from '@/lib/error-handling';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { prisma } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
@@ -22,47 +23,83 @@ const updateProfileSchema = z.object({
     .min(2, 'Miasto musi mieć co najmniej 2 znaki')
     .max(50, 'Miasto nie może być dłuższe niż 50 znaków'),
   postalCode: z.string().regex(/^\d{2}-\d{3}$/, 'Kod pocztowy musi być w formacie XX-XXX'),
-  phoneNumber: z.string().regex(/^\+48\d{9}$/, 'Numer telefonu musi być w formacie +48XXXXXXXXX'),
+  phoneNumber: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      val => !val || val === '' || val === null || /^\+\d{1,4}\s?\d{3,}/.test(val),
+      'Numer telefonu musi być w formacie międzynarodowym (np. +48 123 456 789)'
+    ),
 });
 
 // GET - Pobierz dane profilu użytkownika
 export async function GET(request: NextRequest) {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔵 GET /api/profile - rozpoczęcie');
+    }
+
     // Rate limiting
     const rateLimitResponse = apiRateLimit(request);
     if (rateLimitResponse) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔴 Rate limit exceeded');
+      }
       return rateLimitResponse;
     }
 
     // Sprawdź autoryzację Firebase
     const authResult = await requireFirebaseAuth(request);
-    if (authResult instanceof Response) {
+    if (authResult instanceof NextResponse) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔴 Auth failed');
+      }
       return authResult;
     }
     const { decodedToken } = authResult;
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Auth successful, user:', decodedToken.uid);
+    }
+
     // Pobierz dane użytkownika
-    const user = await prisma.user.findFirst({
-      where: { firebaseUid: decodedToken.uid },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        address: true,
-        city: true,
-        postalCode: true,
-        phoneNumber: true,
-        isPhoneVerified: true,
-        isProfileVerified: true,
-        isActive: true,
-        role: true,
-        createdAt: true,
-      },
-    });
+    let user;
+    try {
+      user = await prisma.user.findFirst({
+        where: { firebaseUid: decodedToken.uid },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          address: true,
+          city: true,
+          postalCode: true,
+          phoneNumber: true,
+          isPhoneVerified: true,
+          isProfileVerified: true,
+          isActive: true,
+          role: true,
+          createdAt: true,
+        },
+      });
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Prisma findFirst error:', error);
+      }
+      throw error;
+    }
 
     if (!user) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔴 User not found');
+      }
       return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ User found, returning data');
     }
 
     return NextResponse.json({
@@ -72,33 +109,67 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Błąd podczas pobierania profilu:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas pobierania profilu' },
-      { status: 500 }
-    );
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ GET /api/profile error:', error);
+      console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error);
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
+      if (error instanceof Error && error.stack) {
+        console.error('Error stack:', error.stack);
+      }
+    }
+    return handleApiError(error, request, { endpoint: 'profile', method: 'GET' });
   }
 }
 
 // PATCH - Aktualizuj dane profilu użytkownika
 export async function PATCH(request: NextRequest) {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔵 PATCH /api/profile - rozpoczęcie');
+    }
+
     // Rate limiting
     const rateLimitResponse = apiRateLimit(request);
     if (rateLimitResponse) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔴 Rate limit exceeded');
+      }
       return rateLimitResponse;
     }
 
     // Sprawdź autoryzację Firebase
     const authResult = await requireFirebaseAuth(request);
-    if (authResult instanceof Response) {
+    if (authResult instanceof NextResponse) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔴 Auth failed');
+      }
       return authResult;
     }
     const { decodedToken } = authResult;
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Auth successful, user:', decodedToken.uid);
+    }
 
     // Parsuj i waliduj dane
-    const body = await request.json();
-    const validatedData = updateProfileSchema.parse(body);
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return handleApiError(AppErrors.validation('Nieprawidłowy format JSON'), request, { endpoint: 'profile', method: 'PATCH' });
+    }
+
+    let validatedData;
+    try {
+      validatedData = updateProfileSchema.parse(body);
+    } catch (error) {
+      // Loguj szczegóły błędu walidacji w development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Validation error:', error);
+        console.error('Body received:', JSON.stringify(body, null, 2));
+      }
+      return handleApiError(error, request, { endpoint: 'profile', method: 'PATCH', body });
+    }
 
     // Sprawdź czy użytkownik istnieje
     const existingUser = await prisma.user.findFirst({
@@ -110,7 +181,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Jeśli numer telefonu się zmienił, resetuj weryfikację
-    const phoneChanged = existingUser.phoneNumber !== validatedData.phoneNumber;
+    const phoneChanged = existingUser.phoneNumber !== (validatedData.phoneNumber || null);
 
     // Sprawdź czy profil jest kompletny (wszystkie wymagane pola uzupełnione)
     const isProfileComplete =
@@ -127,7 +198,7 @@ export async function PATCH(request: NextRequest) {
       address: string;
       city: string;
       postalCode: string;
-      phoneNumber: string;
+      phoneNumber?: string | null;
       isPhoneVerified?: boolean;
       phoneVerificationCode?: null;
       phoneVerificationExpires?: null;
@@ -138,7 +209,9 @@ export async function PATCH(request: NextRequest) {
       address: validatedData.address,
       city: validatedData.city,
       postalCode: validatedData.postalCode,
-      phoneNumber: validatedData.phoneNumber,
+      ...(validatedData.phoneNumber && typeof validatedData.phoneNumber === 'string' && validatedData.phoneNumber.trim() !== '' 
+        ? { phoneNumber: validatedData.phoneNumber.trim() } 
+        : { phoneNumber: null }),
     };
 
     if (phoneChanged) {
@@ -156,25 +229,39 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Aktualizuj profil użytkownika
-    const updatedUser = await prisma.user.update({
-      where: { id: existingUser.id },
-      data: updateData,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        address: true,
-        city: true,
-        postalCode: true,
-        phoneNumber: true,
-        isPhoneVerified: true,
-        isProfileVerified: true,
-        isActive: true,
-        role: true,
-        updatedAt: true,
-      },
-    });
+    let updatedUser;
+    try {
+      updatedUser = await prisma.user.update({
+        where: { id: existingUser.id },
+        data: updateData,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          address: true,
+          city: true,
+          postalCode: true,
+          phoneNumber: true,
+          isPhoneVerified: true,
+          isProfileVerified: true,
+          isActive: true,
+          role: true,
+          updatedAt: true,
+        },
+      });
+    } catch (error) {
+      // Loguj szczegóły błędu Prisma w development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Prisma update error:', error);
+        console.error('Update data:', JSON.stringify(updateData, null, 2));
+      }
+      throw error; // Rzuć dalej, aby został obsłużony przez handleApiError
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Profile updated successfully');
+    }
 
     return NextResponse.json({
       message: 'Profil został zaktualizowany pomyślnie',
@@ -185,23 +272,14 @@ export async function PATCH(request: NextRequest) {
       phoneVerificationReset: phoneChanged,
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: 'Błędne dane',
-          details: error.issues.map(err => ({
-            field: err.path.join('.'),
-            message: err.message,
-          })),
-        },
-        { status: 400 }
-      );
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ PATCH /api/profile error:', error);
+      console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error);
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
+      if (error instanceof Error && error.stack) {
+        console.error('Error stack:', error.stack);
+      }
     }
-
-    console.error('Błąd podczas aktualizacji profilu:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas aktualizacji profilu' },
-      { status: 500 }
-    );
+    return handleApiError(error, request, { endpoint: 'profile', method: 'PATCH' });
   }
 }
