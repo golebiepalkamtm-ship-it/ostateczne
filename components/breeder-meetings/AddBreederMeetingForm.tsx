@@ -7,6 +7,7 @@ import { AlertCircle, Camera, CheckCircle, Upload, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function AddBreederMeetingForm() {
   const { user, loading } = useAuth();
@@ -60,18 +61,30 @@ export default function AddBreederMeetingForm() {
         });
         setPreviewImages([]);
 
+        toast.success('Spotkanie zostało dodane pomyślnie!', {
+          duration: 3000,
+        });
+
         // Przekieruj po 2 sekundach
         setTimeout(() => {
           router.push('/breeder-meetings');
         }, 2000);
       } else {
         const errorData = await response.json();
+        const errorMsg = errorData.error || 'Wystąpił błąd podczas dodawania spotkania';
         setSubmitStatus('error');
-        setErrorMessage(errorData.error || 'Wystąpił błąd podczas dodawania spotkania');
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg, {
+          duration: 5000,
+        });
       }
-    } catch {
+    } catch (error) {
+      const errorMsg = 'Wystąpił błąd podczas wysyłania formularza';
       setSubmitStatus('error');
-      setErrorMessage('Wystąpił błąd podczas wysyłania formularza');
+      setErrorMessage(errorMsg);
+      toast.error(errorMsg, {
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting(false);
     }

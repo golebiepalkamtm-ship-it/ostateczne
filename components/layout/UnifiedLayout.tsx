@@ -68,8 +68,9 @@ export function UnifiedLayout({
               alt="Tło gołębnika Pałka MTM"
               fill
               priority
-              className="object-cover object-top"
+              className="object-cover object-center"
               sizes="100vw"
+              quality={90}
             />
           </div>
           {/* Szara nakładka na tło */}

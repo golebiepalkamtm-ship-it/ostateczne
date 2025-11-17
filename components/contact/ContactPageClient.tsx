@@ -6,8 +6,57 @@ import { UnifiedButton } from '@/components/ui/UnifiedButton';
 import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone } from 'lucide-react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function ContactPageClient() {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast.success('Wiadomość została wysłana pomyślnie!', {
+          duration: 4000,
+        });
+        setFormData({
+          fullName: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Nie udało się wysłać wiadomości', {
+          duration: 5000,
+        });
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Wystąpił błąd podczas wysyłania wiadomości', {
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       {/* Hero Section */}
@@ -124,7 +173,7 @@ export default function ContactPageClient() {
                 Napisz do nas
               </Text3D>
 
-              <form className="max-w-2xl mx-auto">
+              <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label
@@ -136,9 +185,12 @@ export default function ContactPageClient() {
                     <input
                       id="fullName"
                       type="text"
+                      value={formData.fullName}
+                      onChange={e => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                       className="w-full px-4 py-3 glass-morphism rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all duration-300"
                       placeholder="Twoje imię i nazwisko"
                       aria-describedby="fullName-description"
+                      required
                     />
                     <div id="fullName-description" className="sr-only">
                       Wprowadź swoje imię i nazwisko
@@ -151,9 +203,12 @@ export default function ContactPageClient() {
                     <input
                       id="email"
                       type="email"
+                      value={formData.email}
+                      onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       className="w-full px-4 py-3 glass-morphism rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all duration-300"
                       placeholder="twoj@email.pl"
                       aria-describedby="email-description"
+                      required
                     />
                     <div id="email-description" className="sr-only">
                       Wprowadź swój adres email
@@ -168,9 +223,12 @@ export default function ContactPageClient() {
                   <input
                     id="subject"
                     type="text"
+                    value={formData.subject}
+                    onChange={e => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                     className="w-full px-4 py-3 glass-morphism rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
                     placeholder="Temat wiadomości"
                     aria-describedby="subject-description"
+                    required
                   />
                   <div id="subject-description" className="sr-only">
                     Wprowadź temat wiadomości
@@ -184,9 +242,12 @@ export default function ContactPageClient() {
                   <textarea
                     id="message"
                     rows={6}
+                    value={formData.message}
+                    onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     className="w-full px-4 py-3 glass-morphism rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 resize-none"
                     placeholder="Napisz swoją wiadomość..."
                     aria-describedby="message-description"
+                    required
                   ></textarea>
                   <div id="message-description" className="sr-only">
                     Wprowadź treść wiadomości
@@ -195,13 +256,15 @@ export default function ContactPageClient() {
 
                 <div className="text-center">
                   <UnifiedButton
+                    type="submit"
                     variant="primary"
                     size="lg"
                     intensity="high"
                     glow={false}
                     className="px-12"
+                    disabled={isSubmitting}
                   >
-                    Wyślij wiadomość
+                    {isSubmitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
                   </UnifiedButton>
                 </div>
               </form>

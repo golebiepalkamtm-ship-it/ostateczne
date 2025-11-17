@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle, MapPin, Phone, Save, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface User {
   id: string;
@@ -48,7 +49,9 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
         setLoading(true);
 
         if (!firebaseUser) {
-          setMessage({ type: 'error', text: 'Brak autoryzacji' });
+          const errorMsg = 'Brak autoryzacji';
+          setMessage({ type: 'error', text: errorMsg });
+          toast.error(errorMsg, { duration: 3000 });
           return;
         }
 
@@ -63,11 +66,15 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           const data = await response.json();
           setUser(data.user);
         } else {
-          setMessage({ type: 'error', text: 'Błąd podczas ładowania profilu' });
+          const errorMsg = 'Błąd podczas ładowania profilu';
+          setMessage({ type: 'error', text: errorMsg });
+          toast.error(errorMsg, { duration: 4000 });
         }
       } catch (error) {
         console.error('Błąd podczas ładowania profilu:', error);
-        setMessage({ type: 'error', text: 'Wystąpił błąd podczas ładowania profilu' });
+        const errorMsg = 'Wystąpił błąd podczas ładowania profilu';
+        setMessage({ type: 'error', text: errorMsg });
+        toast.error(errorMsg, { duration: 4000 });
       } finally {
         setLoading(false);
       }
@@ -163,11 +170,15 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
 
       if (response.ok) {
         setUser(data.user);
+        const successMsg = data.phoneVerificationReset
+          ? 'Profil zaktualizowany. Numer telefonu wymaga ponownej weryfikacji.'
+          : 'Profil został zaktualizowany pomyślnie';
         setMessage({
           type: 'success',
-          text: data.phoneVerificationReset
-            ? 'Profil zaktualizowany. Numer telefonu wymaga ponownej weryfikacji.'
-            : 'Profil został zaktualizowany pomyślnie',
+          text: successMsg,
+        });
+        toast.success(successMsg, {
+          duration: data.phoneVerificationReset ? 5000 : 3000,
         });
       } else {
         if (data.details) {
@@ -178,11 +189,15 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           });
           setErrors(serverErrors);
         }
-        setMessage({ type: 'error', text: data.error || 'Błąd podczas aktualizacji profilu' });
+        const errorMsg = data.error || 'Błąd podczas aktualizacji profilu';
+        setMessage({ type: 'error', text: errorMsg });
+        toast.error(errorMsg, { duration: 5000 });
       }
     } catch (error) {
       console.error('Błąd podczas zapisywania profilu:', error);
-      setMessage({ type: 'error', text: 'Wystąpił błąd podczas zapisywania profilu' });
+      const errorMsg = 'Wystąpił błąd podczas zapisywania profilu';
+      setMessage({ type: 'error', text: errorMsg });
+      toast.error(errorMsg, { duration: 5000 });
     } finally {
       setSaving(false);
     }

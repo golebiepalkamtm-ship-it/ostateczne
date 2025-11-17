@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Camera, MapPin, MessageSquare, Plus, Star, Trophy, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { debug, isDev } from '@/lib/logger';
+import toast from 'react-hot-toast';
 
 interface Achievement {
   pigeon: string;
@@ -172,11 +173,19 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
       const result = await response.json();
       if (isDev) debug('Reference added:', result);
 
+      toast.success('Referencja została dodana pomyślnie!', {
+        duration: 4000,
+      });
+
       if (onSuccess) {
         onSuccess();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Wystąpił nieoczekiwany błąd');
+      const errorMessage = err instanceof Error ? err.message : 'Wystąpił nieoczekiwany błąd';
+      setError(errorMessage);
+      toast.error(errorMessage, {
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting(false);
     }

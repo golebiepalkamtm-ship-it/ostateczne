@@ -261,18 +261,40 @@ finalConfig.webpack = (config, options) => {
     };
   }
 
-  // 2. Ignoruj pozostałe ostrzeżenia (tylko jako fallback)
+  // 2. Ignoruj wszystkie ostrzeżenia o critical dependencies (działa w dev i production)
   config.ignoreWarnings = [
     ...(config.ignoreWarnings || []),
     // Wycisz wszystkie ostrzeżenia o critical dependencies z OpenTelemetry/Prisma instrumentation
     { module: /@prisma\/instrumentation/ },
     { module: /require-in-the-middle/ },
     { module: /@opentelemetry\/instrumentation/ },
+    { module: /@sentry\/node/ },
     { message: /Critical dependency: the request of a dependency is an expression/ },
     { message: /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/ },
+    // Wycisz wszystkie ostrzeżenia z node_modules (instrumentation)
+    (warning) => {
+      return (
+        warning.module?.resource?.includes('node_modules') &&
+        (warning.message?.includes('Critical dependency') ||
+          warning.message?.includes('require function is used'))
+      );
+    },
   ];
 
-  // 3. Napraw błędy Watchpack na Windows przez ignorowanie plików systemowych
+  // 3. Wycisz ostrzeżenia w stats (dodatkowa warstwa tłumienia)
+  config.stats = {
+    ...config.stats,
+    warningsFilter: [
+      /Critical dependency/,
+      /require function is used/,
+      /@prisma\/instrumentation/,
+      /require-in-the-middle/,
+      /@opentelemetry\/instrumentation/,
+      /@sentry\/node/,
+    ],
+  };
+
+  // 4. Napraw błędy Watchpack na Windows przez ignorowanie plików systemowych
   if (options.dev) {
     config.watchOptions = {
       ...config.watchOptions,
@@ -288,7 +310,7 @@ finalConfig.webpack = (config, options) => {
     };
   }
 
-  // 4. Zachowaj pozostałe, ważne części oryginalnej konfiguracji webpack
+  // 5. Zachowaj pozostałe, ważne części oryginalnej konfiguracji webpack
   if (!options.isServer) {
     config.resolve.fallback = {
       ...config.resolve.fallback,

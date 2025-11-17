@@ -68,17 +68,17 @@ export function LiquidBackground() {
         app.liquidPlane.uniforms.displacementScale.value = 2.5;
         app.setRain(false);
         
-        // Dopasuj kamerę - oddal i przesuń mocno w dół aby pokazać cały dach
+        // Dopasuj kamerę - przesuń w górę aby pokazać kafle nad dachem gołębnika
         if (app.camera) {
-          app.camera.position.z = 2.2;
-          app.camera.position.y = -0.6;
+          app.camera.position.z = 2.4;
+          app.camera.position.y = 0.4;
           app.camera.updateProjectionMatrix();
         }
         
-        // Zwiększ skalę płaszczyzny i przesuń mocno w dół
+        // Zwiększ skalę płaszczyzny i przesuń w dół aby kafle były widoczne
         if (app.liquidPlane) {
           app.liquidPlane.scale.set(2.4, 2.4, 1);
-          app.liquidPlane.position.y = -0.5;
+          app.liquidPlane.position.y = -0.2;
         }
       }
     `;

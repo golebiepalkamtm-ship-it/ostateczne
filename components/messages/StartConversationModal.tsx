@@ -5,6 +5,7 @@ import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { Search, Send, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface User {
   id: string;
@@ -81,6 +82,9 @@ export function StartConversationModal({
 
       if (response.ok) {
         const data = await response.json();
+        toast.success('Konwersacja rozpoczęta pomyślnie!', {
+          duration: 3000,
+        });
         onConversationStarted(data.conversation.id);
         onClose();
         setSelectedUser(undefined);
@@ -88,11 +92,15 @@ export function StartConversationModal({
         setSearchQuery('');
       } else {
         const error = await response.json();
-        alert(error.error || 'Nie udało się rozpocząć konwersacji');
+        toast.error(error.error || 'Nie udało się rozpocząć konwersacji', {
+          duration: 4000,
+        });
       }
     } catch (error) {
       console.error('Error starting conversation:', error);
-      alert('Wystąpił błąd podczas rozpoczynania konwersacji');
+      toast.error('Wystąpił błąd podczas rozpoczynania konwersacji', {
+        duration: 4000,
+      });
     } finally {
       setIsSending(false);
     }

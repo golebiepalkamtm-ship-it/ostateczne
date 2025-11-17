@@ -7,6 +7,7 @@ import { pl } from 'date-fns/locale';
 import { MessageCircle, Send, User } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface Message {
   id: string;
@@ -289,9 +290,16 @@ export function MessagesPage({ userId }: MessagesPageProps) {
         if (response.ok) {
           const data = await response.json();
           setConversations(data.conversations);
+        } else {
+          toast.error('Nie udało się pobrać konwersacji', {
+            duration: 3000,
+          });
         }
       } catch (error) {
         console.error('Error fetching conversations:', error);
+        toast.error('Wystąpił błąd podczas pobierania konwersacji', {
+          duration: 3000,
+        });
       }
     };
 
@@ -309,9 +317,16 @@ export function MessagesPage({ userId }: MessagesPageProps) {
             const data = await response.json();
             setMessages(data.messages);
             setOtherParticipant(data.conversation.otherParticipant);
+          } else {
+            toast.error('Nie udało się pobrać wiadomości', {
+              duration: 3000,
+            });
           }
         } catch (error) {
           console.error('Error fetching messages:', error);
+          toast.error('Wystąpił błąd podczas pobierania wiadomości', {
+            duration: 3000,
+          });
         } finally {
           setIsLoading(false);
         }
@@ -346,9 +361,20 @@ export function MessagesPage({ userId }: MessagesPageProps) {
             senderId: userId, // Użyj rzeczywistego ID użytkownika
           },
         ]);
+        toast.success('Wiadomość wysłana', {
+          duration: 2000,
+        });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Nie udało się wysłać wiadomości', {
+          duration: 4000,
+        });
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      toast.error('Wystąpił błąd podczas wysyłania wiadomości', {
+        duration: 4000,
+      });
     }
   };
 

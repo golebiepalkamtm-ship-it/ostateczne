@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { AlertCircle, Calendar, Eye, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface AuctionDetailsProps {
   auctionId: string;
@@ -185,9 +186,18 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
         const loadedAuction = await getAuctionById(auctionId);
         setAuction(loadedAuction);
         setError(null);
+        if (!loadedAuction) {
+          toast.error('Aukcja nie została znaleziona', {
+            duration: 4000,
+          });
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Błąd podczas ładowania aukcji');
+        const errorMessage = err instanceof Error ? err.message : 'Błąd podczas ładowania aukcji';
+        setError(errorMessage);
         setAuction(null);
+        toast.error(errorMessage, {
+          duration: 5000,
+        });
       }
     };
     loadAuction();
@@ -285,15 +295,20 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
 
   const handleBid = async () => {
     if (!canBid) {
-      alert(
-        `Aby licytować, musisz uzupełnić profil i zweryfikować numer telefonu. Brakujące pola: ${missingFields.join(', ')}`
+      toast.error(
+        `Aby licytować, musisz uzupełnić profil i zweryfikować numer telefonu. Brakujące pola: ${missingFields.join(', ')}`,
+        {
+          duration: 5000,
+        }
       );
       return;
     }
 
     const bidValue = parseFloat(bidAmount);
     if (!bidAmount || bidValue <= auction.currentPrice) {
-      alert(`Oferta musi być wyższa od aktualnej ceny ${formatPrice(auction.currentPrice)}`);
+      toast.error(`Oferta musi być wyższa od aktualnej ceny ${formatPrice(auction.currentPrice)}`, {
+        duration: 4000,
+      });
       return;
     }
 
@@ -321,24 +336,46 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
         }
 
         setBidAmount('');
-        alert(`Licytacja ${formatPrice(bidValue)} została złożona!`);
+        toast.success(`Licytacja ${formatPrice(bidValue)} została złożona!`, {
+          duration: 4000,
+        });
       } else {
         // Obsługa błędów z serwera
         if (data.missingFields) {
-          alert(`${data.message}\nBrakujące pola: ${data.missingFields.join(', ')}`);
+          toast.error(
+            `${data.message}. Brakujące pola: ${data.missingFields.join(', ')}`,
+            {
+              duration: 5000,
+            }
+          );
         } else {
-          alert(data.error || 'Błąd podczas składania licytacji');
+          toast.error(data.error || 'Błąd podczas składania licytacji', {
+            duration: 4000,
+          });
         }
       }
     } catch (error) {
       console.error('Błąd podczas składania licytacji:', error);
-      alert('Wystąpił błąd podczas składania licytacji');
+      toast.error('Wystąpił błąd podczas składania licytacji', {
+        duration: 4000,
+      });
     } finally {
       setIsBidding(false);
     }
   };
 
   const handleBuyNow = () => {
+    if (!auction.buyNowPrice) {
+      toast.error('Cena "Kup teraz" nie jest dostępna', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    toast.success('Przekierowywanie do podsumowania zakupu...', {
+      duration: 2000,
+    });
+
     // Przekierowanie do strony podsumowującej zakup
     const successData = {
       type: 'buy_now',
@@ -362,7 +399,9 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
     localStorage.setItem('auctionSuccess', JSON.stringify(successData));
 
     // Przekierowanie do strony sukcesu
-    window.location.href = '/auctions/success';
+    setTimeout(() => {
+      window.location.href = '/auctions/success';
+    }, 1000);
   };
 
   const minBidAmount = auction.currentPrice + 100;

@@ -37,6 +37,9 @@
 /* Background image for layout */
 .pigeon-lofts-background {
   background-image: url('/pigeon-lofts-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Dynamic width for progress bars */
