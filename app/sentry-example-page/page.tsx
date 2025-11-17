@@ -4,6 +4,9 @@ import Head from 'next/head';
 import * as Sentry from '@sentry/nextjs';
 import { useState, useEffect } from 'react';
 
+// Force dynamic rendering to avoid Firebase initialization during build
+export const dynamic = 'force-dynamic';
+
 class SentryExampleFrontendError extends Error {
   constructor(message: string | undefined) {
     super(message);
