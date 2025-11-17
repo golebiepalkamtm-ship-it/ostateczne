@@ -136,3 +136,7 @@ d-data-highway/
 
 # Test/debug folders
 -p/
+
+# Large files that shouldn't be in repo
+oracleJdk-25/
+**/oracleJdk-25/
