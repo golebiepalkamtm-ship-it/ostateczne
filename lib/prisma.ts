@@ -15,13 +15,19 @@ const getDatabaseUrl = () => {
   return process.env.DEV_DATABASE_URL || process.env.DATABASE_URL || 'file:./dev.db';
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+// Lazy initialization function to avoid Prisma initialization during build
+const createPrismaClient = () => {
+  const databaseUrl = getDatabaseUrl();
+  
+  // During build on Vercel, if DATABASE_URL is not set, use placeholder
+  // This won't be used during build as Next.js doesn't execute queries during build
+  const url = databaseUrl || 'postgresql://placeholder:placeholder@localhost:5432/placeholder';
+  
+  return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     datasources: {
       db: {
-        url: getDatabaseUrl(),
+        url,
       },
     },
     errorFormat: 'pretty',
@@ -31,6 +37,10 @@ export const prisma =
         log: [],
       }),
   });
+};
+
+export const prisma =
+  globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
