@@ -25,6 +25,10 @@ export default function PasswordResetForm() {
     setError('');
 
     try {
+      if (!auth) {
+        throw new Error('Firebase nie jest zainicjalizowany');
+      }
+
       await sendPasswordResetEmail(auth, email, {
         url: `${window.location.origin}/auth/register`,
         handleCodeInApp: false,
