@@ -110,7 +110,9 @@ export default function FirebaseAuthForm({
     } catch (error) {
       logger.error('Błąd synchronizacji:', error instanceof Error ? error.message : error);
       setError('Wystąpił błąd po zalogowaniu. Spróbuj ponownie.');
-      await signOut(auth);
+      if (auth) {
+        await signOut(auth);
+      }
     }
   };
 
@@ -144,6 +146,10 @@ export default function FirebaseAuthForm({
     setError('');
 
     try {
+      if (!auth) {
+        throw new Error('Firebase nie jest zainicjalizowany');
+      }
+
       // Ustaw persistence na podstawie opcji "Zapamiętaj mnie"
       const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
       await setPersistence(auth, persistence);
@@ -212,6 +218,10 @@ export default function FirebaseAuthForm({
     setError('');
 
     try {
+      if (!auth) {
+        throw new Error('Firebase nie jest zainicjalizowany');
+      }
+
       const provider = new GoogleAuthProvider();
       // Dodaj dodatkowe zakresy jeśli potrzebujesz
       provider.addScope('email');
@@ -276,6 +286,10 @@ export default function FirebaseAuthForm({
     setError('');
 
     try {
+      if (!auth) {
+        throw new Error('Firebase nie jest zainicjalizowany');
+      }
+
       const provider = new FacebookAuthProvider();
       // Dodaj dodatkowe zakresy jeśli potrzebujesz
       provider.addScope('email');
@@ -412,6 +426,10 @@ export default function FirebaseAuthForm({
 
       if (!response.ok) {
         throw new Error(data.error || 'Wystąpił błąd podczas rejestracji');
+      }
+
+      if (!auth) {
+        throw new Error('Firebase nie jest zainicjalizowany');
       }
 
       // Zaloguj użytkownika automatycznie po rejestracji (użytkownik już został utworzony przez API)
