@@ -66,6 +66,9 @@ function CompleteProfileContent() {
     setError('');
 
     try {
+      if (!auth) {
+        throw new Error('Firebase nie jest zainicjalizowany');
+      }
       const firebaseUser = auth.currentUser;
       if (!firebaseUser) {
         throw new Error('Brak zalogowanego użytkownika');

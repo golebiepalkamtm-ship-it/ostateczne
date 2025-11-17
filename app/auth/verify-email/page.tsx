@@ -49,6 +49,10 @@ function VerifyEmailContent() {
 
     const verifyEmail = async () => {
       try {
+        if (!auth) {
+          throw new Error('Firebase nie jest zainicjalizowany');
+        }
+
         console.log('🔍 Rozpoczynam weryfikację z kodem:', oobCode);
         console.log('🔍 Długość kodu:', oobCode.length);
 
