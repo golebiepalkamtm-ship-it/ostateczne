@@ -34,7 +34,7 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-T645E1YQHW
 2. Settings → Environment Variables
 3. Dodaj każdą zmienną osobno:
    - **Name**: `FIREBASE_PROJECT_ID`
-   - **Value**: `m-t-m-62972`
+   - **Value**: `mtm-62972`
    - **Environment**: Production, Preview, Development (zaznacz wszystkie)
 4. Powtórz dla wszystkich zmiennych
 
