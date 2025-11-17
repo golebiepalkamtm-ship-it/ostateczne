@@ -27,6 +27,7 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:app": "vitest run ./__tests__ ./app ./lib ./components ./hooks ./utils",
+    "test:firebase": "tsx scripts/test-firebase-init.ts",
     "deploy:vercel": "vercel --prod",
     "deploy:homepl": "bash scripts/deploy-homepl.sh"
   },
@@ -41,7 +42,7 @@
     "@tanstack/react-query-devtools": "^5.90.2",
     "autoprefixer": "^10.4.21",
     "date-fns": "^4.1.0",
-    "firebase": "^12.5.0",
+    "firebase": "^12.6.0",
     "firebase-admin": "^13.5.0",
     "framer-motion": "^12.23.24",
     "gsap": "^3.13.0",
