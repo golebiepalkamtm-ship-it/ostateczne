@@ -149,3 +149,6 @@ scripts/service-account.json
 **/*service-account*.json
 **/*-key.json
 firebase-key.json
+.nextauth-secret.txt
+.db-password.txt
+.database-url.txt
