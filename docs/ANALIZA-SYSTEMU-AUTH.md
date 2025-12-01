@@ -510,8 +510,8 @@ Brak zmiennych środowiskowych:
 
 ```bash
 # W pliku .env lub .env.local:
-FIREBASE_PROJECT_ID=pigeon-aucion-41d68
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@pigeon-aucion-41d68.iam.gserviceaccount.com
+FIREBASE_PROJECT_ID=mtm-62972
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@mtm-62972.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...[CAŁY KLUCZ ~1700 znaków]...\n-----END PRIVATE KEY-----\n"
 ```
 

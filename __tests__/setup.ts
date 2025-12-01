@@ -6,6 +6,13 @@ import { vi } from 'vitest';
 process.env.NEXTAUTH_SECRET = 'test-secret';
 process.env.NEXTAUTH_URL = 'http://localhost:3000';
 
+// Set DATABASE_URL for integration tests (if not already set)
+// Use in-memory SQLite for testing or skip integration tests
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'file:./test.db';
+  console.warn('DATABASE_URL not set, using in-memory database for tests');
+}
+
 // Mock Next.js modules
 vi.mock('next/server', () => ({
   NextRequest: class MockNextRequest {

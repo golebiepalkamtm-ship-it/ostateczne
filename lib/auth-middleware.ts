@@ -1,74 +1,185 @@
-import { requireFirebaseAuth } from '@/lib/firebase-auth';
-import { prisma } from '@/lib/prisma';
-import { NextRequest, NextResponse } from 'next/server';
+import { requireFirebaseAuth } from '@/lib/firebase-auth'
+import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
+import { error as logError } from '@/lib/logger'
+import * as Sentry from '@sentry/nextjs'
+
+type Role = 'USER_REGISTERED' | 'USER_EMAIL_VERIFIED' | 'USER_FULL_VERIFIED' | 'ADMIN'
+
+/**
+ * Uniwersalna funkcja sprawdzająca czy użytkownik spełnia wymagania roli
+ * @param request - NextRequest object
+ * @param requiredRole - Minimalna wymagana rola
+ * @returns null jeśli użytkownik ma dostęp, NextResponse z błędem jeśli nie
+ */
+async function requireRole(request: NextRequest, requiredRole: Role): Promise<NextResponse | null> {
+  const authResult = await requireFirebaseAuth(request)
+  if (authResult instanceof NextResponse) {
+    return authResult
+  }
+
+  const { decodedToken } = authResult
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { firebaseUid: decodedToken.uid },
+      select: {
+        role: true,
+        isActive: true,
+        emailVerified: true,
+        isPhoneVerified: true,
+        isProfileVerified: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        address: true,
+        city: true,
+        postalCode: true,
+      },
+    })
+
+    if (!user) {
+      logError(`User with firebaseUid ${decodedToken.uid} not found in database`)
+      return NextResponse.json({ error: 'Użytkownik nie został znaleziony.' }, { status: 404 })
+    }
+
+    // Administratorzy mają zawsze dostęp
+    if (user.role === 'ADMIN') {
+      return null
+    }
+
+    // Hierarchia ról
+    const roleHierarchy: Record<Role, number> = {
+      USER_REGISTERED: 1,
+      USER_EMAIL_VERIFIED: 2,
+      USER_FULL_VERIFIED: 3,
+      ADMIN: 4,
+    }
+
+    const userLevel = roleHierarchy[user.role]
+    const requiredLevel = roleHierarchy[requiredRole]
+
+    if (userLevel < requiredLevel) {
+      // Zwróć odpowiedni komunikat w zależności od brakującego poziomu
+      if (requiredRole === 'USER_EMAIL_VERIFIED') {
+        return NextResponse.json(
+          {
+            error: 'Zweryfikuj adres e-mail, aby uzyskać dostęp.',
+            requiresEmailVerification: true,
+            currentRole: user.role,
+            requiredRole,
+          },
+          { status: 403 }
+        )
+      }
+
+      if (requiredRole === 'USER_FULL_VERIFIED') {
+        const missingVerifications = []
+        if (!user.isPhoneVerified) missingVerifications.push('telefon')
+        if (!user.isProfileVerified) missingVerifications.push('profil')
+
+        return NextResponse.json(
+          {
+            error: `Aby uzyskać pełny dostęp, zweryfikuj: ${missingVerifications.join(', ')}.`,
+            requiresFullVerification: true,
+            currentRole: user.role,
+            requiredRole,
+            isPhoneVerified: user.isPhoneVerified,
+            isProfileVerified: user.isProfileVerified,
+          },
+          { status: 403 }
+        )
+      }
+
+      return NextResponse.json(
+        {
+          error: 'Nie masz wystarczających uprawnień.',
+          currentRole: user.role,
+          requiredRole,
+        },
+        { status: 403 }
+      )
+    }
+
+    return null
+  } catch (error) {
+    logError('Error checking user role', error, decodedToken.uid)
+    Sentry.captureException(error, { extra: { firebaseUid: decodedToken.uid, requiredRole } })
+    return NextResponse.json(
+      { error: 'Wystąpił błąd podczas sprawdzania uprawnień.' },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * Middleware sprawdzające czy użytkownik ma dostęp do Panelu Użytkownika (Poziom 2)
+ * Wymagane dla wejścia do /profile
+ */
+export async function requireEmailVerification(request: NextRequest) {
+  return requireRole(request, 'USER_EMAIL_VERIFIED')
+}
+
+/**
+ * Middleware sprawdzające pełną weryfikację użytkownika (Poziom 3)
+ * Wymagane dla aukcji, dodawania treści, referencji itp.
+ */
+export async function requireFullVerification(request: NextRequest) {
+  return requireRole(request, 'USER_FULL_VERIFIED')
+}
 
 /**
  * Middleware sprawdzające czy użytkownik ma zweryfikowany telefon
  * Wymagane dla funkcji takich jak: tworzenie aukcji, licytowanie, dodawanie spotkań
  */
 export async function requirePhoneVerification(request: NextRequest) {
-  const authResult = await requireFirebaseAuth(request);
+  const authResult = await requireFirebaseAuth(request)
   if (authResult instanceof NextResponse) {
-    return authResult;
+    return authResult
   }
-  const { decodedToken } = authResult;
+
+  const { decodedToken } = authResult
 
   try {
     const user = await prisma.user.findUnique({
       where: { firebaseUid: decodedToken.uid },
-      select: {
-        isPhoneVerified: true,
-        phoneNumber: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-      },
-    });
+      select: { isPhoneVerified: true, role: true },
+    })
 
     if (!user) {
-      return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
+      return NextResponse.json({ error: 'Użytkownik nie został znaleziony.' }, { status: 404 })
     }
 
-    // Administratorzy nie wymagają weryfikacji telefonu
-    if (user.role === 'ADMIN') {
-      return null;
+    if (user.role === 'ADMIN' || user.isPhoneVerified) {
+      return null
     }
 
-    if (!user.isPhoneVerified) {
-      return NextResponse.json(
-        {
-          error: 'Weryfikacja numeru telefonu jest wymagana',
-          requiresPhoneVerification: true,
-          phoneNumber: user.phoneNumber,
-          userProfile: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-          },
-        },
-        { status: 403 }
-      );
-    }
-
-    return null; // Brak błędu - użytkownik jest zweryfikowany
-  } catch (error) {
-    console.error('Błąd sprawdzania weryfikacji telefonu:', error);
     return NextResponse.json(
-      { error: 'Wystąpił błąd podczas sprawdzania weryfikacji' },
+      {
+        error: 'Weryfikacja numeru telefonu jest wymagana.',
+        requiresPhoneVerification: true,
+      },
+      { status: 403 }
+    )
+  } catch (error) {
+    logError('Error checking phone verification', error, decodedToken.uid)
+    return NextResponse.json(
+      { error: 'Wystąpił błąd podczas sprawdzania weryfikacji telefonu.' },
       { status: 500 }
-    );
+    )
   }
 }
 
 /**
  * Middleware sprawdzające czy użytkownik ma kompletny profil
- * Wymagane dla wszystkich funkcji platformy
  */
 export async function requireCompleteProfile(request: NextRequest) {
-  const authResult = await requireFirebaseAuth(request);
+  const authResult = await requireFirebaseAuth(request)
   if (authResult instanceof NextResponse) {
-    return authResult;
+    return authResult
   }
-  const { decodedToken } = authResult;
+
+  const { decodedToken } = authResult
 
   try {
     const user = await prisma.user.findUnique({
@@ -80,21 +191,18 @@ export async function requireCompleteProfile(request: NextRequest) {
         city: true,
         postalCode: true,
         phoneNumber: true,
-        isProfileVerified: true,
         role: true,
       },
-    });
+    })
 
     if (!user) {
-      return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
+      return NextResponse.json({ error: 'Użytkownik nie został znaleziony.' }, { status: 404 })
     }
 
-    // Administratorzy nie wymagają kompletnego profilu
     if (user.role === 'ADMIN') {
-      return null;
+      return null
     }
 
-    // Sprawdź czy profil jest kompletny
     const isProfileComplete = !!(
       user.firstName &&
       user.lastName &&
@@ -102,160 +210,24 @@ export async function requireCompleteProfile(request: NextRequest) {
       user.city &&
       user.postalCode &&
       user.phoneNumber
-    );
+    )
 
     if (!isProfileComplete) {
       return NextResponse.json(
         {
-          error: 'Profil użytkownika jest niekompletny',
+          error: 'Profil użytkownika jest niekompletny.',
           requiresProfileCompletion: true,
-          missingFields: {
-            firstName: !user.firstName,
-            lastName: !user.lastName,
-            address: !user.address,
-            city: !user.city,
-            postalCode: !user.postalCode,
-            phoneNumber: !user.phoneNumber,
-          },
         },
         { status: 403 }
-      );
+      )
     }
 
-    return null; // Brak błędu - profil jest kompletny
+    return null
   } catch (error) {
-    console.error('Błąd sprawdzania kompletności profilu:', error);
+    logError('Error checking profile completion', error, decodedToken.uid)
     return NextResponse.json(
-      { error: 'Wystąpił błąd podczas sprawdzania profilu' },
+      { error: 'Wystąpił błąd podczas sprawdzania profilu.' },
       { status: 500 }
-    );
-  }
-}
-
-/**
- * Middleware sprawdzające czy użytkownik ma dostęp do Panelu Użytkownika (Poziom 2)
- * Wymagane dla wejścia do /profile
- */
-export async function requireEmailVerification(request: NextRequest) {
-  const authResult = await requireFirebaseAuth(request);
-  if (authResult instanceof NextResponse) {
-    return authResult;
-  }
-  const { decodedToken } = authResult;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid: decodedToken.uid },
-      select: {
-        emailVerified: true,
-        isActive: true,
-        role: true,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
-    }
-
-    // Poziom 2: USER_EMAIL_VERIFIED lub wyższy
-    const hasLevel2Access =
-      user.role === 'USER_EMAIL_VERIFIED' ||
-      user.role === 'USER_FULL_VERIFIED' ||
-      user.role === 'ADMIN';
-
-    if (!hasLevel2Access) {
-      return NextResponse.json(
-        {
-          error: 'Zweryfikuj email aby uzyskać dostęp do Panelu Użytkownika.',
-          requiresEmailVerification: true,
-          emailVerified: !!user.emailVerified,
-          isActive: user.isActive,
-          role: user.role,
-        },
-        { status: 403 }
-      );
-    }
-
-    return null; // Brak błędu - użytkownik ma Poziom 2
-  } catch (error) {
-    console.error('Błąd sprawdzania dostępu do Panelu Użytkownika:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas sprawdzania dostępu' },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * Middleware sprawdzające pełną weryfikację użytkownika (Poziom 3)
- * Wymagane dla aukcji, dodawania treści, referencji itp.
- */
-export async function requireFullVerification(request: NextRequest) {
-  const authResult = await requireFirebaseAuth(request);
-  if (authResult instanceof NextResponse) {
-    return authResult;
-  }
-  const { decodedToken } = authResult;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid: decodedToken.uid },
-      select: {
-        role: true,
-        isPhoneVerified: true,
-        isProfileVerified: true,
-        firstName: true,
-        lastName: true,
-        phoneNumber: true,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
-    }
-
-    // Poziom 3: USER_FULL_VERIFIED lub ADMIN
-    const hasLevel3Access = user.role === 'USER_FULL_VERIFIED' || user.role === 'ADMIN';
-
-    if (!hasLevel3Access) {
-      return NextResponse.json(
-        {
-          error:
-            'Uzupełnij profil i zweryfikuj telefon, aby brać udział w aukcjach i dodawać treści.',
-          requiresFullVerification: true,
-          role: user.role,
-          isPhoneVerified: user.isPhoneVerified,
-          isProfileVerified: user.isProfileVerified,
-          profileComplete: !!(user.firstName && user.lastName && user.phoneNumber),
-        },
-        { status: 403 }
-      );
-    }
-
-    return null; // Brak błędu - użytkownik ma Poziom 3
-  } catch (error) {
-    console.error('Błąd sprawdzania pełnej weryfikacji:', error);
-    return NextResponse.json(
-      { error: 'Wystąpił błąd podczas sprawdzania pełnej weryfikacji' },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * Factory function do tworzenia middleware z różnymi poziomami weryfikacji
- */
-export function createVerificationMiddleware(level: 'email' | 'profile' | 'phone' | 'full') {
-  switch (level) {
-    case 'email':
-      return requireEmailVerification;
-    case 'profile':
-      return requireCompleteProfile;
-    case 'phone':
-      return requirePhoneVerification;
-    case 'full':
-      return requireFullVerification;
-    default:
-      return requireFirebaseAuth;
+    )
   }
 }

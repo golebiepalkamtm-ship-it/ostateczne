@@ -56,8 +56,8 @@ const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
 ```bash
 # KONFIGURACJA FIREBASE (ADMIN SDK - SERWER)
-FIREBASE_PROJECT_ID=pigeon-aucion-41d68
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@pigeon-aucion-41d68.iam.gserviceaccount.com
+FIREBASE_PROJECT_ID=mtm-62972
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@mtm-62972.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...1755 znaków...\n-----END PRIVATE KEY-----\n"
 ```
 

@@ -3,7 +3,7 @@
 ## KROK 1️⃣: Włącz Phone Auth w Firebase Console
 
 1. Otwórz: https://console.firebase.google.com/
-2. Wybierz projekt: **pigeon-aucion-41d68**
+2. Wybierz projekt: **mtm-62972**
 3. **Authentication** → **Sign-in method** → **Phone** → **Enable** → **Save**
 
 ✅ Phone Auth włączone!
@@ -46,15 +46,15 @@ Skopiuj i wypełnij:
 ```env
 # Firebase Client SDK (z Kroku 3A)
 NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSy..."
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="pigeon-aucion-41d68.firebaseapp.com"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="pigeon-aucion-41d68"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="pigeon-aucion-41d68.firebasestorage.app"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="mtm-62972.firebaseapp.com"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="mtm-62972"
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="mtm-62972.firebasestorage.app"
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="151771999775"
 NEXT_PUBLIC_FIREBASE_APP_ID="1:151771999775:web:..."
 
 # Firebase Admin SDK (z pliku JSON z Kroku 3B)
-FIREBASE_PROJECT_ID="pigeon-aucion-41d68"
-FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxxxx@pigeon-aucion-41d68.iam.gserviceaccount.com"
+FIREBASE_PROJECT_ID="mtm-62972"
+FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxxxx@mtm-62972.iam.gserviceaccount.com"
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----\n"
 ```
 

@@ -517,7 +517,6 @@ export default function AdminDashboard() {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function getRoleText(_role: string) {
     // Unused helper - may be used in future
     // switch (role) {

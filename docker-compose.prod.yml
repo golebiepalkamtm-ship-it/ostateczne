@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database (Production)
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: palkamtm-postgres-prod
     restart: always
     environment:
@@ -22,7 +20,7 @@ services:
 
   # Redis for caching (Production)
   redis:
-    image: redis:7-alpine
+    image: redis:7.4-alpine
     container_name: palkamtm-redis-prod
     restart: always
     command: redis-server --requirepass ${REDIS_PASSWORD}
@@ -59,7 +57,7 @@ services:
     command: >
       -c "
         echo '📦 Installing dependencies...' &&
-        npm ci --silent --omit=dev &&
+        npm ci --silent --legacy-peer-deps &&
         echo '🔄 Generating Prisma Client...' &&
         npx prisma generate &&
         echo '🚀 Running database migrations...' &&
@@ -75,17 +73,20 @@ services:
     container_name: palkamtm-app-prod
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3000"
+    volumes:
+      - ./public/uploads:/app/public/uploads
+      - ./public/models:/app/public/models
     environment:
       # Database
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-palkamtm_production}
       
       # Redis
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis:6379
       
       # Next.js
       NODE_ENV: production
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://palkamtm.pl}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       
       # NextAuth
       NEXTAUTH_URL: ${NEXTAUTH_URL:-https://palkamtm.pl}
@@ -129,28 +130,31 @@ services:
         condition: service_healthy
       prisma:
         condition: service_completed_successfully
-    networks:
-      - app-network
-    healthcheck:
-      test: ['CMD-SHELL', 'wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # Nginx Reverse Proxy (Production)
-  nginx:
-    image: nginx:alpine
-    container_name: palkamtm-nginx-prod
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: palkamtm-prometheus-prod
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "9090:9090"
     volumes:
-      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:11.5.0
+    container_name: palkamtm-grafana-prod
+    restart: always
+    ports:
+      - "4000:3000"
+    environment:
+      GRAFANA_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GRAFANA_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin123}
+    volumes:
+      - grafana_prod_data:/var/lib/grafana
     depends_on:
-      - app
+      - prometheus
     networks:
       - app-network
 
@@ -158,6 +162,8 @@ volumes:
   postgres_prod_data:
     driver: local
   redis_prod_data:
+    driver: local
+  grafana_prod_data:
     driver: local
 
 networks:

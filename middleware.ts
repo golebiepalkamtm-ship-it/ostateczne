@@ -48,8 +48,11 @@ export async function middleware(request: NextRequest) {
 
   // Wymuszenie HTTPS w produkcji (TYLKO jeśli nie jesteśmy na Vercel - Vercel robi to automatycznie)
   // Vercel automatycznie obsługuje HTTPS, więc ten redirect może powodować problemy
-  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL && !isHttps(request)) {
-    const httpsUrl = `https://${request.headers.get('host')}${pathname}${request.url.split('?')[1] ? '?' + request.url.split('?')[1] : ''}`;
+  // Wyłączone dla localhost (Docker development/testing)
+  const host = request.headers.get('host') || '';
+  const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL && !isHttps(request) && !isLocalhost) {
+    const httpsUrl = `https://${host}${pathname}${request.url.split('?')[1] ? '?' + request.url.split('?')[1] : ''}`;
     return NextResponse.redirect(httpsUrl, 301);
   }
 

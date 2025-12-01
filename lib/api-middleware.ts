@@ -323,7 +323,6 @@ export function createPaginatedResponse<T = unknown>(
 /**
  * Helper do logowania akcji użytkownika
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function logUserActionHelper(
   _userId: string,
   _action: string,
@@ -335,7 +334,6 @@ export function logUserActionHelper(
 /**
  * Helper do logowania zdarzeń biznesowych
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function logBusinessEventHelper(_event: string, _context?: Record<string, unknown>) {
   // logger.logBusinessEvent(event, context);
 }

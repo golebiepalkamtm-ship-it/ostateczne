@@ -93,7 +93,16 @@ pids
 
 # Gatsby files
 .cache/
-public
+
+# Public directory - exclude user uploads and large files
+public/uploads/
+public/models/
+public/meetings with breeders/
+public/press/
+public/golden-pair/
+public/champions/
+public/*.mp4
+public/*.gif
 
 # Storybook build outputs
 .out

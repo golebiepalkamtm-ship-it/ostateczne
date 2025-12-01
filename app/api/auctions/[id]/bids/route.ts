@@ -95,7 +95,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Utwórz licytację w transakcji
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await prisma.$transaction(async (tx: any) => {
       // Utwórz nową licytację
       const bid = await tx.bid.create({

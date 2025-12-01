@@ -71,7 +71,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Utwórz nową konwersację i pierwszą wiadomość w transakcji
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await prisma.$transaction(async (tx: any) => {
       // Utwórz konwersację
       const conversation = await tx.conversation.create({

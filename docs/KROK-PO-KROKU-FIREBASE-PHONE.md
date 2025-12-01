@@ -4,7 +4,7 @@
 
 1. Przejdź do: https://console.firebase.google.com/
 2. Zaloguj się swoim kontem Google
-3. Wybierz projekt **`pigeon-aucion-41d68`** (lub sprawdź `.firebaserc` - może być inny projekt)
+3. Wybierz projekt **`mtm-62972`** (lub sprawdź `.firebaserc` - może być inny projekt)
 
 ---
 

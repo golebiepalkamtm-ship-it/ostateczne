@@ -24,7 +24,6 @@ class MemoryCSRFTokenStore implements CSRFTokenStore {
     return value;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async set(key: string, value: { token: string; expires: number }, _ttl: number) {
     this.store.set(key, value);
   }

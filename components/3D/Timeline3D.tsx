@@ -781,7 +781,6 @@ export function Timeline3D({ data, onYearSelect }: Timeline3DProps) {
 
     scene.traverse((obj) => {
       const potentialMesh = obj as THREE.Object3D & {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         geometry?: THREE.BufferGeometry<any>;
         material?: THREE.Material | THREE.Material[];
         isMesh?: boolean;

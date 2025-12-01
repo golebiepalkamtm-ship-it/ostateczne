@@ -4,6 +4,14 @@
  * Uruchom: npx tsx scripts/test-firebase-init.ts
  */
 
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load environment variables
+config({ path: resolve(process.cwd(), '.env.local') });
+config({ path: resolve(process.cwd(), '.env') });
+
+// Import AFTER loading env vars
 import { isFirebaseConfigValid } from '../lib/firebase-config';
 import { getAdminAuth, getAdminApp } from '../lib/firebase-admin';
 

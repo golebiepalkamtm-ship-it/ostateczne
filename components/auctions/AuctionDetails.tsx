@@ -7,6 +7,8 @@ import { useAppStore } from '@/store/useAppStore';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { motion } from 'framer-motion';
+import { GlowingEdgeCard } from '@/components/ui/GlowingEdgeCard';
+import { InteractiveCard } from '@/components/ui/InteractiveCard';
 import { AlertCircle, Calendar, Eye, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -334,9 +336,8 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
         }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
+        await response.json();
         // Odśwież dane aukcji
         const auctionResponse = await fetch(`/api/auctions/${auction.id}`);
         if (auctionResponse.ok) {

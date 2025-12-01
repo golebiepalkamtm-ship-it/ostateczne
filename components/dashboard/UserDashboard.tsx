@@ -7,6 +7,8 @@ import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { getPhoneCodeForCountry } from '@/lib/country-codes';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { GlowingEdgeCard } from '@/components/ui/GlowingEdgeCard';
+import { InteractiveCard } from '@/components/ui/InteractiveCard';
 // ...existing code...
 import { InfoTooltip } from '@/components/ui/InfoTooltip';
 import { sendEmailVerification } from 'firebase/auth';
@@ -16,7 +18,6 @@ import {
   BarChart3,
   Bell,
   Calendar,
-  Camera,
   CheckCircle,
   Edit3,
   Gavel,
@@ -29,12 +30,9 @@ import {
   Phone,
   Plus,
   Search,
-  Settings,
   Shield,
-  Star,
   Trophy,
   User,
-  Users,
   Clock,
   TrendingUp,
 } from 'lucide-react';
@@ -67,12 +65,36 @@ export function UserDashboard() {
   const [smsCode, setSmsCode] = useState('');
   const [isVerifyingSms, setIsVerifyingSms] = useState(false);
   const [showCreateAuctionForm, setShowCreateAuctionForm] = useState(false);
+  
+  interface Auction {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    startingPrice: number;
+    currentPrice: number;
+    buyNowPrice?: number | null;
+    endTime: string;
+    status: string;
+    createdAt: string;
+    sellerId?: string;
+    images?: string[];
+  }
+  
+  interface Bid {
+    id: string;
+    auctionId: string;
+    amount: number;
+    createdAt: string;
+    auction?: Auction;
+  }
+  
   const [auctionsData, setAuctionsData] = useState<{
-    myAuctions: any[];
-    watchedAuctions: any[];
-    myBids: any[];
-    endedAuctions: any[];
-    soldAuctions: any[];
+    myAuctions: Auction[];
+    watchedAuctions: Auction[];
+    myBids: Bid[];
+    endedAuctions: Auction[];
+    soldAuctions: Auction[];
   }>({
     myAuctions: [],
     watchedAuctions: [],
@@ -191,7 +213,6 @@ export function UserDashboard() {
 
     if (user && dbUser && hasFetchedProfile.current !== user.uid) {
       // Określ kod kierunkowy na podstawie kraju w danych lub domyślnie Polska
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const country = (dbUser as any)?.country || 'Polska';
       const phoneCode = getPhoneCodeForCountry(country);
 
@@ -888,7 +909,6 @@ export function UserDashboard() {
                         return (
                           <button
                             key={subTab.id}
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             onClick={() => setAuctionsSubTab(subTab.id as any)}
                             className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-all ${
                               auctionsSubTab === subTab.id
@@ -912,7 +932,6 @@ export function UserDashboard() {
                           </h4>
                           {auctionsData.myAuctions.length > 0 ? (
                             <div className="space-y-3">
-                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                               {auctionsData.myAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
@@ -960,7 +979,6 @@ export function UserDashboard() {
                           </h4>
                           {auctionsData.watchedAuctions.length > 0 ? (
                             <div className="space-y-3">
-                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                               {auctionsData.watchedAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
@@ -1001,7 +1019,6 @@ export function UserDashboard() {
                           </h4>
                           {auctionsData.myBids.length > 0 ? (
                             <div className="space-y-3">
-                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                               {auctionsData.myBids.map((bid: any) => (
                                 <div
                                   key={bid.id}
@@ -1047,7 +1064,6 @@ export function UserDashboard() {
                           </h4>
                           {auctionsData.endedAuctions.length > 0 ? (
                             <div className="space-y-3">
-                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                               {auctionsData.endedAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
@@ -1087,7 +1103,6 @@ export function UserDashboard() {
                           </h4>
                           {auctionsData.soldAuctions.length > 0 ? (
                             <div className="space-y-3">
-                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                               {auctionsData.soldAuctions.map((auction: any) => (
                                 <div
                                   key={auction.id}
@@ -1123,17 +1138,23 @@ export function UserDashboard() {
                 ) : (
                   <div className="text-center py-12">
                     <Shield className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-white mb-4">Dostęp ograniczony</h3>
-                    <p className="text-white/70 mb-6 max-w-md mx-auto">
-                      Aby uzyskać dostęp do aukcji, musisz uzupełnić swój profil i zweryfikować
-                      numer telefonu przez SMS.
-                    </p>
+                    <h3 className="text-2xl font-bold text-white mb-4">🔒 Wymagana weryfikacja Poziomu 3</h3>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-6 mb-6 max-w-2xl mx-auto">
+                      <p className="text-white/80 mb-4">
+                        Aby uzyskać dostęp do tworzenia aukcji i licytowania, musisz osiągnąć <strong className="text-blue-400">Poziom 3</strong>.
+                      </p>
+                      <div className="space-y-2 text-left text-sm text-white/70">
+                        <p>📧 <strong className="text-green-400">Poziom 1:</strong> Rejestracja - Ukończone ✓</p>
+                        <p>✅ <strong className="text-green-400">Poziom 2:</strong> Weryfikacja email - Ukończone ✓</p>
+                        <p>🚀 <strong className="text-yellow-400">Poziom 3:</strong> Profil + Telefon - <strong className="text-yellow-400">Wymagane</strong></p>
+                      </div>
+                    </div>
                     <Link
-                      href="?tab=profile"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300"
+                      href="?tab=profile&edit=true"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
                     >
                       <User className="w-4 h-4" />
-                      <span>Uzupełnij profil i zweryfikuj telefon</span>
+                      <span>Kontynuuj weryfikację</span>
                     </Link>
                   </div>
                 )}
@@ -1440,11 +1461,11 @@ export function UserDashboard() {
 
                       // ✅ SUKCES - Telefon zweryfikowany!
                       toast.success(
-                        '🎉 Telefon zweryfikowany! Masz teraz pełny dostęp do platformy!',
+                        '🎉 Gratulacje! Poziom 3 odblokowany! Masz teraz pełny dostęp - możesz tworzyć aukcje, licytować i korzystać ze wszystkich funkcji platformy!',
                         {
-                          duration: 7000,
+                          duration: 8000,
                           position: 'top-center',
-                          icon: '✅',
+                          icon: '🚀',
                         }
                       );
 

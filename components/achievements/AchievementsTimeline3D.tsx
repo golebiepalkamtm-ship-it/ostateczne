@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { achievementsData } from '@/lib/achievements/data';
 import type { YearData } from '@/lib/achievements/types';
 import { Trophy, Award, Sparkles, ChevronRight } from 'lucide-react';
+import { GlowingEdgeCard } from '@/components/ui/GlowingEdgeCard';
 
 interface YearCardProps {
   data: YearData;
@@ -86,19 +87,20 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
         />
 
         {/* Main Card */}
-        <div
+        <GlowingEdgeCard
           className={`relative bg-gradient-to-br ${
             isMasterYear
               ? 'from-yellow-900/90 via-yellow-800/80 to-yellow-900/90'
               : 'from-gray-900/95 via-gray-800/90 to-gray-900/95'
-          } backdrop-blur-2xl rounded-3xl p-8 border-2 transition-all duration-500 overflow-hidden ${
+          } backdrop-blur-2xl p-8 transition-all duration-500 overflow-hidden ${
             isSelected
-              ? 'border-yellow-500 shadow-2xl shadow-yellow-500/50'
+              ? 'shadow-2xl shadow-yellow-500/50'
               : hovered
-              ? 'border-blue-500/70 shadow-xl shadow-blue-500/40'
-              : 'border-gray-700/50 shadow-lg'
+              ? 'shadow-xl shadow-blue-500/40'
+              : 'shadow-lg'
           }`}
-          style={{ transformStyle: 'preserve-3d' }}
+          glowSensitivity={25}
+          colorSensitivity={45}
         >
           {/* Animated background pattern */}
           <motion.div
@@ -208,7 +210,7 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
               <ChevronRight className="w-4 h-4" />
             </motion.div>
           </div>
-        </div>
+        </GlowingEdgeCard>
       </motion.div>
     </motion.div>
   );

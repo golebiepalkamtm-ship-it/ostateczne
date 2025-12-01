@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import type { Viewport } from 'next';
 import './globals.css';
 import './loading-animation.css'; // Import custom CSS for the fade-out effect
+import { initGlowingCards } from './glowing-cards';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -31,6 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // Sprawdź czy jesteśmy w przeglądarce
   useEffect(() => {
     setIsClient(true);
+    
+    // Inicjalizuj glowing cards effect
+    initGlowingCards();
     
     // Jeśli overlay jest wyłączony lub w production, od razu ukryj
     if (!enableLoadingOverlay || isProduction) {

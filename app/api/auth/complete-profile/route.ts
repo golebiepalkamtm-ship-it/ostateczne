@@ -38,18 +38,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
     }
 
+    // Pobierz pełne dane użytkownika, aby sprawdzić czy możemy podnieść rolę
+    const currentUser = await prisma.user.findFirst({
+      where: { firebaseUid: decodedToken.uid },
+      select: { id: true, isPhoneVerified: true, isActive: true, role: true },
+    });
+
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Użytkownik nie został znaleziony' }, { status: 404 });
+    }
+
     // Aktualizuj profil użytkownika
+    const dataToUpdate: any = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      address: address.trim(),
+      city: city?.trim() || null,
+      postalCode: postalCode?.trim() || null,
+      phoneNumber: phoneNumber?.trim() || null,
+      isProfileVerified: true,
+    };
+
+    // Podnieś rolę do USER_FULL_VERIFIED tylko jeśli:
+    // - telefon jest zweryfikowany
+    // - użytkownik jest aktywny
+    // - nie jest już USER_FULL_VERIFIED ani ADMIN
+    if (
+      currentUser.isPhoneVerified &&
+      currentUser.isActive &&
+      currentUser.role !== 'USER_FULL_VERIFIED' &&
+      currentUser.role !== 'ADMIN'
+    ) {
+      dataToUpdate.role = 'USER_FULL_VERIFIED';
+    }
+
     const updatedUser = await prisma.user.update({
-      where: { id: dbUser.id },
-      data: {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        address: address.trim(),
-        city: city?.trim() || null,
-        postalCode: postalCode?.trim() || null,
-        phoneNumber: phoneNumber?.trim() || null,
-        isProfileVerified: true, // Oznacz profil jako zweryfikowany po uzupełnieniu
-      },
+      where: { id: currentUser.id },
+      data: dataToUpdate,
     });
 
     return NextResponse.json({
@@ -65,6 +90,7 @@ export async function POST(request: NextRequest) {
         phoneNumber: updatedUser.phoneNumber,
         isProfileVerified: updatedUser.isProfileVerified,
         isPhoneVerified: updatedUser.isPhoneVerified,
+        role: updatedUser.role,
       },
     });
   } catch (error) {

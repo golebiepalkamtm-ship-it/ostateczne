@@ -47,11 +47,11 @@ export default function FirebaseAuthForm({
     const emailVerified = searchParams.get('emailVerified') === 'true';
     if (verified && emailVerified) {
       setSuccess(
-        '✅ Email został pomyślnie zweryfikowany! Jesteś już zalogowany. Przejdź do panelu użytkownika, aby uzupełnić dane i zweryfikować numer telefonu.'
+        '✅ Email zweryfikowany! Poziom 2 odblokowany. Teraz możesz przejść do Panelu Użytkownika. Aby uzyskać pełny dostęp do aukcji (Poziom 3), uzupełnij profil i zweryfikuj telefon.'
       );
     } else if (verified) {
       setSuccess(
-        '✅ Email został pomyślnie zweryfikowany! Jesteś już zalogowany. Przejdź do panelu użytkownika, aby uzupełnić dane i zweryfikować numer telefonu.'
+        '✅ Email zweryfikowany! Poziom 2 odblokowany. Teraz możesz przejść do Panelu Użytkownika. Aby uzyskać pełny dostęp do aukcji (Poziom 3), uzupełnij profil i zweryfikuj telefon.'
       );
     }
   }, [searchParams]);

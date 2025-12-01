@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { GlowingEdgeCard } from '@/components/ui/GlowingEdgeCard';
 
 type AchievementTimelineEntry = {
   label: string;
@@ -76,30 +77,130 @@ function TimelineCard({ item, align }: TimelineCardProps) {
   const { ref, isVisible } = useScrollReveal();
 
   return (
-    <div className="relative md:grid md:grid-cols-2 md:gap-12 max-w-7xl mx-auto">
+    <div className="relative max-w-7xl mx-auto">
       <span
         aria-hidden="true"
-        className="absolute left-4 top-8 z-20 h-5 w-5 -translate-x-1/2 rounded-full border border-white/40 bg-gradient-to-br from-white via-sky-200 to-blue-400 shadow-glow md:left-1/2"
+        className="absolute left-4 top-8 z-20 h-4 w-4 -translate-x-1/2 rounded-full border border-white/30 bg-gradient-to-br from-white via-sky-200 to-blue-400 md:left-1/2"
       >
-        <span className="absolute inset-0 rounded-full bg-white/20 blur-md" />
+        <span className="absolute inset-0 rounded-full bg-white/10 blur-sm" />
       </span>
 
-      <article
-        ref={ref}
-        className={mergeClasses(
-          'glass-morphism relative z-10 w-full overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-8 pl-14 text-white shadow-2xl transition-all duration-500 hover:border-white hover:shadow-[0_0_60px_20px_rgba(255,255,255,1),0_0_100px_30px_rgba(255,255,255,0.7)]',
-          'backdrop-blur-2xl',
-          'before:absolute before:inset-0 before:skew-x-12 before:bg-white/10 before:opacity-0 before:transition-all before:duration-700 hover:before:animate-[shimmer_1.5s_infinite]',
-          align === 'left'
-            ? 'md:col-start-1 md:justify-self-end md:pr-16 md:text-right'
-            : 'md:col-start-2 md:justify-self-start md:pl-16',
-          // Jeśli niewidoczny, ustaw opacity-0 (żeby nie było go widać przed animacją).
-          // Jeśli widoczny, dodaj animację fade-in-fwd.
-          !isVisible && 'opacity-0',
-          isVisible && 'fade-in-fwd'
-        )}
-      >
-        <div className="flex flex-col gap-2 text-left md:text-inherit">
+      <div className={mergeClasses(
+        "relative",
+        align === 'left'
+          ? 'md:w-[calc(50%-3rem)] md:ml-0 md:mr-auto'
+          : 'md:w-[calc(50%-3rem)] md:ml-auto md:mr-0'
+      )}>
+        {/* Warstwa 9 - najgłębsza */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/15 bg-gradient-to-br from-white/0.2 via-white/0.1 to-transparent backdrop-blur-xs"
+          style={{ 
+            transform: 'translateX(13.5px) translateY(6.75px) translateZ(-13.5px)', 
+            zIndex: 1 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 8 */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/17 bg-gradient-to-br from-white/0.7 via-white/0.4 to-transparent backdrop-blur-xs"
+          style={{ 
+            transform: 'translateX(12px) translateY(6px) translateZ(-12px)', 
+            zIndex: 2 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 7 */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/18 bg-gradient-to-br from-white/0.8 via-white/0.45 to-transparent backdrop-blur-xs"
+          style={{ 
+            transform: 'translateX(10.5px) translateY(5.25px) translateZ(-10.5px)', 
+            zIndex: 3 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 6 */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/20 bg-gradient-to-br from-white/1 via-white/0.5 to-transparent backdrop-blur-xs"
+          style={{ 
+            transform: 'translateX(9px) translateY(4.5px) translateZ(-9px)', 
+            zIndex: 4 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 5 */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/25 bg-gradient-to-br from-white/2 via-white/0.8 to-transparent backdrop-blur-sm"
+          style={{ 
+            transform: 'translateX(7px) translateY(3.5px) translateZ(-7px)', 
+            zIndex: 5 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 4 */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/30 bg-gradient-to-br from-white/3 via-white/1 to-transparent backdrop-blur-sm"
+          style={{ 
+            transform: 'translateX(5px) translateY(2.5px) translateZ(-5px)', 
+            zIndex: 6 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 3 */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/35 bg-gradient-to-br from-white/4 via-white/1.2 to-transparent backdrop-blur-md"
+          style={{ 
+            transform: 'translateX(3.5px) translateY(1.75px) translateZ(-3.5px)', 
+            zIndex: 7 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 2 */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/45 bg-gradient-to-br from-white/6 via-white/2 to-transparent backdrop-blur-lg"
+          style={{ 
+            transform: 'translateX(2px) translateY(1px) translateZ(-2px)', 
+            zIndex: 8 
+          }}
+          aria-hidden="true"
+        />
+        
+        {/* Warstwa 1 - najbliżej głównej */}
+        <div 
+          className="absolute inset-0 rounded-3xl border-2 border-white/55 bg-gradient-to-br from-white/8 via-white/3 to-transparent backdrop-blur-xl"
+          style={{ 
+            transform: 'translateX(1px) translateY(0.5px) translateZ(-1px)', 
+            zIndex: 9 
+          }}
+          aria-hidden="true"
+        />
+
+        <article
+          ref={ref}
+          className={mergeClasses(
+            'glass-morphism relative z-[10] w-full rounded-3xl border-2 border-white/20 bg-gradient-to-br from-white/5 via-white/2 to-transparent p-8 text-white transition-all duration-[2000ms]',
+            'backdrop-blur-2xl',
+            align === 'left'
+              ? 'md:pr-16 md:text-right pl-14'
+              : 'md:pl-16 pl-14',
+            !isVisible && 'opacity-0 translate-z-[-200px] scale-50',
+            isVisible && 'opacity-100 translate-z-0 scale-100'
+          )}
+          style={{
+            transform: !isVisible ? 'translateZ(-200px) scale(0.5)' : 'translateZ(0) scale(1)',
+            transition: 'all 2000ms cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}
+        >
+        <div className={mergeClasses(
+          "flex flex-col gap-2",
+          align === 'left' ? 'text-left md:text-right' : 'text-left'
+        )}>
           <div
             className={mergeClasses(
               'flex flex-wrap items-baseline gap-3',
@@ -110,11 +211,11 @@ function TimelineCard({ item, align }: TimelineCardProps) {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-5 rounded-2xl border border-white/10 bg-white/5 p-6 text-lg text-white/80 shadow-inner">
+        <div className="mt-6 grid gap-5 rounded-2xl border border-white/10 bg-white/5 p-6 text-lg text-white/80">
           {item.groups.map((group) => (
             <div
               key={`${item.year}-${group.title}`}
-              className="rounded-xl border border-white/5 bg-black/20 p-5 shadow-soft"
+              className="rounded-xl border border-white/5 bg-black/20 p-5"
             >
               <p className="text-base md:text-lg font-semibold uppercase tracking-[0.3em] text-white/60 mb-4">
                 {group.title}
@@ -156,6 +257,7 @@ function TimelineCard({ item, align }: TimelineCardProps) {
           ))}
         </div>
       </article>
+      </div>
     </div>
   );
 }
@@ -170,7 +272,11 @@ export function AchievementTimeline({ items, className = '' }: AchievementTimeli
       )}
     >
       {items.map((item, index) => (
-        <TimelineCard key={item.year} item={item} align={index % 2 === 0 ? 'left' : 'right'} />
+        <TimelineCard
+          key={item.year}
+          item={item}
+          align={index % 2 === 0 ? 'left' : 'right'}
+        />
       ))}
     </section>
   );
@@ -640,7 +746,7 @@ export const achievementsTimelineData: AchievementTimelineItem[] = [
     label: 'Chronologia 2014',
     title: 'Mistrzostwo w każdej strukturze',
     description:
-      'Ten sam wynik w Oddziale, Okręgu, Regionie i MP – kat. A i B wygrane na każdym poziomie.',
+      'Ten sam wynik w Oddziale, Okregu, Regionie i MP – kat. A i B wygrane na kazdym poziomie.',
     groups: [
       {
         title: 'Oddział Łużyce Lubań 0446',
@@ -730,7 +836,7 @@ export const achievementsTimelineData: AchievementTimelineItem[] = [
   {
     year: '2018',
     label: 'Chronologia 2018',
-    title: 'Seria zwycięstw młodych w Kwsia',
+    title: 'Seria zwycięstw młodych w Kwisa',
     description:
       'Mistrzostwa w kat. A i B oraz wyróżnienia dla młodych gołębi w całej Polsce.',
     groups: [

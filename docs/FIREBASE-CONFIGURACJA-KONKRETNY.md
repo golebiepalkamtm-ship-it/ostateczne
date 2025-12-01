@@ -15,7 +15,7 @@ FIREBASE_PRIVATE_KEY="..." (z pliku JSON)
 ### 1. Sprawdź Client SDK values:
 
 1. Otwórz: https://console.firebase.google.com/
-2. Projekt: **pigeon-aucion-41d68**
+2. Projekt: **mtm-62972**
 3. ⚙️ **Settings** → **Project settings**
 4. **Your apps** → kliknij aplikację web (lub utwórz jeśli nie ma)
 5. Skopiuj wartości z sekcji **SDK setup and configuration** → **npm**
@@ -25,9 +25,9 @@ FIREBASE_PRIVATE_KEY="..." (z pliku JSON)
 Sprawdź czy w `.env.local` są **dokładnie** te same wartości:
 
 - `NEXT_PUBLIC_FIREBASE_API_KEY` = powinno być z Firebase Console
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` = `pigeon-aucion-41d68.firebaseapp.com`
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` = `pigeon-aucion-41d68`
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` = `pigeon-aucion-41d68.firebasestorage.app`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` = `mtm-62972.firebaseapp.com`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` = `mtm-62972`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` = `mtm-62972.firebasestorage.app`
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` = powinno być z Firebase Console
 - `NEXT_PUBLIC_FIREBASE_APP_ID` = powinno być z Firebase Console
 
@@ -63,9 +63,9 @@ Sprawdź czy w `.env.local` są **dokładnie** te same wartości:
 ```env
 # Firebase Configuration (Client SDK - z Firebase Console)
 NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSy..." # ⚠️ SPRAWDŹ W FIREBASE CONSOLE
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="pigeon-aucion-41d68.firebaseapp.com"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="pigeon-aucion-41d68"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="pigeon-aucion-41d68.firebasestorage.app"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="mtm-62972.firebaseapp.com"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="mtm-62972"
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="mtm-62972.firebasestorage.app"
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="151771999775" # ⚠️ SPRAWDŹ W FIREBASE CONSOLE
 NEXT_PUBLIC_FIREBASE_APP_ID="1:151771999775:web:..." # ⚠️ SPRAWDŹ W FIREBASE CONSOLE
 

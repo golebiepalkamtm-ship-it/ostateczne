@@ -7,7 +7,7 @@ import { UnifiedCard } from '@/components/ui/UnifiedCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppStore, useError, useFilteredAuctions, useLoading } from '@/store/useAppStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Calendar, Gavel, LayoutGrid, List, Plus, Search } from 'lucide-react';
+import { Calendar, Gavel, Plus, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -63,7 +63,6 @@ export function AuctionsPage() {
   const [filterStatus, setFilterStatus] = useState<
     'all' | 'ACTIVE' | 'ENDED' | 'CANCELLED' | 'PENDING'
   >('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list'); // Domyślnie lista
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [nowTs, setNowTs] = useState<number>(Date.now());
   // const [bidAmounts, setBidAmounts] = useState<Record<string, string>>({}) // unused

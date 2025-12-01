@@ -9,9 +9,10 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FileText, HelpCircle, LucideImage, Video, X } from 'lucide-react';
+import { FileText, LucideImage, Video, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { UnifiedCard } from '@/components/ui/UnifiedCard';
+import { InfoTooltip } from '@/components/ui/InfoTooltip';
 import { auctionCreateSchema } from '@/lib/validations/schemas';
 import { debug, error, isDev } from '@/lib/logger';
 

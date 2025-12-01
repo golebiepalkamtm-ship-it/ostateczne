@@ -1,0 +1,243 @@
+/* ========================================
+   POKEMON-STYLE HOLOGRAPHIC CARD EFFECTS
+   ======================================== */
+
+/* Base holographic shine effect */
+@keyframes holographic-shine {
+  0% {
+    background-position: 0% 50%, 50% 50%;
+  }
+  50% {
+    background-position: 100% 50%, 50% 50%;
+  }
+  100% {
+    background-position: 0% 50%, 50% 50%;
+  }
+}
+
+/* Sparkle/glitter animation */
+@keyframes sparkle-drift {
+  0%, 100% {
+    opacity: 0.15;
+    transform: translateZ(8px) scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    transform: translateZ(10px) scale(1.05);
+  }
+}
+
+/* Rainbow gradient shift */
+@keyframes rainbow-shift {
+  0% {
+    filter: hue-rotate(0deg) brightness(1.1);
+  }
+  50% {
+    filter: hue-rotate(180deg) brightness(1.2);
+  }
+  100% {
+    filter: hue-rotate(360deg) brightness(1.1);
+  }
+}
+
+/* Utility classes for holographic effects */
+.holographic-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+.holographic-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.holographic-card:hover::before {
+  opacity: 1;
+  animation: holographic-shine 3s ease-in-out infinite;
+}
+
+/* Shine layer with rainbow gradient */
+.holographic-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 100, 200, 0.3),
+    rgba(100, 200, 255, 0.3),
+    rgba(255, 255, 100, 0.3),
+    rgba(100, 255, 200, 0.3)
+  );
+  background-size: 300% 300%;
+  mix-blend-mode: color-dodge;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.holographic-card:hover .holographic-shine {
+  opacity: 0.6;
+  animation: rainbow-shift 4s ease-in-out infinite;
+}
+
+/* Glare effect that follows mouse */
+.holographic-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 400px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.3) 20%,
+    transparent 60%
+  );
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.holographic-card:hover .holographic-glare {
+  opacity: 1;
+}
+
+/* Sparkle/glitter overlay */
+.holographic-sparkle {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle, rgba(200, 220, 255, 0.6) 1px, transparent 1px);
+  background-size: 40px 40px, 60px 60px;
+  background-position: 0% 0%, 50% 50%;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.holographic-card:hover .holographic-sparkle {
+  opacity: 0.2;
+  animation: sparkle-drift 6s ease-in-out infinite;
+}
+
+/* Border highlight effect */
+.holographic-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    var(--border-angle, 135deg),
+    rgba(255, 255, 255, 0.5),
+    transparent 30%
+  );
+  mask: linear-gradient(white, white) content-box, linear-gradient(white, white);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.holographic-card:hover .holographic-border {
+  opacity: 1;
+}
+
+/* Perspective wrapper for 3D effect */
+.holographic-wrapper {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Content layer with depth */
+.holographic-content {
+  position: relative;
+  z-index: 10;
+  transform: translateZ(20px);
+}
+
+/* Variant: Subtle (less intense) */
+.holographic-card.holographic-subtle .holographic-shine {
+  opacity: 0.3;
+}
+
+.holographic-card.holographic-subtle:hover .holographic-glare {
+  opacity: 0.5;
+}
+
+.holographic-card.holographic-subtle:hover .holographic-sparkle {
+  opacity: 0.1;
+}
+
+/* Variant: Intense (maximum effect) */
+.holographic-card.holographic-intense .holographic-shine {
+  opacity: 0.8;
+}
+
+.holographic-card.holographic-intense:hover .holographic-glare {
+  opacity: 1;
+}
+
+.holographic-card.holographic-intense:hover .holographic-sparkle {
+  opacity: 0.3;
+}
+
+/* Accessibility: Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .holographic-card,
+  .holographic-card::before,
+  .holographic-shine,
+  .holographic-glare,
+  .holographic-sparkle,
+  .holographic-border {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Performance optimization */
+.holographic-card,
+.holographic-card::before,
+.holographic-shine,
+.holographic-glare,
+.holographic-sparkle,
+.holographic-border {
+  will-change: transform, opacity;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .holographic-glare {
+    background: radial-gradient(
+      circle 400px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0.2) 20%,
+      transparent 60%
+    );
+  }
+
+  .holographic-sparkle {
+    background-image: 
+      radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+      radial-gradient(circle, rgba(200, 220, 255, 0.4) 1px, transparent 1px);
+  }
+}

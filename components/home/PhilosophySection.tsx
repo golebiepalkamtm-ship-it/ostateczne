@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Heart, Quote, Target, Users } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
+import { GlowingEdgeCard } from '@/components/ui/GlowingEdgeCard';
 const philosophyValues = [
   {
     icon: Heart,
@@ -36,7 +37,7 @@ export function PhilosophySection() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true, amount: 0.3 }}
           >
-            <div className="glass-container p-8 rounded-2xl">
+            <GlowingEdgeCard className="p-8">
               <div className="mb-10">
                 <Quote className="w-12 h-12 text-primary-400 mb-6" />
                 <blockquote className="text-xl sm:text-2xl font-display font-medium text-white leading-relaxed border-l-4 border-primary-400 pl-6 mb-8">
@@ -62,7 +63,7 @@ export function PhilosophySection() {
                 <span>Poznaj Naszą Historię</span>
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
-            </div>
+            </GlowingEdgeCard>
           </motion.div>
 
           {/* Right Column - Values */}
@@ -80,19 +81,20 @@ export function PhilosophySection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="glass-container p-6 rounded-2xl flex items-start space-x-6 hover:bg-white/20 transition-colors duration-300"
               >
-                <div className="flex-shrink-0 w-14 h-14 bg-white/10 rounded-lg flex items-center justify-center ring-1 ring-white/20">
-                  <value.icon className="w-7 h-7 text-primary-400 animate-glow3D" />
-                </div>
-                <React.Fragment>
-                  <div>
-                    <h3 className="font-display font-bold text-xl text-white">{value.title}</h3>
-                    <p className="text-secondary-200 leading-relaxed mt-1 text-base">
-                      {value.description}
-                    </p>
+                <GlowingEdgeCard className="p-6 flex items-start space-x-6">
+                  <div className="flex-shrink-0 w-14 h-14 bg-white/10 rounded-lg flex items-center justify-center ring-1 ring-white/20">
+                    <value.icon className="w-7 h-7 text-primary-400 animate-glow3D" />
                   </div>
-                </React.Fragment>
+                  <React.Fragment>
+                    <div>
+                      <h3 className="font-display font-bold text-xl text-white">{value.title}</h3>
+                      <p className="text-secondary-200 leading-relaxed mt-1 text-base">
+                        {value.description}
+                      </p>
+                    </div>
+                  </React.Fragment>
+                </GlowingEdgeCard>
               </motion.div>
             ))}
           </motion.div>

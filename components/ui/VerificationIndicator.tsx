@@ -113,19 +113,27 @@ export function VerificationBanner() {
   if (allVerified) return null;
 
   const getNextStep = () => {
+    if (!status.emailVerified) {
+      return {
+        title: '📧 Poziom 1: Zweryfikuj email',
+        description: 'Kliknij link w emailu, aby uzyskać dostęp do Panelu Użytkownika (Poziom 2)',
+        link: '/profile',
+        icon: Shield,
+      };
+    }
     if (!status.profileComplete) {
       return {
-        title: 'Uzupełnij swój profil',
-        description: 'Dodaj swoje dane osobowe i adres, aby móc korzystać z platformy',
-        link: '/auth/complete-profile',
+        title: '👤 Poziom 2: Uzupełnij profil',
+        description: 'Dodaj dane osobowe i adres, aby przejść do weryfikacji telefonu (Poziom 3)',
+        link: '/profile?tab=profile&edit=true',
         icon: User,
       };
     }
     if (!status.phoneVerified) {
       return {
-        title: 'Zweryfikuj numer telefonu',
-        description: 'Zweryfikuj swój numer telefonu SMS, aby uzyskać pełny dostęp',
-        link: '/auth/verify-phone',
+        title: '📱 Poziom 3: Zweryfikuj telefon',
+        description: 'Potwierdź numer telefonu przez SMS, aby uzyskać pełny dostęp do aukcji i licytacji',
+        link: '/profile?tab=profile',
         icon: Phone,
       };
     }
@@ -147,13 +155,17 @@ export function VerificationBanner() {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-white mb-1">{nextStep.title}</h3>
-          <p className="text-sm text-white/70 mb-3">{nextStep.description}</p>
+          <p className="text-sm text-white/70 mb-2">{nextStep.description}</p>
+          <div className="text-xs text-white/50 mb-3">
+            <p>💡 System 3-poziomowej weryfikacji:</p>
+            <p>• Poziom 1: Rejestracja → Poziom 2: Email + Panel → Poziom 3: Telefon + Pełny dostęp</p>
+          </div>
           <Link
             href={nextStep.link}
             className="inline-flex items-center px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-sm rounded-lg transition-colors"
           >
             <Shield className="w-4 h-4 mr-2" />
-            Przejdź do weryfikacji
+            Kontynuuj weryfikację
           </Link>
         </div>
       </div>

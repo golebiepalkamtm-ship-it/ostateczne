@@ -4,7 +4,6 @@ import { UserStatus } from '@/components/auth/UserStatus';
 import { Footer } from '@/components/layout/Footer';
 import { LogoGlow } from '@/components/layout/LogoGlow';
 import { VerificationBanner, VerificationIndicator } from '@/components/ui/VerificationIndicator';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import Image from 'next/image';
@@ -20,27 +19,6 @@ const navItems = [
   { href: '/about', icon: 'fas fa-info-circle', title: 'O nas', label: 'O Nas' },
   { href: '/contact', icon: 'fas fa-envelope', title: 'Kontakt', label: 'Kontakt' },
 ];
-
-const navContainerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.04,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const navItemVariants = {
-  hidden: { opacity: 0, x: -50, rotate: -90 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    rotate: 0,
-    transition: { duration: 1.5, ease: [0.4, 0, 0.2, 1] as const },
-  },
-};
 
 interface UnifiedLayoutProps {
   children: ReactNode;

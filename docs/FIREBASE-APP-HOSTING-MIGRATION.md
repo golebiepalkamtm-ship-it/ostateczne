@@ -28,7 +28,7 @@ Aplikacja została skonfigurowana do deploymentu na **Firebase App Hosting**, kt
    ```json
    {
      "projects": {
-       "default": "pigeon-aucion-41d68"
+       "default": "mtm-62972"
      }
    }
    ```

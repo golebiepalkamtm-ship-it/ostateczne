@@ -9,7 +9,7 @@ Link weryfikacyjny email nie działa, ponieważ `FIREBASE_PRIVATE_KEY` w pliku `
 ### Krok 1: Przejdź do Firebase Console
 
 1. Otwórz: https://console.firebase.google.com/
-2. Wybierz projekt: **pigeon-aucion-41d68**
+2. Wybierz projekt: **mtm-62972**
 
 ### Krok 2: Znajdź Service Accounts
 
@@ -39,7 +39,7 @@ Pod tym będzie przycisk:
 2. Pojawi się ostrzeżenie:
    > "This key will allow access to your Firebase project. Keep it confidential..."
 3. Kliknij **"Generate Key"**
-4. Pobierze się plik: `pigeon-aucion-41d68-firebase-adminsdk-xxxxx.json`
+4. Pobierze się plik: `mtm-62972-firebase-adminsdk-xxxxx.json`
 
 ### Krok 4: Otwórz Pobrany Plik JSON
 
@@ -48,10 +48,10 @@ Plik będzie zawierał:
 ```json
 {
   "type": "service_account",
-  "project_id": "pigeon-aucion-41d68",
+  "project_id": "mtm-62972",
   "private_key_id": "abc123def456...",
   "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n[DUŻO WIĘCEJ TEKSTU - około 1700 znaków]\n...==\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-fbsvc@pigeon-aucion-41d68.iam.gserviceaccount.com",
+  "client_email": "firebase-adminsdk-xxxxx@mtm-62972.iam.gserviceaccount.com",
   "client_id": "...",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
@@ -69,8 +69,8 @@ Plik będzie zawierał:
 
 ```bash
 # KONFIGURACJA FIREBASE (ADMIN SDK - SERWER)
-FIREBASE_PROJECT_ID=pigeon-aucion-41d68
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@pigeon-aucion-41d68.iam.gserviceaccount.com
+FIREBASE_PROJECT_ID=mtm-62972
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@mtm-62972.iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...[CAŁY KLUCZ Z JSON]...==\n-----END PRIVATE KEY-----\n"
 ```
 

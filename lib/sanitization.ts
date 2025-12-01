@@ -44,7 +44,6 @@ export function sanitizeUrl(url: string): string {
 /**
  * Sanityzuje obiekt rekurencyjnie
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
   if (!obj || typeof obj !== 'object') {
     return obj;

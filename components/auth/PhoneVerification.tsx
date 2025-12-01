@@ -238,11 +238,24 @@ export function PhoneVerification({ user, onVerificationComplete }: PhoneVerific
             </p>
           </div>
         </div>
-        <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
-          <p className="text-green-300 text-sm">
-            ✅ Weryfikacja telefonu została zakończona pomyślnie. Masz teraz pełny dostęp do
-            wszystkich funkcji platformy.
-          </p>
+        <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-lg p-6">
+          <div className="flex items-start gap-3">
+            <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+            <div>
+              <p className="text-green-300 font-semibold mb-2">
+                🎉 Weryfikacja zakończona! Osiągnąłeś Poziom 3!
+              </p>
+              <p className="text-green-300/80 text-sm">
+                Masz teraz pełny dostęp do wszystkich funkcji platformy:
+              </p>
+              <ul className="text-green-300/70 text-sm mt-2 space-y-1">
+                <li>✓ Tworzenie i zarządzanie aukcjami</li>
+                <li>✓ Licytowanie gołębi</li>
+                <li>✓ Dodawanie recenzji i opinii</li>
+                <li>✓ Bezpośredni kontakt z innymi hodowcami</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </motion.div>
     );

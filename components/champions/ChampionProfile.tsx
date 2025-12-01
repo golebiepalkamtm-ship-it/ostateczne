@@ -4,6 +4,8 @@ import ImageModal from '@/components/ImageModal';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { AnimatePresence, motion } from 'framer-motion';
+import { GlowingEdgeCard } from '@/components/ui/GlowingEdgeCard';
+import { InteractiveCard } from '@/components/ui/InteractiveCard';
 import { Calendar, Heart, MapPin, Play, Share2, Trophy, Users, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
