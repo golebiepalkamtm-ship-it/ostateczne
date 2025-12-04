@@ -47,6 +47,7 @@ export default function ImageModal({
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const prevIndexRef = useRef<number | undefined>(currentIndex);
+  const flightDoneRef = useRef(false);
   
   // Detect navigation direction based on index change
   useEffect(() => {
@@ -72,7 +73,21 @@ export default function ImageModal({
     
     setIsBrowser(true);
     
-    console.log('ImageModal: Initializing', { sourceElement: !!sourceElement, sourceRect: !!sourceRect });
+    console.log('ImageModal: ===== INITIALIZING =====');
+    console.log('ImageModal: Image data:', { id: image.id, src: image.src, alt: image.alt });
+    console.log('ImageModal: Props:', { 
+      sourceElement: !!sourceElement, 
+      hasOnPrevious: !!onPrevious,
+      hasOnNext: !!onNext,
+      sourceRect: !!sourceRect,
+      sourceRectDetails: sourceRect ? {
+        width: sourceRect.width,
+        height: sourceRect.height,
+        left: sourceRect.left,
+        top: sourceRect.top
+      } : null
+    });
+    console.log('ImageModal: Starting initialization process...');
 
     // Skip animation if no source element OR invalid sourceRect - go directly to modal
     if (!sourceElement || !sourceRect || sourceRect.width === 0) {
@@ -82,21 +97,8 @@ export default function ImageModal({
       return;
     }
 
-    console.log('ImageModal: Starting 4s flight animation');
-    
-    // Zdjęcie leci 4s (BEZ modala w tle)
-    // Po zakończeniu lotu (4000ms) pokazujemy modal + tło jednocześnie
-    const modalTimer = setTimeout(() => {
-      console.log('ImageModal: Flight complete, showing modal');
-      setAnimationPhase('modal');
-      setShowBackground(true);
-    }, 4000);
-
-    // Krótko po pojawieniu się modalu (4200ms) pokazujemy kontrolki
-    const completeTimer = setTimeout(() => {
-      console.log('ImageModal: Showing controls');
-      setAnimationPhase('complete');
-    }, 4200);
+    // Sterowanie przejściem do modala po zakończeniu animacji lotu
+    // zostało przeniesione do onAnimationComplete na obrazie (bez setTimeout)
 
     // Lock scroll
     const scrollY = window.scrollY;
@@ -122,11 +124,9 @@ export default function ImageModal({
       } catch {
         /* ignore */
       }
-    }, 0);
+    }, 4500);
 
     return () => {
-      clearTimeout(modalTimer);
-      clearTimeout(completeTimer);
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
@@ -184,6 +184,15 @@ export default function ImageModal({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onPrevious, onNext, hasPrevious, hasNext]);
+
+  // Ustaw focus na przycisku zamknięcia po pełnym pokazaniu modala
+  useEffect(() => {
+    if (animationPhase === 'complete') {
+      setTimeout(() => {
+        try { closeButtonRef.current?.focus(); } catch {}
+      }, 100);
+    }
+  }, [animationPhase]);
 
   const handleZoomIn = () => {
     setZoomLevel((prev: number) => Math.min(prev + 0.5, 3));
@@ -257,11 +266,19 @@ export default function ImageModal({
 
   if (!isBrowser) return null;
 
-  const isFlying = animationPhase === 'flying' && sourceRect && sourceRect.width > 0;
+  const isFlying = (animationPhase === 'flying' || animationPhase === 'modal') && sourceRect && sourceRect.width > 0;
   const showModal = animationPhase === 'modal' || animationPhase === 'complete';
   const animationComplete = animationPhase === 'complete';
   
-  console.log('ImageModal render:', { animationPhase, isFlying, showModal, animationComplete });
+  console.log('ImageModal render:', { 
+    animationPhase, 
+    isFlying, 
+    showModal, 
+    animationComplete,
+    sourceRectExists: !!sourceRect,
+    sourceRectWidth: sourceRect?.width,
+    isBrowser: isBrowser 
+  });
 
   return ReactDOM.createPortal(
     <>
@@ -311,7 +328,7 @@ export default function ImageModal({
                 x: startOffsetX,
                 y: startOffsetY,
                 scale: startScale,
-                opacity: 1,
+                opacity: 0,
               }}
               animate={{
                 // Kończymy w centrum (offset = 0)
@@ -324,31 +341,40 @@ export default function ImageModal({
                 duration: 4,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
+              onAnimationStart={() => {
+                // Start modal background after 2 seconds
+                setTimeout(() => {
+                  setAnimationPhase('modal');
+                  setShowBackground(true);
+                }, 2000);
+              }}
+              onAnimationComplete={() => {
+                if (flightDoneRef.current) return;
+                flightDoneRef.current = true;
+                setAnimationPhase('complete');
+              }}
             />
           </motion.div>
         );
       })()}
 
       {/* Modal z tłem - pokazuje się DOPIERO po zakończeniu lotu zdjęcia */}
-      <AnimatePresence>
-        {showModal && (
-          <motion.div
-            className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
-            initial={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
-            animate={{
-              backgroundColor: showBackground ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0)',
-            }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-            onClick={handleBackdropClick}
-            style={{
-              pointerEvents: animationComplete ? 'auto' : 'none',
-            }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="image-modal-title"
-            aria-describedby="image-modal-description"
-          >
+      {showModal && (
+        <motion.div
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/95"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: showModal || animationPhase === 'complete' ? 1 : 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          onClick={handleBackdropClick}
+          style={{
+            pointerEvents: 'auto',
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="image-modal-title"
+          aria-describedby="image-modal-description"
+        >
             {/* Accessibility labels */}
             <h2 id="image-modal-title" className="sr-only">
               {image.alt || 'Podgląd zdjęcia'}
@@ -383,7 +409,7 @@ export default function ImageModal({
                     className="max-w-full max-h-full object-contain"
                     initial={{
                       x: slideDirection === 'left' ? 300 : slideDirection === 'right' ? -300 : 0,
-                      opacity: 0,
+                      opacity: slideDirection ? 0 : 1,
                       scale: zoomLevel,
                     }}
                     animate={{
@@ -415,8 +441,10 @@ export default function ImageModal({
                 </AnimatePresence>
               </div>
         {animationComplete && (
-          <div className="absolute top-4 left-4 flex items-center space-x-2 z-10">
+          <div className="absolute top-4 left-4 flex items-center space-x-2 z-[100001] pointer-events-auto">
             <button
+              type="button"
+              onMouseDown={e => e.stopPropagation()}
               onClick={handleZoomOut}
               disabled={zoomLevel <= 0.5}
               className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -426,6 +454,8 @@ export default function ImageModal({
             </button>
 
             <button
+              type="button"
+              onMouseDown={e => e.stopPropagation()}
               onClick={handleResetZoom}
               className="px-3 py-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors text-sm"
               aria-label="Resetuj zoom"
@@ -434,6 +464,8 @@ export default function ImageModal({
             </button>
 
             <button
+              type="button"
+              onMouseDown={e => e.stopPropagation()}
               onClick={handleZoomIn}
               disabled={zoomLevel >= 3}
               className="p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -454,13 +486,15 @@ export default function ImageModal({
         {/* Close Button - show only after animation */}
         {animationComplete && (
           <button
+            type="button"
             ref={closeButtonRef}
+            onMouseDown={e => e.stopPropagation()}
             onClick={e => {
               e.stopPropagation();
               if (isDev) debug('Close button clicked');
               onClose();
             }}
-            className="absolute top-4 right-4 p-2 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors z-[100] cursor-pointer"
+            className="absolute top-4 right-4 p-2 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors z-[100001] pointer-events-auto cursor-pointer"
             aria-label="Zamknij"
           >
             <X size={24} />
@@ -469,8 +503,10 @@ export default function ImageModal({
 
         {/* Previous Button - show only after animation */}
         {animationComplete && onPrevious && hasPrevious && (
-          <div className="absolute left-0 top-0 w-20 h-full flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity duration-300 z-40 group">
+          <div className="absolute left-0 top-0 w-20 h-full flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity duration-300 z-[100] group">
             <button
+              type="button"
+              onMouseDown={e => e.stopPropagation()}
               onClick={onPrevious}
               className="p-4 rounded-full bg-black/80 text-white hover:bg-black/90 transition-all duration-200 hover:scale-110 shadow-lg"
               aria-label="Poprzednie zdjęcie"
@@ -489,8 +525,10 @@ export default function ImageModal({
 
         {/* Next Button - show only after animation */}
         {animationComplete && onNext && hasNext && (
-          <div className="absolute right-0 top-0 w-20 h-full flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity duration-300 z-40 group">
+          <div className="absolute right-0 top-0 w-20 h-full flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity duration-300 z-[100] group">
             <button
+              type="button"
+              onMouseDown={e => e.stopPropagation()}
               onClick={onNext}
               className="p-4 rounded-full bg-black/80 text-white hover:bg-black/90 transition-all duration-200 hover:scale-110 shadow-lg"
               aria-label="Następne zdjęcie"
@@ -507,9 +545,8 @@ export default function ImageModal({
           </div>
         )}
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+      )}
     </>,
     document.body
   );
