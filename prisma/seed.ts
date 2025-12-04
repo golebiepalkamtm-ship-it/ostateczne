@@ -4,7 +4,7 @@
  */
 
 import { PrismaClient, Role } from '@prisma/client';
-import * as Sentry from '@sentry/nextjs';
+import { captureError } from '../lib/sentry-helpers';
 
 const prisma = new PrismaClient();
 
@@ -78,7 +78,7 @@ async function seedRoles() {
 
   } catch (error) {
     console.error('❌ Error seeding roles:', error);
-    Sentry.captureException(error, { extra: { context: 'seed_roles' } });
+    captureError(error as Error, { context: 'seed_roles' });
     throw error;
   }
 }
@@ -117,7 +117,7 @@ async function main() {
 main()
   .catch((error) => {
     console.error('💥 Seeding failed:', error);
-    Sentry.captureException(error, { extra: { context: 'seed_main' } });
+    captureError(error as Error, { context: 'seed_main' });
     process.exit(1);
   })
   .finally(async () => {

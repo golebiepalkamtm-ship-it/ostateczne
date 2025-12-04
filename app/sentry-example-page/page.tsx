@@ -1,7 +1,6 @@
 'use client';
 
 import Head from 'next/head';
-import * as Sentry from '@sentry/nextjs';
 import { useState, useEffect } from 'react';
 
 // Force dynamic rendering to avoid Firebase initialization during build
@@ -20,8 +19,14 @@ export default function Page() {
 
   useEffect(() => {
     async function checkConnectivity() {
-      const result = await Sentry.diagnoseSdkConnectivity();
-      setIsConnected(result !== 'sentry-unreachable');
+      try {
+        const Sentry = await import('@sentry/nextjs');
+        const result = await Sentry.diagnoseSdkConnectivity();
+        setIsConnected(result !== 'sentry-unreachable');
+      } catch (err) {
+        // If Sentry is not available during build, keep connectivity true
+        setIsConnected(true);
+      }
     }
     checkConnectivity();
   }, []);
@@ -58,21 +63,27 @@ export default function Page() {
         <button
           type="button"
           onClick={async () => {
-            await Sentry.startSpan(
-              {
-                name: 'Example Frontend/Backend Span',
-                op: 'test',
-              },
-              async () => {
-                const res = await fetch('/api/sentry-example-api');
-                if (!res.ok) {
-                  setHasSentError(true);
+            try {
+              const Sentry = await import('@sentry/nextjs');
+              await Sentry.startSpan(
+                {
+                  name: 'Example Frontend/Backend Span',
+                  op: 'test',
+                },
+                async () => {
+                  const res = await fetch('/api/sentry-example-api');
+                  if (!res.ok) {
+                    setHasSentError(true);
+                  }
                 }
-              }
-            );
-            throw new SentryExampleFrontendError(
-              'This error is raised on the frontend of the example page.'
-            );
+              );
+              throw new SentryExampleFrontendError(
+                'This error is raised on the frontend of the example page.'
+              );
+            } catch (err) {
+              // ignore if Sentry is not available during build
+              console.warn('Sentry not available:', err);
+            }
           }}
           disabled={!isConnected}
         >

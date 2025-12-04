@@ -41,14 +41,23 @@ export function SmartImage({
   aspectRatio = 'auto',
   cropFocus = 'center',
 }: SmartImageProps) {
+  // Sprawdź czy src jest prawidłowy - nie modyfikuj URL-i zewnętrznych
+  const isValidSrc = src && typeof src === 'string' && src.trim() !== '';
+
+  // Next/Image nie obsługuje blob: (URL.createObjectURL) ani niektórych data: URL poprawnie
+  // Również API routes wymagają regularnych img tagów
+  const isBlobOrDataUrl = typeof src === 'string' && (/^blob:/.test(src) || /^data:/.test(src));
+  const isApiRoute = typeof src === 'string' && /^\/api\//.test(src);
+  const isLocalUrl = typeof src === 'string' && /^\/[^a]/.test(src) && !isApiRoute && !isBlobOrDataUrl;
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [isInView, setIsInView] = useState(priority);
+  const [isInView, setIsInView] = useState(priority || isApiRoute); // API routes load immediately
   const imgRef = useRef<HTMLDivElement>(null);
 
-  // Intersection Observer for lazy loading
+  // Intersection Observer for lazy loading (skip for API routes and priority images)
   useEffect(() => {
-    if (priority || isInView) return;
+    if (priority || isInView || isApiRoute) return;
 
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
       setIsInView(true);
@@ -83,7 +92,7 @@ export function SmartImage({
         // ignore
       }
     };
-  }, [priority, isInView, imgRef]);
+  }, [priority, isInView, imgRef, isApiRoute]);
 
   const handleLoad = () => {
     setIsLoaded(true);
@@ -118,9 +127,6 @@ export function SmartImage({
 
     return `${baseClasses} ${loadedClasses} ${fitClasses} ${aspectClasses}`;
   };
-
-  // Sprawdź czy src jest prawidłowy - nie modyfikuj URL-i zewnętrznych
-  const isValidSrc = src && typeof src === 'string' && src.trim() !== '';
 
   if (!isValidSrc) {
     return (
@@ -168,21 +174,32 @@ export function SmartImage({
 
       {/* Actual image */}
       {isInView && (
-        <Image
-          src={src}
-          alt={alt}
-          fill={fill}
-          width={!fill ? (width || 400) : undefined}
-          height={!fill ? (height || 300) : undefined}
-          className={getImageClasses()}
-          onLoad={handleLoad}
-          onError={handleError}
-          priority={priority}
-          quality={quality}
-          sizes={sizes}
-          placeholder={placeholder === 'blur' && blurDataURL ? 'blur' : 'empty'}
-          blurDataURL={blurDataURL}
-        />
+        isBlobOrDataUrl || isApiRoute || isLocalUrl ? (
+          <img
+            src={src}
+            alt={alt}
+            className={getImageClasses()}
+            onLoad={handleLoad}
+            onError={handleError}
+            {...(width && height && !fill ? { width, height } : {})}
+          />
+        ) : (
+          <Image
+            src={src}
+            alt={alt}
+            fill={fill}
+            width={!fill ? (width || 400) : undefined}
+            height={!fill ? (height || 300) : undefined}
+            className={getImageClasses()}
+            onLoad={handleLoad}
+            onError={handleError}
+            priority={priority}
+            quality={quality}
+            sizes={sizes}
+            placeholder={placeholder === 'blur' && blurDataURL ? 'blur' : 'empty'}
+            blurDataURL={blurDataURL}
+          />
+        )
       )}
 
       {/* Fade in animation */}

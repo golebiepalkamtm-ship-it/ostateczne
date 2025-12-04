@@ -1,4 +1,8 @@
 export async function register() {
+  // Avoid importing Sentry during the Next.js production build step
+  // Next sets NEXT_PHASE='phase-production-build' during build — bail out early
+  if (process.env.NEXT_PHASE === 'phase-production-build') return
+
   // W development wyłącz Sentry - usuwa webpack warnings
   if (process.env.NODE_ENV === 'production') {
     // Dynamic import - only loads in production, avoids webpack processing in dev

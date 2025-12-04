@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:20-bullseye-slim AS builder
 WORKDIR /app
 
 # Copy package files AND Prisma schema before install
@@ -17,13 +17,22 @@ COPY . .
 RUN npx next build
 
 # Production image
-FROM node:20-alpine
+FROM node:20-bullseye-slim
 WORKDIR /app
 
 # Copy package files and install ONLY production dependencies
 # Skip postinstall script (prisma generate) since we'll copy generated client
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev --ignore-scripts --legacy-peer-deps
+
+# Provide runtime stub for optional OpenTelemetry package if not present
+# (prevents MODULE_NOT_FOUND for @opentelemetry/instrumentation-http)
+COPY lib/stubs/opentelemetry-instrumentation-http.js ./node_modules/@opentelemetry/instrumentation-http/index.js
+
+# Ensure system OpenSSL libraries needed by Prisma native engines are available
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends libssl1.1 ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy Prisma Client and schema from builder
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
@@ -42,7 +51,18 @@ COPY --from=builder /app/public/workbox-*.js* ./public/
 
 # Copy entrypoint script (run migrations at startup)
 COPY scripts/docker-entrypoint.sh /usr/local/bin/
+# Copy startup diagnostic script so entrypoint can run it in runtime image
+COPY --from=builder /app/scripts/startup-diagnostic.js ./scripts/startup-diagnostic.js
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Some Next standalone bundles expect files under /workspace.
+# Create /workspace and symlink key folders so module resolution works
+RUN mkdir -p /workspace \
+  && ln -s /app/.next /workspace/.next || true \
+  && ln -s /app/node_modules /workspace/node_modules || true \
+  && ln -s /app/public /workspace/public || true \
+  && ln -s /app/prisma /workspace/prisma || true \
+  && ln -s /app/scripts /workspace/scripts || true
 
 EXPOSE 3000
 

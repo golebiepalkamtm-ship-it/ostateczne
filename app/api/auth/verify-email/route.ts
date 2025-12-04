@@ -4,7 +4,7 @@ import { getAuth } from 'firebase-admin/auth'
 import { getAdminApp } from '@/lib/firebase-admin'
 import { handleApiError } from '@/lib/error-handling'
 import { error as logError } from '@/lib/logger'
-import * as Sentry from '@sentry/nextjs'
+import { captureMessage } from '@/lib/sentry-helpers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const adminApp = getAdminApp()
     if (!adminApp) {
       logError('Firebase Admin App is not initialized for email verification.')
-      Sentry.captureMessage('CRITICAL: Firebase Admin App not initialized in verify-email.', 'fatal')
+      captureMessage('CRITICAL: Firebase Admin App not initialized in verify-email.', 'fatal')
       return NextResponse.json({ error: 'Serwis jest tymczasowo niedostępny.' }, { status: 503 })
     }
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Zostawiamy go na razie jako pusty, aby nie powodować błędów 404, ale logujemy ostrzeżenie.
     
     logError('Endpoint /api/auth/verify-email is deprecated and should not be called directly.')
-    Sentry.captureMessage('Deprecated endpoint /api/auth/verify-email was called.', 'warning')
+    captureMessage('Deprecated endpoint /api/auth/verify-email was called.', 'warning')
 
     // Zwracamy sukces, aby nie blokować przepływu po stronie klienta,
     // ale informujemy, że operacja jest przestarzała.

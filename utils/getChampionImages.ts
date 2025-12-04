@@ -24,7 +24,25 @@ export interface ChampionImageData {
 
 // Funkcja do skanowania folderów championów z obsługą Firebase Storage
 export async function scanChampionFolders(): Promise<ChampionImageData[]> {
-  // Najpierw spróbuj pobrać z Firebase Storage
+  // Jeśli wymuszone lokalne lub pracujemy lokalnie (dev), użyj lokalnych plików najpierw
+  const forceLocal =
+    String(process.env.FORCE_LOCAL_CHAMPIONS || '').toLowerCase() === '1' ||
+    String(process.env.FORCE_LOCAL_CHAMPIONS || '').toLowerCase() === 'true';
+  const isDev = process.env.NODE_ENV !== 'production';
+
+  if (forceLocal || isDev) {
+    try {
+      const localChampions = await scanFromLocalFiles();
+      if (localChampions.length > 0) {
+        console.log(`Używam lokalnych plików championów (znaleziono ${localChampions.length})`);
+        return localChampions;
+      }
+    } catch (err) {
+      console.warn('Błąd podczas skanowania lokalnych plików, spróbuję Firebase Storage:', err);
+    }
+  }
+
+  // Jeśli nie wymuszone lokalnie lub lokalne nie zawiera danych, spróbuj Firebase Storage
   try {
     const firebaseChampions = await scanFromFirebaseStorage();
     if (firebaseChampions.length > 0) {
@@ -32,11 +50,11 @@ export async function scanChampionFolders(): Promise<ChampionImageData[]> {
       return firebaseChampions;
     }
   } catch (error) {
-    console.log('Firebase Storage niedostępne, używam lokalnych plików:', error);
+    console.log('Firebase Storage niedostępne lub puste, używam lokalnych plików jako fallback:', error);
   }
 
-  // Fallback do lokalnych plików
-  console.log('Używam lokalnych plików championów');
+  // Ostateczny fallback do lokalnych plików
+  console.log('Używam lokalnych plików championów (fallback)');
   return scanFromLocalFiles();
 }
 

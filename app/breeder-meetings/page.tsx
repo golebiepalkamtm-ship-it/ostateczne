@@ -543,9 +543,6 @@ export default function BreederMeetingsPage() {
                             {meeting.location}
                           </p>
                         )}
-                        {meeting.date && (
-                          <p className="text-white/50 text-center mt-1">{meeting.date}</p>
-                        )}
                       </div>
 
                       {/* Gallery Grid */}
@@ -569,6 +566,7 @@ export default function BreederMeetingsPage() {
                                 fitMode="contain"
                                 aspectRatio="landscape"
                                 className="w-full h-full transition-transform duration-500 group-hover:scale-110"
+                                priority={imageIndex === 0}
                               />
                               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                 <div className="w-8 h-8 bg-amber-500/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-amber-400/50">

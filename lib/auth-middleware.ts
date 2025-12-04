@@ -95,7 +95,7 @@ async function requireRole(request: NextRequest, requiredRole: Role): Promise<Ne
     return null
   } catch (error) {
     logError('Error checking user role', error, decodedToken.uid)
-    Sentry.captureException(error, { extra: { firebaseUid: decodedToken.uid, requiredRole } })
+    captureException(error as Error, { firebaseUid: decodedToken.uid, requiredRole })
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas sprawdzania uprawnień.' },
       { status: 500 }
@@ -216,6 +216,7 @@ export async function requireCompleteProfile(request: NextRequest) {
     return null
   } catch (error) {
     logError('Error checking profile completion', error, decodedToken.uid)
+    captureException(error as Error, { firebaseUid: decodedToken.uid })
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas sprawdzania profilu.' },
       { status: 500 }

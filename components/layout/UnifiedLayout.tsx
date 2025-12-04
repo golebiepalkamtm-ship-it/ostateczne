@@ -53,8 +53,7 @@ export function UnifiedLayout({
               quality={90}
             />
           </div>
-          {/* Szara nakładka na tło */}
-          <div className="fixed inset-0 bg-black/25 pointer-events-none z-0"></div>
+          {/* Nakładka tła usunięta - obraz tła będzie wyświetlany bez przyciemnienia */}
         </>
       )}
 

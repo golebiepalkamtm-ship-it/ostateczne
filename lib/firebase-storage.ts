@@ -49,16 +49,27 @@ export async function getFirebaseStorageUrl(storagePath: string): Promise<string
  */
 export function getFirebaseStorageUrlSync(storagePath: string): string {
   const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-  
+  const publicAssetBase = process.env.NEXT_PUBLIC_ASSET_BASE_URL || ''
+
+  // If a public CDN/base URL is configured (e.g. storage.googleapis.com/<bucket>),
+  // use it to construct a simple, predictable URL without calling Firebase APIs.
+  if (publicAssetBase) {
+    // Ensure no trailing slash on base
+    const base = publicAssetBase.replace(/\/$/, '')
+    // Remove leading slash from storagePath
+    const path = storagePath.startsWith('/') ? storagePath.slice(1) : storagePath
+    return `${base}/${path}`
+  }
+
   if (!bucketName) {
     console.error('[Firebase Storage] NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET not configured')
     return ''
   }
-  
-  // Encode path for URL
+
+  // Encode path for Firebase Storage API URL
   const encodedPath = encodeURIComponent(storagePath)
-  
-  // Construct public URL
+
+  // Construct public URL via Firebase Storage HTTP endpoint
   return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media`
 }
 
@@ -80,12 +91,19 @@ export function getFirebaseStorageUrlSync(storagePath: string): string {
 export function convertPublicPathToStorageUrl(publicPath: string): string {
   // Remove leading slash if present
   let cleanPath = publicPath.startsWith('/') ? publicPath.slice(1) : publicPath
-  
+
   // If path doesn't start with 'public/', add it
   if (!cleanPath.startsWith('public/')) {
     cleanPath = `public/${cleanPath}`
   }
-  
+
+  // In development, use local URLs from public/ folder
+  if (process.env.NODE_ENV === 'development') {
+    const localPath = cleanPath.replace('public/', '')
+    // Ensure proper URL encoding for spaces and special characters
+    return `/${encodeURIComponent(localPath).replace(/%2F/g, '/')}`
+  }
+
   return getFirebaseStorageUrlSync(cleanPath)
 }
 

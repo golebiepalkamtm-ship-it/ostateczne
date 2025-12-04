@@ -3,6 +3,7 @@ import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { requirePhoneVerification } from '@/lib/phone-verification';
 import { prisma, withDatabaseFallback } from '@/lib/prisma';
 import { apiRateLimit } from '@/lib/rate-limit';
+import { convertPublicPathToStorageUrl } from '@/lib/firebase-storage';
 import { existsSync } from 'fs';
 import { mkdir, writeFile } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
@@ -88,13 +89,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Zapisz spotkanie do bazy danych
+    const firebaseImagePaths = imagePaths.map(path => convertPublicPathToStorageUrl(path));
     const meeting = await prisma.breederMeeting.create({
       data: {
         title,
         description: description || '',
         location,
         date: new Date(date),
-        images: JSON.stringify(imagePaths),
+        images: JSON.stringify(firebaseImagePaths),
         userId: decodedToken.uid,
         isApproved: false, // Nowe spotkania wymagają zatwierdzenia
       },
@@ -126,12 +128,12 @@ export async function GET() {
       date: '2024-01-15',
       description: 'Spotkanie z hodowcą Geert Munnik w jego hodowli w Holandii',
       images: [
-        '/meetings with breeders/Geert Munnik/DSC_0031.jpg',
-        '/meetings with breeders/Geert Munnik/DSC_0038.jpg',
-        '/meetings with breeders/Geert Munnik/DSC_0044.jpg',
-        '/meetings with breeders/Geert Munnik/DSC_0399.jpg',
-        '/meetings with breeders/Geert Munnik/DSC_03991.jpg',
-        '/meetings with breeders/Geert Munnik/DSC_0409.jpg',
+        convertPublicPathToStorageUrl('/meetings with breeders/Geert Munnik/DSC_0031.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Geert Munnik/DSC_0038.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Geert Munnik/DSC_0044.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Geert Munnik/DSC_0399.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Geert Munnik/DSC_03991.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Geert Munnik/DSC_0409.jpg'),
       ],
     },
     {
@@ -141,15 +143,15 @@ export async function GET() {
       date: '2024-02-20',
       description: 'Wizyta u hodowcy Jana Oosta - dyskusje o hodowli gołębi pocztowych',
       images: [
-        '/meetings with breeders/Jan Oost/DSC_0002.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0004.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0006.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0011.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0017.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0018.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0422.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0423.jpg',
-        '/meetings with breeders/Jan Oost/DSC_0426.jpg',
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0002.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0004.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0006.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0011.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0017.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0018.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0422.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0423.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Jan Oost/DSC_0426.jpg'),
       ],
     },
     {
@@ -159,9 +161,9 @@ export async function GET() {
       date: '2024-03-10',
       description: 'Spotkanie z doświadczonym hodowcą Marginus Oostenbrink',
       images: [
-        '/meetings with breeders/Marginus Oostenbrink/DSC_0431.jpg',
-        '/meetings with breeders/Marginus Oostenbrink/DSC_0433.jpg',
-        '/meetings with breeders/Marginus Oostenbrink/DSC_0435.jpg',
+        convertPublicPathToStorageUrl('/meetings with breeders/Marginus Oostenbrink/DSC_0431.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Marginus Oostenbrink/DSC_0433.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Marginus Oostenbrink/DSC_0435.jpg'),
       ],
     },
     {
@@ -171,10 +173,10 @@ export async function GET() {
       date: '2024-04-05',
       description: 'Wizyta u niemieckiego hodowcy Theo Lehnen',
       images: [
-        '/meetings with breeders/Theo Lehnen/Theo-1.jpg',
-        '/meetings with breeders/Theo Lehnen/Theo-2.jpg',
-        '/meetings with breeders/Theo Lehnen/Theo-3.jpg',
-        '/meetings with breeders/Theo Lehnen/Theo.jpg',
+        convertPublicPathToStorageUrl('/meetings with breeders/Theo Lehnen/Theo-1.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Theo Lehnen/Theo-2.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Theo Lehnen/Theo-3.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Theo Lehnen/Theo.jpg'),
       ],
     },
     {
@@ -184,13 +186,13 @@ export async function GET() {
       date: '2024-05-12',
       description: 'Spotkanie z hodowcą Toni van Ravenstein - wymiana doświadczeń',
       images: [
-        '/meetings with breeders/Toni van Ravenstein/DSC_0001.jpg',
-        '/meetings with breeders/Toni van Ravenstein/DSC_0003.jpg',
-        '/meetings with breeders/Toni van Ravenstein/DSCF2556.jpg',
-        '/meetings with breeders/Toni van Ravenstein/DSCF2559.jpg',
-        '/meetings with breeders/Toni van Ravenstein/DSCF2578.jpg',
-        '/meetings with breeders/Toni van Ravenstein/TONI-1.jpg',
-        '/meetings with breeders/Toni van Ravenstein/TONI-2.jpg',
+        convertPublicPathToStorageUrl('/meetings with breeders/Toni van Ravenstein/DSC_0001.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Toni van Ravenstein/DSC_0003.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Toni van Ravenstein/DSCF2556.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Toni van Ravenstein/DSCF2559.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Toni van Ravenstein/DSCF2578.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Toni van Ravenstein/TONI-1.jpg'),
+        convertPublicPathToStorageUrl('/meetings with breeders/Toni van Ravenstein/TONI-2.jpg'),
       ],
     },
   ];
@@ -225,7 +227,15 @@ export async function GET() {
         location: meeting.location,
         date: meeting.date.toISOString().split('T')[0],
         description: meeting.description || '',
-        images: JSON.parse(meeting.images || '[]'),
+        images: JSON.parse(meeting.images || '[]').map((imagePath: string) => {
+          // If it's already a Firebase Storage URL, return it as-is
+          if (imagePath.includes('firebasestorage.googleapis.com')) {
+            return imagePath;
+          }
+          // Otherwise convert to Firebase Storage URL
+          const cleanPath = imagePath.replace(/^\/api\/images\?path=/, '').replace(/^\/api\/images\//, '').replace(/^\//, '');
+          return convertPublicPathToStorageUrl(cleanPath);
+        }),
       }));
     },
     [],

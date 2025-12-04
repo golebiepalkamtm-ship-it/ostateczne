@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bezpłatne API Claude z Puter.js</title>
+    <script src="https://js.puter.com/v2/"></script>
+</head>
+<body>
+    <h1>Bezpłatne, nieograniczone API Claude</h1>
+    <p>Ten przykład pokazuje jak używać Puter.js do dostępu do Claude bez kluczy API.</p>
+
+    <h2>Przykład 1: Podstawowe generowanie tekstu z Claude Sonnet 4.5</h2>
+    <button onclick="generateBasicText()">Generuj Tekst</button>
+    <div id="basic-output"></div>
+
+    <h2>Przykład 2: Przesyłanie strumieniowe odpowiedzi</h2>
+    <button onclick="streamResponse()">Strumieniuj Odpowiedź</button>
+    <div id="stream-output"></div>
+
+    <h2>Przykład 3: Korzystanie z różnych modeli</h2>
+    <button onclick="generateWithHaiku()">Użyj Claude Haiku 4.5</button>
+    <div id="haiku-output"></div>
+    <button onclick="generateWithOpus()">Użyj Claude Opus 4.5</button>
+    <div id="opus-output"></div>
+
+    <script>
+        // Przykład 1
+        function generateBasicText() {
+            puter.ai.chat("Explain quantum computing in simple terms", {model: 'claude-sonnet-4-5'})
+                .then(response => {
+                    document.getElementById('basic-output').innerText = response.message.content[0].text;
+                })
+                .catch(error => {
+                    document.getElementById('basic-output').innerText = 'Błąd: ' + error.message;
+                });
+        }
+
+        // Przykład 2
+        async function streamResponse() {
+            const output = document.getElementById('stream-output');
+            output.innerText = '';
+            try {
+                const response = await puter.ai.chat(
+                    "Write a detailed essay on the impact of artificial intelligence on society", 
+                    {model: 'claude-sonnet-4-5', stream: true}
+                );
+                
+                for await (const part of response) {
+                    output.innerText += part?.text || '';
+                }
+            } catch (error) {
+                output.innerText = 'Błąd: ' + error.message;
+            }
+        }
+
+        // Przykład 3
+        function generateWithHaiku() {
+            puter.ai.chat("Write a short poem about coding", { model: "claude-haiku-4-5" })
+                .then(response => {
+                    document.getElementById('haiku-output').innerHTML = '<h3>Using claude-haiku-4-5 model</h3>' + response.message.content[0].text;
+                })
+                .catch(error => {
+                    document.getElementById('haiku-output').innerText = 'Błąd: ' + error.message;
+                });
+        }
+
+        function generateWithOpus() {
+            puter.ai.chat("Write a short poem about coding", { model: "claude-opus-4-5" })
+                .then(response => {
+                    document.getElementById('opus-output').innerHTML = '<h3>Using claude-opus-4-5 model</h3>' + response.message.content[0].text;
+                })
+                .catch(error => {
+                    document.getElementById('opus-output').innerText = 'Błąd: ' + error.message;
+                });
+        }
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\Marcin_Palka\marcin\Aukcje-Palka-MTM\lib\Nowy folder\index.html

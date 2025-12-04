@@ -1,22 +1,16 @@
 const path = require('path');
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const baseConfig = {
   reactStrictMode: true,
   generateEtags: false,
   poweredByHeader: false,
-  eslint: { ignoreDuringBuilds: true },
+
   typescript: { ignoreBuildErrors: true },
 
-  ...(process.platform === 'win32' || process.env.WATCHPACK_POLLING === 'true') && {
-    watchOptions: {
-      poll: 100,
-      aggregateTimeout: 0,
-      ...(process.env.WATCHPACK_POLLING === 'false' && { poll: false }),
-    },
-  },
-
-  experimental: process.env.NODE_ENV === 'production' ? { instrumentationHook: true } : {},
+  
+  // Disable instrumentationHook during build to avoid requiring optional OpenTelemetry modules
+  experimental: {},
 
   ...(process.env.NODE_ENV === 'development' && {
     generateBuildId: () => 'dev-build-stable',
@@ -46,19 +40,41 @@ const nextConfig = {
   },
 
   async headers() {
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-hashes' https://js.sentry-cdn.com",
+      "script-src-attr 'unsafe-hashes'",
+      "script-src-elem 'self' 'unsafe-inline' https://js.sentry-cdn.com",
+      "style-src 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
+      "style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
+      "img-src 'self' data: blob: https://storage.googleapis.com https://firebasestorage.googleapis.com",
+      "connect-src 'self' https://sentry.io https://m-t-m-62972.firebaseapp.com https://storage.googleapis.com https://palkamtm.pl https://palkamtm.pl/api/metrics https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://firebaseinstallations.googleapis.com https://*.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
+      "worker-src 'self' blob:",
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
+      "child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
+      "object-src 'none'",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+    ].join('; ')
+
     const headers = [
       {
         source: '/(.*)',
         headers: [
-          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), fullscreen=self' },
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+          { key: 'Content-Security-Policy', value: csp },
         ],
       },
       {
         source: '/api/(.*)',
-        headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }],
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        ],
       },
     ];
     if (process.env.NODE_ENV === 'development') {
@@ -76,6 +92,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/m-t-m-62972.firebasestorage.app/**' },
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com', pathname: '/**' },
       { protocol: 'https', hostname: '*.firebasestorage.app', pathname: '/**' },
+      { protocol: 'https', hostname: 'm-t-m-62972.firebasestorage.app', pathname: '/**' },
       { protocol: 'https', hostname: 'palkamtm.pl', pathname: '/**' },
       { protocol: 'https', hostname: 'www.palkamtm.pl', pathname: '/**' },
       { protocol: 'https', hostname: 'res.cloudinary.com', pathname: '/**' },
@@ -85,11 +102,6 @@ const nextConfig = {
       { protocol: 'https', hostname: '*.googleapis.com', pathname: '/**' },
       { protocol: 'https', hostname: '*.us-east4.hosted.app', pathname: '/**' },
       { protocol: 'http', hostname: 'localhost', pathname: '/**' },
-      // Dodatkowe wzorce dla Firebase Storage
-      { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/*' },
-      { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/*/*' },
-      { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/*/*/*' },
-      { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/*/*/*/*' },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -97,11 +109,9 @@ const nextConfig = {
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    unoptimized: true,
+    // Nie ustawiaj globalnie unoptimized, pozwól Next optymalizować obrazy
   },
 };
-
-module.exports = nextConfig;
 
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -132,12 +142,14 @@ const withPWA = require('next-pwa')({
   ],
 });
 
-let finalConfig = withPWA(nextConfig);
+const isPhaseProductionBuild = process.env.NEXT_PHASE === 'phase-production-build'
 
-finalConfig.webpack = (config, options) => {
+let nextConfig = withPWA(baseConfig);
+
+nextConfig.webpack = (config, options) => {
   const webpack = require('webpack');
 
-  if (options.dev) {
+  if (options.dev || isPhaseProductionBuild) {
     config.plugins = [
       ...(config.plugins || []),
       new webpack.IgnorePlugin({ resourceRegExp: /@prisma\/instrumentation/ }),
@@ -154,6 +166,7 @@ finalConfig.webpack = (config, options) => {
       '@prisma/instrumentation': path.resolve(__dirname, 'lib/stubs/prisma-instrumentation-stub.ts'),
       'require-in-the-middle': path.resolve(__dirname, 'lib/stubs/require-in-the-middle-stub.ts'),
       '@opentelemetry/instrumentation': path.resolve(__dirname, 'lib/stubs/opentelemetry-instrumentation-stub.ts'),
+      '@opentelemetry/instrumentation-http': path.resolve(__dirname, 'lib/stubs/opentelemetry-instrumentation-stub.ts'),
     };
   }
 
@@ -186,11 +199,37 @@ finalConfig.webpack = (config, options) => {
       net: false,
       tls: false,
     };
+    // Prevent server-only modules from being bundled into client code
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      'firebase-admin': path.resolve(__dirname, 'lib/stubs/firebase-admin-stub.ts'),
+    };
   }
 
+  // Ensure OpenTelemetry instrumentation modules are stubbed during build
+  config.resolve.alias = {
+    ...(config.resolve.alias || {}),
+    '@opentelemetry/instrumentation': path.resolve(__dirname, 'lib/stubs/opentelemetry-instrumentation-stub.ts'),
+    '@opentelemetry/instrumentation-http': path.resolve(__dirname, 'lib/stubs/opentelemetry-instrumentation-stub.ts'),
+  };
+
   config.externals = [...(config.externals || []), '@prisma/client', 'firebase-admin', 'redis'];
+
+  // Ignore common system swap/page files to avoid Watchpack EINVAL errors on Windows
+  try {
+    config.watchOptions = config.watchOptions || {}
+    config.watchOptions.ignored = [
+      ...(config.watchOptions.ignored || []),
+      /(^|[\\/])node_modules([\\/]|$)/,
+      /(^|[\\/])C:[\\/](?:pagefile|swapfile)\.sys$/i
+    ]
+  } catch (e) {
+    // ignore
+  }
 
   return config;
 };
 
-module.exports = finalConfig;
+
+
+module.exports = nextConfig;

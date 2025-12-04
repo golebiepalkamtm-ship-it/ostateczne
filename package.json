@@ -2,13 +2,13 @@
   "name": "palka-mtm-auctions",
   "version": "1.0.0",
   "description": "- Next.js 14\r - PWA (next-pwa)\r - Monitoring: Sentry, Prometheus, Grafana\r - API smart cache: Redis\r - Testy E2E: Playwright\r - Micro-interakcje: framer-motion\r - Accessibility standard\r - Feature flags (lib/features.ts)\r - Canary ready, docker ready, cloud native",
-  "homepage": "https://github.com/Mantaxx/wwwwww11111#readme",
+  "homepage": "https://github.com/golebiepalkamtm-ship-it/Aukcje-Palka-MTM#readme",
   "bugs": {
-    "url": "https://github.com/Mantaxx/wwwwww11111/issues"
+    "url": "https://github.com/golebiepalkamtm-ship-it/Aukcje-Palka-MTM/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/borysbory69-hash/palka-mtm.git"
+    "url": "git+https://github.com/golebiepalkamtm-ship-it/Aukcje-Palka-MTM.git"
   },
   "license": "ISC",
   "author": "",
@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@opentelemetry/instrumentation-http": "^0.208.0",
     "@prisma/client": "5.22.0",
     "@react-spring/three": "^10.0.3",
     "@react-three/drei": "^9.117.0",
@@ -61,6 +62,7 @@
     "lucide-react": "^0.548.0",
     "mapbox-gl": "^3.1.2",
     "next": "^14.0.0",
+    "next-auth": "^4.24.13",
     "next-pwa": "^5.6.0",
     "next-sitemap": "^4.2.3",
     "nodemailer": "^7.0.10",
@@ -84,6 +86,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^16.0.7",
     "@playwright/test": "^1.56.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -97,7 +100,7 @@
     "@vitest/coverage-v8": "^4.0.8",
     "@vitest/ui": "^4.0.8",
     "eslint": "8.57.0",
-    "eslint-config-next": "^15.0.0",
+    "eslint-config-next": "^16.0.7",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.2.1",
     "jsdom": "^27.0.1",

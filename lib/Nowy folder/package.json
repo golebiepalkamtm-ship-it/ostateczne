@@ -1,0 +1,38 @@
+{
+  "name": "claude-ai-extension",
+  "displayName": "Claude AI Extension",
+  "description": "Rozszerzenie VS Code integrujące Puter.js dla Claude AI do generowania i wyjaśniania kodu.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onCommand:claude.generateCode", "onCommand:claude.explainCode"],
+  "main": "./.vscode/main.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "claude.generateCode",
+        "title": "Generuj Kod z Claude"
+      },
+      {
+        "command": "claude.explainCode",
+        "title": "Wyjaśnij Kod z Claude"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "claude.generateCode",
+          "when": "editorHasSelection",
+          "group": "7_modification"
+        },
+        {
+          "command": "claude.explainCode",
+          "when": "editorHasSelection",
+          "group": "7_modification"
+        }
+      ]
+    }
+  }
+}

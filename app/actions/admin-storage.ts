@@ -1,3 +1,4 @@
+"use server";
 import { revalidatePath } from 'next/cache';
 import { getAdminApp } from '@/lib/firebase-admin';
 import { getStorage } from 'firebase-admin/storage';

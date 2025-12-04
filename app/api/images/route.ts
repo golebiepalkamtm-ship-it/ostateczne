@@ -3,13 +3,16 @@ import { promises as fs } from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
 import { join } from 'path';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const resolvedParams = await params;
-    const imagePath = resolvedParams.path.join('/');
+    const url = new URL(request.url);
+    const imagePath = url.searchParams.get('path');
+    if (!imagePath) {
+      return new NextResponse(JSON.stringify({ error: 'Path parameter is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     const fullPath = join(process.cwd(), 'public', imagePath);
 
     // Check if file exists

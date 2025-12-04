@@ -8,7 +8,7 @@ import { getAdminAuth } from '@/lib/firebase-admin'
 import { handleApiError } from '@/lib/error-handling'
 import { prisma } from '@/lib/prisma'
 import { apiRateLimit } from '@/lib/rate-limit'
-import * as Sentry from '@sentry/nextjs'
+import { captureException, captureMessage } from '@/lib/sentry-helpers'
 import { error as logError } from '@/lib/logger'
 
 const registerSchema = z.object({
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const adminAuth = getAdminAuth()
     if (!adminAuth) {
       logError('Firebase Admin Auth is not initialized.')
-      Sentry.captureMessage('CRITICAL: Firebase Admin Auth not initialized during registration.', 'fatal')
+      captureMessage('CRITICAL: Firebase Admin Auth not initialized during registration.', 'fatal')
       return NextResponse.json(
         { error: 'Serwis jest tymczasowo niedostępny.' },
         { status: 503 }
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     } catch (dbError) {
       // Jeśli zapis do bazy danych się nie powiedzie, cofnij utworzenie użytkownika w Firebase
       logError('Failed to create user in local DB, rolling back Firebase user.', email, firebaseUser.uid, dbError)
-      Sentry.captureException(dbError, { extra: { firebaseUid: firebaseUser.uid, reason: "Rollback after DB user creation failure." }})
+      captureException(dbError, { firebaseUid: firebaseUser.uid, reason: 'Rollback after DB user creation failure.' })
       
       await adminAuth.deleteUser(firebaseUser.uid)
       

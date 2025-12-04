@@ -1,3 +1,42 @@
+// Use single prisma import (from lib) and avoid duplicate type names
+type SimpleBidResult = { status: number; code: string; message: string };
+
+export async function placeBidTransaction(
+  auctionId: string,
+  newBid: number,
+  userId: string,
+  currentKnownBid: number,
+  minStep: number
+): Promise<SimpleBidResult> {
+  try {
+    await prisma.$transaction(async (tx) => {
+      const auction = await tx.auction.findUnique({ where: { id: auctionId } });
+
+      if (!auction) throw new Error('Auction not found (404).');
+      if (auction.sellerId === userId) throw new Error('Cannot bid on own auction (403).');
+      if (new Date() > new Date(auction.deadline)) throw new Error('Auction has ended (400).');
+      if (newBid < Number(auction.currentBid || 0) + minStep) throw new Error(`Bid must be at least ${minStep} higher (400).`);
+
+      const updateResult = await tx.auction.updateMany({
+        where: { id: auctionId, currentBid: currentKnownBid },
+        data: { currentBid: newBid, currentBidderId: userId },
+      });
+
+      if (updateResult.count === 0) {
+        throw new Error('Bid update failed. Race condition detected (409).');
+      }
+
+      await tx.bidHistory.create({ data: { auctionId, userId, amount: newBid } });
+    });
+
+    return { status: 200, code: 'AUCTION_BID_OK', message: 'Bid placed successfully.' };
+  } catch (err) {
+    const msg = (err as Error).message || 'Unknown error';
+    const match = msg.match(/\((\d{3})\)/);
+    const status = match ? parseInt(match[1], 10) : 500;
+    return { status, code: 'AUCTION_BID_FAIL', message: msg };
+  }
+}
 /**
  * Auction Service - Obsługa zaawansowanej logiki aukcji
  * 

@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { handleApiError } from '@/lib/error-handling'
 import { requireFirebaseAuth } from '@/lib/firebase-auth'
 import { createApiSuccessResponse, createApiErrorResponse } from '@/lib/api-response'
-import * as Sentry from '@sentry/nextjs'
+import { captureMessage } from '@/lib/sentry-helpers'
 import { error as logError, info as logInfo } from '@/lib/logger'
 import { ROLE_HIERARCHY } from '@/types/auth'
 
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     } else {
       // Nowy użytkownik (scenariusz awaryjny - OAuth)
       logInfo(`User auto-created during sync: ${email}`)
-      Sentry.captureMessage(`User auto-created during sync: ${email}`, 'info')
+      captureMessage(`User auto-created during sync: ${email}`, 'info')
 
       dbUser = await prisma.user.create({
         data: {

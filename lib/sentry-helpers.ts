@@ -1,9 +1,10 @@
-// W development używaj stub zamiast prawdziwego Sentry
-// W production ładuj prawdziwy Sentry
+// In development and during Next's production build phase, use a noop stub
+// to avoid pulling optional native/instrumentation modules into the bundle.
 const isDev = process.env.NODE_ENV === 'development';
+const isPhaseProductionBuild = process.env.NEXT_PHASE === 'phase-production-build'
 
 let Sentry: any;
-if (isDev) {
+if (isDev || isPhaseProductionBuild) {
   // Stub dla development - wszystkie funkcje są no-op
   const noop = () => {};
   const createNoopScope = () => ({
@@ -91,6 +92,14 @@ export function captureMessage(
     Sentry.captureMessage(message);
   });
 }
+
+  /**
+   * Backwards-compatible alias: some files import `captureException`.
+   * Forward to `captureError` to avoid changing many callers.
+   */
+  export function captureException(error: Error | AppError, context?: Record<string, unknown>) {
+    return captureError(error, context);
+  }
 
 /**
  * Dodaje kontekst użytkownika do Sentry

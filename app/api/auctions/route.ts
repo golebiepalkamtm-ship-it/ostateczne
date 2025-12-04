@@ -8,7 +8,10 @@ import {
   createAuctionSorting,
   createPagination,
 } from '@/lib/optimized-queries';
-import { prisma } from '@/lib/prisma';
+// Note: don't import `prisma` at module top-level to avoid initializing
+// the client during build/deploy when DATABASE_URL may be missing or
+// unreachable. We'll import it lazily inside handlers after checking
+// `isDatabaseConfigured()`.
 import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 
@@ -18,9 +21,16 @@ import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 async function getAuctionsHandler(request: NextRequest) {
+  // Temporary debug switch: when set to 'true' in env, return simple OK
+  // This allows testing whether the route/middleware or DB logic causes 500.
+  if (process.env.FORCE_SIMPLE_AUCTIONS_HANDLER === 'true') {
+    return NextResponse.json({ ok: true });
+  }
+
   try {
-    // Sprawdź dostępność bazy danych
-    const { isDatabaseConfigured } = await import('@/lib/prisma');
+    // Sprawdź dostępność bazy danych i załaduj klienta tylko jeśli skonfigurowano
+    const prismaModule = await import('@/lib/prisma');
+    const { isDatabaseConfigured } = prismaModule;
     if (!isDatabaseConfigured()) {
       return NextResponse.json(
         {
@@ -77,7 +87,8 @@ async function getAuctionsHandler(request: NextRequest) {
     const orderBy = createAuctionSorting(sortBy);
     const { skip, take } = createPagination(page, limit);
 
-    // Wykonaj zapytania równolegle
+    // Wykonaj zapytania równolegle (prisma załadowany leniwie)
+    const prisma = prismaModule.prisma;
     const [auctions, total] = await Promise.all([
       prisma.auction.findMany({
         where,
@@ -115,6 +126,10 @@ async function createAuctionHandler(request: NextRequest) {
   const { decodedToken } = authResult;
 
   // Pobierz użytkownika z bazy po firebaseUid
+  // Załaduj prisma dopiero teraz
+  const { prisma: prismaClient, isDatabaseConfigured: _isDbConfigured } = await import('@/lib/prisma');
+  const prisma = prismaClient;
+
   const dbUser = await prisma.user.findFirst({
     where: { firebaseUid: decodedToken.uid },
     select: {
