@@ -48,7 +48,9 @@ export function SmartImage({
   // Również API routes wymagają regularnych img tagów
   const isBlobOrDataUrl = typeof src === 'string' && (/^blob:/.test(src) || /^data:/.test(src));
   const isApiRoute = typeof src === 'string' && /^\/api\//.test(src);
-  const isLocalUrl = typeof src === 'string' && /^\/[^a]/.test(src) && !isApiRoute && !isBlobOrDataUrl;
+  // Treat any path starting with '/' as a local public asset, but exclude API routes
+  // Previous detection used a narrow regex which incorrectly ignored some local paths; it has been replaced
+  const isLocalUrl = typeof src === 'string' && src.startsWith('/') && !isApiRoute && !isBlobOrDataUrl;
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);

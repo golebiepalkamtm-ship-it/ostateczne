@@ -38,6 +38,8 @@
     "deploy:homepl": "bash scripts/deploy-homepl.sh",
     "deploy:firebase": "npx firebase-tools deploy --only apphosting",
     "deploy:firebase:all": "npx firebase-tools deploy"
+    ,
+    "diagnose:breeder-images": "node scripts/diagnose-breeder-images.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
