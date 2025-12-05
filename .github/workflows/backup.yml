@@ -1,0 +1,47 @@
+name: Repo Backup (artifact)
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 3 * * *' # daily at 03:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  create-backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (fast)
+        run: |
+          npm ci --prefer-offline --no-audit --no-fund || true
+
+      - name: Build (if applicable)
+        run: |
+          if [ -f package.json ]; then npm run build --if-present || true; fi
+
+      - name: Create archive (exclude node_modules and .git)
+        run: |
+          TARFILE=repo-backup-${{ github.sha }}.tar.gz
+          tar --exclude='./.git' --exclude='./node_modules' -czf "$TARFILE" .
+          echo "Archive created: $TARFILE"
+          echo "TARFILE=$TARFILE" >> $GITHUB_ENV
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-backup-${{ github.sha }}
+          path: ${{ env.TARFILE }}
+
+      - name: Cleanup archive
+        run: rm -f ${{ env.TARFILE }} || true

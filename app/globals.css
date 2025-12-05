@@ -227,6 +227,9 @@ select > .glow {
   mix-blend-mode: var(--glow-blend);
 }
 
+/* Import local overrides for glass button variants */
+@import url('/glass-variants.css');
+
 [class*="card"] > .glow::before,
 [class*="glass"] > .glow::before,
 .btn-primary > .glow::before,
@@ -408,6 +411,16 @@ select > .glow::before {
   left: 150% !important;
 }
 
+/* Disable hover/float/scale transforms globally for glass-nav-button
+   Required: no floating/hover transform anywhere in the app */
+.glass-nav-button,
+.glass-nav-button:hover,
+.glass-nav-button:focus,
+.glass-nav-button:active {
+  transform: none !important;
+  transition: none !important;
+}
+
 /* Hero title styling like navigation tiles */
 .hero-title-nav-style {
   font-weight: 800;
@@ -417,8 +430,38 @@ select > .glow::before {
     rgba(218, 182, 98, 0.9) 50%,
     rgba(160, 135, 75, 0.8) 75%,
     rgba(120, 100, 55, 0.7) 100%);
-  background-clip: text;
   -webkit-background-clip: text;
+
+/* GLOBAL OVERRIDE: Disable all transform/hover effects across the entire site
+   User requested removal of floating/hover effects for containers on the page.
+   This will neutralize CSS transforms and transition animations on hover/focus/active.
+   NOTE: This is an aggressive global override — it intentionally uses !important.
+*/
+body *:hover,
+body *:focus,
+body *:active {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* More aggressive neutralization to stop framer-motion and any inline transforms/animations */
+body * {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  will-change: auto !important;
+}
+
+/* Scoped: more targeted disable for admin panel to override Tailwind hover utilities and shadows */
+.no-hover *:hover,
+.no-hover *:focus,
+.no-hover *:active {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow:
     1px 1px 0px rgba(120, 100, 60, 0.9),
@@ -439,6 +482,71 @@ select > .glow::before {
   background: radial-gradient(ellipse at center, rgba(255, 235, 180, 0.1) 0%, transparent 70%);
   z-index: 900;
   pointer-events: none;
+}
+
+/* Extra enforced overrides specifically for admin panel to stop ALL floating effects */
+.no-hover .card-3d-raised,
+.no-hover .card-3d-raised-strong,
+.no-hover .card,
+.no-hover .card-glass,
+.no-hover .card-glow-edge,
+.no-hover .glass-container,
+.no-hover .glass-nav-button,
+.no-hover .btn-primary,
+.no-hover .btn-secondary,
+.no-hover [class*="rounded-"],
+.no-hover [class*="rounded-"]::before,
+.no-hover [class*="rounded-"]::after {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* Neutralize group-hover effects that may target children */
+.no-hover .group:hover,
+.no-hover .group:hover * {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* Extra specificity for Tailwind utilities (hover:scale-*) applied via class names */
+.no-hover [class*="hover:scale"],
+.no-hover [class*="hover:shadow"],
+.no-hover [class*="hover:from"],
+.no-hover [class*="hover:to"],
+.no-hover [class*="hover:bg"],
+.no-hover [class*="hover:border"] {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure pseudo elements are also neutralized */
+.no-hover *::before,
+.no-hover *::after {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* In case framer-motion applies inline styles, this attempts to override transform/translate inline values */
+.no-hover [style] {
+  /* leaving this mainly to override transforms with !important in rules above */
+}
+
+/* Super-enforced rule: disable all hover/transform/animation/shadow inside admin root */
+.no-hover,
+.no-hover * {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+  will-change: auto !important;
 }
 
 .hero-title-nav-style::after {
@@ -467,4 +575,64 @@ select > .glow::before {
   border-radius: 50%;
 }
 }
+
+/* === Site base improvements - added for cleaner default look === */
+html, body {
+  height: 100%;
+  background: linear-gradient(180deg, #0f1724 0%, #071023 60%);
+  color: #e6eef8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Container helper */
+.site-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Links and accessible focus */
+a {
+  color: #a5f3fc;
+  text-decoration: none;
+}
+
+a:focus,
+a:focus-visible,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 3px solid rgba(165,243,252,0.15);
+  outline-offset: 2px;
+}
+
+/* Improve headings contrast and spacing */
+h1, h2, h3, h4 {
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+/* Make primary buttons more visible by default */
+.btn-primary {
+  background: linear-gradient(180deg, #6ee7b7 0%, #34d399 100%);
+  color: #04202a;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 0.6rem;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+}
+
+/* Small utility to center content vertically */
+.center-vertical {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* End of site base improvements */
 
