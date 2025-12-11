@@ -1,4 +1,5 @@
-const path = require('path');
+import path from 'path';
+import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -196,11 +197,9 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
-
 // Injected content via Sentry wizard below
 
-const withPWA = require('next-pwa')({
+const pwaConfig = withPWA({
   dest: 'public',
   register: true,
   skipWaiting: true,
@@ -234,7 +233,7 @@ const withPWA = require('next-pwa')({
 // const { withSentryConfig } = require('@sentry/nextjs');
 
 // Zastosuj modyfikacje webpack PO opakowaniu konfiguracji przez wtyczki
-let finalConfig = withPWA(nextConfig);
+let finalConfig = pwaConfig(nextConfig);
 
 // Zachowaj oryginalną funkcję webpack (jeśli istnieje), aby ją rozszerzyć
 const originalWebpack = finalConfig.webpack;
@@ -251,7 +250,7 @@ finalConfig.webpack = (config, options) => {
   // To eliminuje webpack warnings poprzez całkowite pominięcie tych modułów
   if (options.dev && options.isServer) {
     const webpack = require('webpack');
-    
+
     // Ignoruj moduły instrumentation - całkowicie pomija ich kompilację
     config.plugins = [
       ...(config.plugins || []),
@@ -371,7 +370,7 @@ finalConfig.webpack = (config, options) => {
 // Używamy tylko manual setup przez instrumentation-client.ts i sentry.server.config.ts
 // withSentryConfig automatycznie inicjalizuje Sentry po stronie klienta, co powoduje konflikt
 // z instrumentation-client.ts, który też inicjalizuje Sentry
-module.exports = finalConfig;
+export default finalConfig;
 
 // UWAGA: Jeśli potrzebujesz automatycznego uploadu source maps do Sentry,
 // możesz użyć Sentry CLI w CI/CD pipeline zamiast withSentryConfig
