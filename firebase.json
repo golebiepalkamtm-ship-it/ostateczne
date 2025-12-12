@@ -15,33 +15,5 @@
   },
   "storage": {
     "rules": "storage.rules"
-  },
-  "apphosting": [
-    {
-      "backendId": "palkamtm",
-      "rootDir": ".",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions",
-        ".next/cache",
-        ".vercel"
-      ],
-      "alwaysDeployFromSource": true
-    },
-    {
-      "backendId": "mtm",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ],
-      "alwaysDeployFromSource": true
-    }
-  ]
+  }
 }

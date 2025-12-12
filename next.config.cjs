@@ -9,51 +9,14 @@ const baseConfig = {
 
   typescript: { ignoreBuildErrors: true },
 
-  turbopack: {
-    // Example: Root directory configuration
-    root: path.join(__dirname),
 
-    // Example: Configure webpack loaders for SVG files
-    rules: {
-      '*.svg': {
-        loaders: [
-          {
-            loader: '@svgr/webpack',
-            options: {
-              icon: true,
-            },
-          },
-        ],
-        as: '*.js',
-      },
-    },
-
-    // Example: Resolve aliases
-    resolveAlias: {
-      '@components': './components',
-      '@lib': './lib',
-      '@utils': './utils',
-      '@types': './types',
-    },
-
-    // Example: Custom extensions resolution
-    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
-
-    // Example: Debug IDs for development builds
-    debugIds: process.env.NODE_ENV === 'development',
-  },
 
   // Disable instrumentationHook during build to avoid requiring optional OpenTelemetry modules
   experimental: {},
 
   ...(process.env.NODE_ENV === 'development' && {
     generateBuildId: () => 'dev-build-stable',
-    onDemandEntries: { maxInactiveAge: 60 * 1000, pagesBufferLength: 5 },
     logging: { fetches: { fullUrl: true } },
-  }),
-
-  ...(process.env.NODE_ENV === 'production' && {
-    onDemandEntries: { maxInactiveAge: 25 * 1000, pagesBufferLength: 2 },
   }),
 
   compress: process.env.NODE_ENV === 'production',
@@ -76,13 +39,13 @@ const baseConfig = {
   async headers() {
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-hashes' https://js.sentry-cdn.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-hashes' https://js.sentry-cdn.com https://www.googletagmanager.com",
       "script-src-attr 'unsafe-hashes'",
-      "script-src-elem 'self' 'unsafe-inline' https://js.sentry-cdn.com",
+      "script-src-elem 'self' 'unsafe-inline' https://js.sentry-cdn.com https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
       "style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
       "img-src 'self' data: blob: https://storage.googleapis.com https://firebasestorage.googleapis.com",
-      "connect-src 'self' https://sentry.io https://m-t-m-62972.firebaseapp.com https://storage.googleapis.com https://palkamtm.pl https://palkamtm.pl/api/metrics https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://firebaseinstallations.googleapis.com https://*.googleapis.com",
+      "connect-src 'self' https://sentry.io https://pigeon-aucion-a722b.firebaseapp.com https://storage.googleapis.com https://palkamtm.pl https://palkamtm.pl/api/metrics https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://firebaseinstallations.googleapis.com https://*.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
       "worker-src 'self' blob:",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
@@ -123,10 +86,10 @@ const baseConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/**' },
-      { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/m-t-m-62972.firebasestorage.app/**' },
+      { protocol: 'https', hostname: 'storage.googleapis.com', pathname: '/pigeon-aucion-a722b.firebasestorage.app/**' },
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com', pathname: '/**' },
       { protocol: 'https', hostname: '*.firebasestorage.app', pathname: '/**' },
-      { protocol: 'https', hostname: 'm-t-m-62972.firebasestorage.app', pathname: '/**' },
+      { protocol: 'https', hostname: 'pigeon-aucion-a722b.firebasestorage.app', pathname: '/**' },
       { protocol: 'https', hostname: 'palkamtm.pl', pathname: '/**' },
       { protocol: 'https', hostname: 'www.palkamtm.pl', pathname: '/**' },
       { protocol: 'https', hostname: 'res.cloudinary.com', pathname: '/**' },
