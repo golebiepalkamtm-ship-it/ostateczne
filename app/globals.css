@@ -1,3 +1,8 @@
+/* stylelint-disable at-rule-no-unknown */
+/* csslint ignore:start */
+@import url("mapbox-gl/dist/mapbox-gl.css");
+@import url("./holographic-effects.css");
+
 /* Efekt odbicia progressive-blur na tle gołębnika */
 .progressive-blur {
   top: calc(50vh - 1px) !important;
@@ -14,10 +19,6 @@
   transition: opacity 0.2s ease;
 }
 /* UnifiedCard hover highlight effect */
-/* stylelint-disable at-rule-no-unknown */
-/* csslint ignore:start */
-@import url("mapbox-gl/dist/mapbox-gl.css");
-@import url("./holographic-effects.css");
 
 @tailwind base;
 @tailwind components;

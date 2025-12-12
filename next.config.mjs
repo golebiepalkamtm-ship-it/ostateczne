@@ -5,6 +5,9 @@ import withPWA from 'next-pwa';
 const nextConfig = {
   // ...existing code...
 
+  // Konfiguracja Turbopack - pusty obiekt aby wyłączyć ostrzeżenie
+  turbopack: {},
+
   // Podstawowa konfiguracja Next.js
   reactStrictMode: true,
 

@@ -11,8 +11,17 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Camera, CheckCircle, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import DatePicker from 'react-datepicker';
+import dynamic from 'next/dynamic';
 import 'react-datepicker/dist/react-datepicker.css';
+
+// Force dynamic rendering to avoid prerendering issues
+export const dynamic = 'force-dynamic';
+
+// Dynamically import DatePicker to avoid SSR issues
+const DatePicker = dynamic(() => import('react-datepicker') as any, {
+  ssr: false,
+  loading: () => <div className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white/50">Ładowanie...</div>
+});
 
 interface BreederMeeting {
   id: string;
