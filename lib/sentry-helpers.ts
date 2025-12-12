@@ -48,7 +48,7 @@ export function captureError(error: Error | AppError, context?: Record<string, u
     return;
   }
 
-  Sentry.withScope(scope => {
+  Sentry.withScope((scope: any) => {
     // Dodaj kontekst
     if (context) {
       scope.setContext('additional', context);
@@ -84,7 +84,7 @@ export function captureMessage(
   level: 'debug' | 'info' | 'warning' | 'error' | 'fatal' = 'info',
   context?: Record<string, unknown>
 ) {
-  Sentry.withScope(scope => {
+  Sentry.withScope((scope: any) => {
     if (context) {
       scope.setContext('messageContext', context);
     }
@@ -178,7 +178,7 @@ export function setContext(key: string, context: Record<string, unknown>) {
  * Ustawia poziom ważności dla następnych zdarzeń
  */
 export function setLevel(level: 'debug' | 'info' | 'warning' | 'error' | 'fatal') {
-  Sentry.withScope(scope => {
+  Sentry.withScope((scope: any) => {
     scope.setLevel(level);
   });
 }

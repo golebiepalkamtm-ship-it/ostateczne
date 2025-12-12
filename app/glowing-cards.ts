@@ -77,9 +77,12 @@ export function initGlowingCards() {
   );
 
   cards.forEach(card => {
+    // Skip any card that is inside a no-hover container (admin override)
+    if (card.closest && card.closest('.no-hover')) return;
+
     // Dodaj element .glow jeśli nie istnieje (z wyjątkiem input/textarea/select - dla nich opcjonalne)
     const isFormElement = card.tagName === 'INPUT' || card.tagName === 'TEXTAREA' || card.tagName === 'SELECT';
-    
+
     if (!card.querySelector('.glow') && !isFormElement) {
       const glow = document.createElement('span');
       glow.className = 'glow';
@@ -105,8 +108,11 @@ export function initGlowingCards() {
             '.card-glow-edge, .card-glass, .glass-container, .card, [class*="card"], [class*="glass"], .btn-primary, .btn-secondary, .glass-nav-button, input:not([type="checkbox"]):not([type="radio"]), textarea, select'
           );
           newCards.forEach(card => {
+            // Skip cards that are inside a no-hover container
+            if (card.closest && card.closest('.no-hover')) return;
+
             const isFormElement = card.tagName === 'INPUT' || card.tagName === 'TEXTAREA' || card.tagName === 'SELECT';
-            
+
             if (!card.querySelector('.glow') && !isFormElement) {
               const glow = document.createElement('span');
               glow.className = 'glow';

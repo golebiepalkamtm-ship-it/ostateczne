@@ -19,7 +19,7 @@ export function NotificationDropdown({ isOpen, onClose }: NotificationDropdownPr
 
   return (
     <div className="absolute right-0 top-full mt-2 w-80 z-50">
-      <UnifiedCard variant="glass" className="p-0">
+      <UnifiedCard variant="glass" noTransparency={true} className="p-0">
         <div className="p-4 border-b border-gray-700">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">

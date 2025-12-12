@@ -28,7 +28,7 @@
    ============================================ */
 .auth-cube-container {
   position: absolute;
-  top: 360px; /* Zwiększone aby nie nachodziło na nawigację */
+  top: 280px; /* Zmniejszono, by kostka była niżej na stronie */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -196,17 +196,8 @@
 /* Tylko złoty styl - bez kolorowych efektów */
 
 .auth-cube-face:hover {
-  box-shadow:
-    /* MAKSYMALNY złoty glow */
-    0 0 40px rgba(218, 182, 98, 1),
-    0 0 60px rgba(189, 158, 88, 1),
-    0 0 90px rgba(165, 138, 78, 0.8),
-    0 0 120px rgba(218, 182, 98, 0.6),
-    /* Wzmocnione inset highlights */
-    inset 0 0 70px rgba(71, 61, 38, 0.35),
-    inset 0 4px 0 rgba(218, 182, 98, 0.9),
-    inset 0 -4px 0 rgba(61, 51, 33, 0.7);
-  /* Bez efektu unoszenia - tylko rotacja kostki 3D */
+  /* Wyłączamy podświetlenie przy najechaniu — użytkownik prosił o brak glow */
+  box-shadow: none !important;
 }
 
 @keyframes goldenGlow {

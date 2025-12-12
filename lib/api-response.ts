@@ -38,12 +38,14 @@ export function createApiErrorResponse(
   return NextResponse.json(
     {
       success: false,
-      error: {
-        message,
-        ...(code && { code }),
-        ...(field && { field }),
-        ...(details && { details }),
-      },
+      // Budujemy obiekt błędu krok po kroku, aby uniknąć spreadowania wartości o nieznanym typie
+      error: (() => {
+        const e: any = { message };
+        if (code) e.code = code;
+        if (field) e.field = field;
+        if (typeof details !== 'undefined') e.details = details;
+        return e as ApiErrorResponse['error'];
+      })(),
       timestamp: new Date().toISOString(),
     },
     { status }

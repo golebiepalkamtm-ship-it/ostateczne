@@ -1,6 +1,9 @@
-// Firebase Admin SDK - tylko dla serwera
-import { cert, getApps, initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
+// Firebase Admin SDK - only require at runtime on server to avoid bundling into client
+/* eslint-disable */
+// We intentionally avoid top-level imports of 'firebase-admin' because Next.js build
+// statically analyzes imports and will try to resolve node-only modules (fs, net, http2)
+// which breaks the client bundle. Instead we `require()` inside the initializer below
+// guarded by server-only checks.
 
 // Wyciszone logi - nie używamy importu z ./logger
 const SILENT_MODE = true;
@@ -9,8 +12,8 @@ const info = (..._args: any[]) => { if (!SILENT_MODE) console.info('[INFO]', ...
 const error = (..._args: any[]) => { if (!SILENT_MODE) console.error('[ERROR]', ..._args); };
 const isDev = process.env.NODE_ENV !== 'production';
 
-let adminAuth: ReturnType<typeof getAuth> | null = null;
-let app: ReturnType<typeof initializeApp> | null = null;
+let adminAuth: any = null;
+let app: any = null;
 let initializationAttempted = false;
 
 const isTest =
@@ -88,20 +91,42 @@ function initializeFirebaseAdmin() {
     }
 
     const firebaseAdminConfig = {
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey: normalizedPrivateKey,
-      }),
+      // credential will be created below using runtime require
       storageBucket: storageBucket,
     };
 
-    info('🔧 Initializing Firebase Admin SDK...');
+    info('🔧 Initializing Firebase Admin SDK (server-only require) ...');
 
-    // Initialize Firebase Admin
-    app = getApps().length === 0 ? initializeApp(firebaseAdminConfig) : getApps()[0];
-    adminAuth = getAuth(app);
-    
+    // Require server-side firebase-admin modules at runtime. Use require instead of
+    // static import to prevent bundlers from including node-only modules in client bundles.
+    if (typeof window !== 'undefined') {
+      error('Attempt to initialize Firebase Admin SDK in browser environment - aborting');
+      return;
+    }
+
+    let adminAppModules: any;
+    let adminAuthModule: any;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      adminAppModules = require('firebase-admin/app');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      adminAuthModule = require('firebase-admin/auth');
+    } catch (err) {
+      error('❌ Could not require firebase-admin modules at runtime:', err instanceof Error ? err.message : String(err));
+      return;
+    }
+
+    const { cert: runtimeCert, getApps: runtimeGetApps, initializeApp: runtimeInitializeApp } = adminAppModules;
+    const { getAuth: runtimeGetAuth } = adminAuthModule;
+
+    // Build final config with runtime certificate
+    const finalConfig = Object.assign({}, firebaseAdminConfig, {
+      credential: runtimeCert({ projectId, clientEmail, privateKey: normalizedPrivateKey }),
+    });
+
+    app = runtimeGetApps().length === 0 ? runtimeInitializeApp(finalConfig) : runtimeGetApps()[0];
+    adminAuth = runtimeGetAuth(app);
+
     info('✅ Firebase Admin SDK initialized successfully');
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);

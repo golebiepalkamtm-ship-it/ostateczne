@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useDropzone } from 'react-dropzone';
@@ -155,6 +156,9 @@ export default function CreateAuctionForm({
   } | null>(null);
 
   // Hook formularza
+  // Cast zodResolver to the react-hook-form Resolver generic to satisfy TS inference
+  const resolver = zodResolver(auctionCreateSchema) as unknown as Resolver<CreateAuctionFormData>;
+
   const {
     register,
     handleSubmit,
@@ -162,7 +166,7 @@ export default function CreateAuctionForm({
     setValue,
     formState: { errors },
   } = useForm<CreateAuctionFormData>({
-    resolver: zodResolver(auctionCreateSchema),
+    resolver,
     mode: 'onChange',
   });
 

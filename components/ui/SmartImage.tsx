@@ -204,16 +204,14 @@ export function SmartImage({
         )
       )}
 
-      {/* Fade in animation */}
-      {isLoaded && (
-        <div
-          className="absolute inset-0 bg-white dark:bg-gray-900"
-          style={{
-            opacity: 1,
-            transition: 'opacity 0.3s',
-          }}
-        />
-      )}
+      {/* Fade overlay — visible while loading, fades out when image loads */}
+      <div
+        className="absolute inset-0 bg-white dark:bg-gray-900 pointer-events-none"
+        style={{
+          opacity: isLoaded ? 0 : 1,
+          transition: 'opacity 0.35s ease',
+        }}
+      />
     </div>
   );
 }

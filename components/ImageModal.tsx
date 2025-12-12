@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactDOM from 'react-dom';
 import { X, ZoomIn, ZoomOut } from 'lucide-react';
-import { MouseEventHandler, useEffect, useState, useRef } from 'react';
+import { MouseEventHandler, useEffect, useState, useRef, useMemo } from 'react';
 import { debug, isDev } from '@/lib/logger';
 
 interface ImageItem {
@@ -48,6 +48,15 @@ export default function ImageModal({
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const prevIndexRef = useRef<number | undefined>(currentIndex);
   const flightDoneRef = useRef(false);
+  // Compute sourceRect from the provided `sourceElement` in a stable way
+  const sourceRect = useMemo(() => {
+    if (typeof window === 'undefined' || !sourceElement) return null;
+    try {
+      return sourceElement.getBoundingClientRect();
+    } catch {
+      return null;
+    }
+  }, [sourceElement]);
   
   // Detect navigation direction based on index change
   useEffect(() => {
@@ -61,17 +70,15 @@ export default function ImageModal({
     prevIndexRef.current = currentIndex;
   }, [currentIndex]);
   
-  // Get source rect immediately (synchronously) to avoid flash
-  const sourceRect = sourceElement ? sourceElement.getBoundingClientRect() : null;
+  // Initialize `isBrowser` on mount
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
 
   // Initialize component and set up animations
   useEffect(() => {
-    // Only run setup once
-    if (isBrowser) {
-      return;
-    }
-    
-    setIsBrowser(true);
+    // Compute sourceRect here to avoid referencing non-stable values in deps
+    const sourceRect = sourceElement ? sourceElement.getBoundingClientRect() : null;
     
     console.log('ImageModal: ===== INITIALIZING =====');
     console.log('ImageModal: Image data:', { id: image.id, src: image.src, alt: image.alt });
@@ -134,7 +141,9 @@ export default function ImageModal({
       window.scrollTo(0, scrollY);
       window.removeEventListener('keydown', handleEscapeKey);
     };
-  }, [onClose, sourceElement, isBrowser, sourceRect]);
+  // We intentionally depend on props that affect the animation lifecycle. Avoid
+  // including internal `isBrowser` state here to prevent a double-run.
+  }, [onClose, sourceElement, image, onPrevious, onNext]);
 
   // Focus trap for accessibility
   useEffect(() => {

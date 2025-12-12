@@ -27,7 +27,7 @@ export function GlobalLoader({
       exit={{ opacity: 0, scale: 0.8 }}
       className="fixed top-4 right-4 z-50"
     >
-      <UnifiedCard variant="glass" className="p-4 flex items-center space-x-3">
+      <UnifiedCard variant="glass" noTransparency={true} className="p-4 flex items-center space-x-3">
         <motion.div
           className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full"
           animate={{ rotate: 360 }}
@@ -47,7 +47,7 @@ export function GlobalLoader({
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
     >
-      <UnifiedCard variant="3d" glow={false} className="p-8 text-center border-2 border-white/20">
+      <UnifiedCard variant="3d" noTransparency={true} glow={false} className="p-8 text-center border-2 border-white/20">
         <motion.div
           className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full mx-auto mb-6"
           animate={{ rotate: 360 }}
@@ -85,6 +85,7 @@ export function GlobalLoader({
       >
         <UnifiedCard
           variant="3d"
+          noTransparency={true}
           glow={false}
           className="p-12 text-center border-2 border-white/30 shadow-2xl"
         >

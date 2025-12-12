@@ -176,28 +176,44 @@ const AdminOverview = memo(function AdminOverview({ stats, isLoading }: AdminOve
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <UnifiedCard variant="glass" className="p-8">
+        <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
           <h3 className="text-2xl font-semibold text-white mb-6">Szybkie akcje</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <button className="p-6 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20">
-              <Users className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-              <p className="text-white font-semibold text-lg mb-1">Zarządzaj użytkownikami</p>
-              <p className="text-white/60 text-sm">Przeglądaj i edytuj konta</p>
+            <button style={{ width: '100%' }} className="w-full text-left p-6 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+              <div className="flex items-center gap-4">
+                <Users className="w-8 h-8 text-blue-400" />
+                <div>
+                  <p className="text-white font-semibold text-lg mb-1">Zarządzaj użytkownikami</p>
+                  <p className="text-white/60 text-sm">Przeglądaj i edytuj konta</p>
+                </div>
+              </div>
             </button>
-            <button className="p-6 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/20">
-              <Gavel className="w-8 h-8 text-green-400 mx-auto mb-3" />
-              <p className="text-white font-semibold text-lg mb-1">Moderuj aukcje</p>
-              <p className="text-white/60 text-sm">Zatwierdzaj i odrzucaj</p>
+            <button style={{ width: '100%' }} className="w-full text-left p-6 bg-green-500/10 border border-green-500/30 rounded-xl">
+              <div className="flex items-center gap-4">
+                <Gavel className="w-8 h-8 text-green-400" />
+                <div>
+                  <p className="text-white font-semibold text-lg mb-1">Moderuj aukcje</p>
+                  <p className="text-white/60 text-sm">Zatwierdzaj i odrzucaj</p>
+                </div>
+              </div>
             </button>
-            <button className="p-6 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/20">
-              <DollarSign className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-              <p className="text-white font-semibold text-lg mb-1">Transakcje</p>
-              <p className="text-white/60 text-sm">Przeglądaj płatności</p>
+            <button style={{ width: '100%' }} className="w-full text-left p-6 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+              <div className="flex items-center gap-4">
+                <DollarSign className="w-8 h-8 text-yellow-400" />
+                <div>
+                  <p className="text-white font-semibold text-lg mb-1">Transakcje</p>
+                  <p className="text-white/60 text-sm">Przeglądaj płatności</p>
+                </div>
+              </div>
             </button>
-            <button className="p-6 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20">
-              <BarChart3 className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-              <p className="text-white font-semibold text-lg mb-1">Raporty</p>
-              <p className="text-white/60 text-sm">Analiza i statystyki</p>
+            <button style={{ width: '100%' }} className="w-full text-left p-6 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+              <div className="flex items-center gap-4">
+                <BarChart3 className="w-8 h-8 text-purple-400" />
+                <div>
+                  <p className="text-white font-semibold text-lg mb-1">Raporty</p>
+                  <p className="text-white/60 text-sm">Analiza i statystyki</p>
+                </div>
+              </div>
             </button>
           </div>
         </UnifiedCard>
@@ -205,7 +221,7 @@ const AdminOverview = memo(function AdminOverview({ stats, isLoading }: AdminOve
 
       {/* System Status & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <UnifiedCard variant="glass" className="p-8">
+        <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
           <h3 className="text-2xl font-semibold text-white mb-6 flex items-center gap-3">
             <Server className="w-6 h-6 text-blue-400" />
             Status Systemu
@@ -242,7 +258,7 @@ const AdminOverview = memo(function AdminOverview({ stats, isLoading }: AdminOve
           </div>
         </UnifiedCard>
 
-        <UnifiedCard variant="glass" className="p-8">
+        <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
           <h3 className="text-2xl font-semibold text-white mb-6 flex items-center gap-3">
             <Clock className="w-6 h-6 text-yellow-400" />
             Ostatnia aktywność
@@ -274,7 +290,7 @@ const AdminOverview = memo(function AdminOverview({ stats, isLoading }: AdminOve
       </div>
 
       {/* Performance Metrics */}
-      <UnifiedCard variant="glass" className="p-8">
+      <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
         <h3 className="text-2xl font-semibold text-white mb-6 flex items-center gap-3">
           <Activity className="w-6 h-6 text-emerald-400" />
           Metryki wydajności

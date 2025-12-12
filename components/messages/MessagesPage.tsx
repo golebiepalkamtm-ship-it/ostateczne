@@ -52,7 +52,7 @@ export function MessagesList({
 }: MessagesListProps) {
   return (
     <div className="w-full md:w-80 shrink-0">
-      <UnifiedCard variant="glass" className="h-full">
+      <UnifiedCard variant="glass" noTransparency={true} className="h-full">
         <div className="p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white flex items-center gap-2">
             <MessageCircle className="w-5 h-5" />
@@ -186,7 +186,7 @@ export function MessageChat({
 
   return (
     <div className="flex-1 flex flex-col">
-      <UnifiedCard variant="glass" className="h-full flex flex-col">
+      <UnifiedCard variant="glass" noTransparency={true} className="h-full flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-gray-700">
           <div className="flex items-center gap-3">

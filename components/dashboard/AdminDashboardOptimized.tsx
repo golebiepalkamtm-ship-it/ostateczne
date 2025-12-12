@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { UnifiedCard } from '@/components/ui/UnifiedCard';
-import { motion } from 'framer-motion';
 import {
   BarChart3,
   Camera,
@@ -752,15 +751,22 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen relative w-full">
-      <div className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 py-10 text-white">
+    <div className="min-h-screen relative w-full no-hover">
+      {/* SVG filter for sharpening background image */}
+      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
+        <filter id="sharpen">
+          <feConvolveMatrix
+            order="3"
+            kernelMatrix="0 -1 0 -1 5 -1 0 -1 0"
+            divisor="1"
+          />
+        </filter>
+      </svg>
+
+      {/* Admin dashboard uses the global background from UnifiedLayout; removed duplicate background here */}
+      <div className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 pt-40 pb-10 text-white">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-5xl font-bold text-gradient bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent mb-2">
@@ -772,28 +778,23 @@ export default function AdminDashboard() {
             </div>
             <button
               onClick={() => router.push('/api/auth/signout')}
-              className="glass-nav-button flex items-center gap-2 px-6 py-3 text-white rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 border border-white/30"
+              className="glass-nav-button flex items-center gap-2 px-6 py-3 text-white rounded-xl backdrop-blur-sm border border-white/30"
             >
               <LogOut className="w-5 h-5" />
               <span>Wyloguj</span>
             </button>
           </div>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <UnifiedCard variant="glass" className="sticky top-8">
+            <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.6} className="sticky top-8 glass-morphism-strong">
               {/* Admin Info */}
               <div className="text-center mb-8 pb-8 border-b border-white/20">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: 'spring' }}
-                  className="w-32 h-32 bg-gradient-to-br from-red-500 via-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-red-500/40"
-                >
+                <div className="w-32 h-32 bg-gradient-to-br from-red-500 via-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-red-500/40">
                   <Shield className="w-16 h-16 text-white" />
-                </motion.div>
+                </div>
                 <h2 className="text-2xl font-bold text-white mb-2">
                   {firebaseUser.displayName || `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim() || 'Administrator'}
                 </h2>
@@ -804,40 +805,72 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Navigation */}
-              <nav className="space-y-2">
-                {tabs.map((tab, index) => {
-                  const Icon = tab.icon;
-                  return (
-                    <motion.button
-                      key={tab.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 * index }}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 text-base ${
-                        activeTab === tab.id
-                          ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105'
-                          : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 hover:scale-102'
-                      }`}
-                    >
-                      <Icon className="w-6 h-6" />
-                      <span className="font-semibold">{tab.label}</span>
-                    </motion.button>
-                  );
-                })}
+              {/* Sidebar navigation kept minimal - tiles moved to main area */}
+              <nav aria-label="Panel nawigacji" className="text-sm">
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => setActiveTab('overview')}
+                    className="glass-nav-button-inline w-full flex items-center gap-3 text-left px-3 py-1.5 rounded-md bg-white/6 text-white/90"
+                  >
+                    <div className="w-8 h-8 flex items-center justify-center rounded-md bg-white/10">
+                      <BarChart3 className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-semibold">Przegląd</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('users')}
+                    className="glass-nav-button-inline w-full flex items-center gap-3 text-left px-3 py-1.5 rounded-md bg-white/6 text-white/90"
+                  >
+                    <div className="w-8 h-8 flex items-center justify-center rounded-md bg-white/10">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-semibold">Użytkownicy</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('auctions')}
+                    className="glass-nav-button-inline w-full flex items-center gap-3 text-left px-3 py-1.5 rounded-md bg-white/6 text-white/90"
+                  >
+                    <div className="w-8 h-8 flex items-center justify-center rounded-md bg-white/10">
+                      <Gavel className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-semibold">Aukcje</span>
+                  </button>
+                </div>
               </nav>
+
+              {/* Compact vertical tab buttons (moved from top grid) */}
+              <div className="mt-6">
+                <div className="flex flex-col gap-3">
+                  {tabs.map(tab => {
+                    const Icon = tab.icon
+                    const isActive = activeTab === tab.id
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        aria-pressed={isActive}
+                        className={`glass-nav-button-inline m-0 flex items-center gap-3 text-left px-3 py-1.5 rounded-md focus:outline-none w-full transition-colors ${
+                              isActive ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white' : 'bg-white/6 text-white/90 hover:bg-white/10'
+                            }`}
+                      >
+                        <div className="w-8 h-8 flex items-center justify-center rounded-md bg-white/10">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-semibold">{tab.label}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             </UnifiedCard>
           </div>
 
           {/* Main Content */}
           <div className="lg:col-span-4">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
+            {/* Large tile navigation was moved to the sidebar for compact vertical navigation */}
+            <div key={activeTab}>
               {activeTab === 'overview' && <AdminOverview stats={stats} isLoading={isLoading} />}
 
               {activeTab === 'users' && (
@@ -900,7 +933,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'transactions' && (
-                <UnifiedCard variant="glass" className="p-8">
+                <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
                   <h3 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                     <DollarSign className="w-8 h-8 text-yellow-400" />
                     Zarządzanie Transakcjami
@@ -1021,7 +1054,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'references' && (
-                <UnifiedCard variant="glass" className="p-8">
+                <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
                   <div className="flex justify-between items-center mb-8">
                     <h3 className="text-3xl font-bold text-white flex items-center gap-3">
                       <Star className="w-8 h-8 text-purple-400" />
@@ -1160,7 +1193,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'meetings' && (
-                <UnifiedCard variant="glass" className="p-8">
+                <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
                   <div className="flex justify-between items-center mb-8">
                     <h3 className="text-3xl font-bold text-white flex items-center gap-3">
                       <Camera className="w-8 h-8 text-pink-400" />
@@ -1301,7 +1334,7 @@ export default function AdminDashboard() {
 
               {activeTab === 'appearance' && (
                 <div className="space-y-6">
-                  <UnifiedCard variant="glass" className="p-8">
+                  <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
                     <h3 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                       <Camera className="w-8 h-8 text-blue-400" />
                       Zarządzanie Wyglądem Strony
@@ -1313,7 +1346,7 @@ export default function AdminDashboard() {
 
               {activeTab === 'gallery' && (
                 <div className="space-y-6">
-                  <UnifiedCard variant="glass" className="p-8">
+                  <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
                     <h3 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                       <Star className="w-8 h-8 text-purple-400" />
                       Galeria Championów
@@ -1325,7 +1358,7 @@ export default function AdminDashboard() {
 
               {activeTab === 'metrics' && (
                 <div className="space-y-6">
-                  <UnifiedCard variant="glass">
+                  <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="glass-morphism-strong">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-2xl font-semibold text-white flex items-center gap-3">
                         <Activity className="w-6 h-6 text-blue-400" />
@@ -1384,7 +1417,7 @@ export default function AdminDashboard() {
                     </div>
                   </UnifiedCard>
 
-                  <UnifiedCard variant="glass" className="p-8">
+                  <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="p-8 glass-morphism-strong">
                     <h4 className="text-2xl font-bold text-white mb-6">Metryki w czasie rzeczywistym</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="p-6 bg-white/5 rounded-xl border border-white/10">
@@ -1417,7 +1450,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'logs' && (
-                <UnifiedCard variant="glass">
+                <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="glass-morphism-strong">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-semibold text-white flex items-center gap-3">
                       <FileText className="w-6 h-6 text-yellow-400" />
@@ -1472,28 +1505,28 @@ export default function AdminDashboard() {
 
               {activeTab === 'reports' && (
                 <div className="space-y-6">
-                  <UnifiedCard variant="glass">
+                  <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="glass-morphism-strong">
                     <h3 className="text-2xl font-semibold text-white mb-6 flex items-center gap-3">
                       <TrendingUp className="w-6 h-6 text-green-400" />
                       Raporty i Analizy
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <button className="p-6 bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                      <button className="p-6 bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-xl text-left">
                         <BarChart3 className="w-8 h-8 text-blue-400 mb-3" />
                         <h4 className="text-white font-semibold mb-2">Raport Użytkowników</h4>
                         <p className="text-white/70 text-sm">Analiza aktywności i rejestracji</p>
                       </button>
-                      <button className="p-6 bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                      <button className="p-6 bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 rounded-xl text-left">
                         <DollarSign className="w-8 h-8 text-green-400 mb-3" />
                         <h4 className="text-white font-semibold mb-2">Raport Finansowy</h4>
                         <p className="text-white/70 text-sm">Przychody, prowizje, transakcje</p>
                       </button>
-                      <button className="p-6 bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                      <button className="p-6 bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-xl text-left">
                         <Gavel className="w-8 h-8 text-purple-400 mb-3" />
                         <h4 className="text-white font-semibold mb-2">Raport Aukcji</h4>
                         <p className="text-white/70 text-sm">Statystyki aukcji i licytacji</p>
                       </button>
-                      <button className="p-6 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl hover:scale-105 transition-all duration-300 text-left">
+                      <button className="p-6 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl text-left">
                         <AlertTriangle className="w-8 h-8 text-yellow-400 mb-3" />
                         <h4 className="text-white font-semibold mb-2">Raport Błędów</h4>
                         <p className="text-white/70 text-sm">Analiza błędów i problemów</p>
@@ -1501,7 +1534,7 @@ export default function AdminDashboard() {
                     </div>
                   </UnifiedCard>
 
-                  <UnifiedCard variant="glass">
+                  <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="glass-morphism-strong">
                     <h4 className="text-xl font-semibold text-white mb-4">Eksport Danych</h4>
                     <div className="space-y-3">
                       <button className="w-full p-4 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-300 flex items-center justify-between">
@@ -1531,7 +1564,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'settings' && (
-                <UnifiedCard variant="glass">
+                <UnifiedCard variant="glass" noTransparency={true} glow={true} glowingEdges={true} edgeGlowIntensity={0.5} className="glass-morphism-strong">
                   <h3 className="text-2xl font-semibold text-white mb-6 flex items-center gap-3">
                     <Settings className="w-6 h-6 text-blue-400" />
                     Ustawienia Platformy
@@ -1618,7 +1651,7 @@ export default function AdminDashboard() {
                   </div>
                 </UnifiedCard>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

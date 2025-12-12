@@ -32,7 +32,7 @@ export function ChampionProfile({ champion }: ChampionProfileProps) {
   if (isDev) debug('ChampionProfile - champion data:', champion);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 pt-4 pb-8">
       {/* Champion Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-white mb-4">

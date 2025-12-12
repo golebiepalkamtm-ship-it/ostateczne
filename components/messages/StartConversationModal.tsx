@@ -132,7 +132,7 @@ export function StartConversationModal({
       <p id="start-conversation-modal-description" className="sr-only">
         Modal do rozpoczynania nowej konwersacji. Wybierz użytkownika i napisz pierwszą wiadomość.
       </p>
-      <UnifiedCard variant="glass" className="w-full max-w-md">
+      <UnifiedCard variant="glass" noTransparency={true} className="w-full max-w-md">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-white">Nowa konwersacja</h2>

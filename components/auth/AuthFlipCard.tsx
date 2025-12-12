@@ -13,11 +13,11 @@ interface AuthFlipCardProps {
   initialMode?: AuthMode;
 }
 
-// Bazowe wymiary kostki
+// Bazowe wymiary kostki (skorygowano: jeszcze niższa wysokość)
 const BASE_WIDTH = 400;
-const BASE_HEIGHT = 520;
-const MIN_HEIGHT = 480;
-const MAX_HEIGHT = 700;
+const BASE_HEIGHT = 360; // poprzednio 420
+const MIN_HEIGHT = 320;  // poprzednio 380
+const MAX_HEIGHT = 520;  // poprzednio 600
 const PADDING = 48; // padding wewnętrzny ścian
 
 export function AuthFlipCard({ initialMode }: AuthFlipCardProps) {

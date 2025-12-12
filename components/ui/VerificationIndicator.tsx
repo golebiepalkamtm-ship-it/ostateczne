@@ -21,7 +21,7 @@ export function VerificationIndicator() {
   const status: VerificationStatus = {
     emailVerified: !!user?.emailVerified,
     profileComplete: !!(dbUser?.firstName && dbUser?.lastName && dbUser?.address),
-    phoneVerified: !!dbUser?.isPhoneVerified,
+    phoneVerified: !!dbUser?.phoneVerified,
     isLoading: loading,
   };
 
@@ -102,7 +102,7 @@ export function VerificationBanner() {
   const status: VerificationStatus = {
     emailVerified: !!user?.emailVerified,
     profileComplete: !!(dbUser?.firstName && dbUser?.lastName && dbUser?.address),
-    phoneVerified: !!dbUser?.isPhoneVerified,
+    phoneVerified: !!dbUser?.phoneVerified,
     isLoading: loading,
   };
 

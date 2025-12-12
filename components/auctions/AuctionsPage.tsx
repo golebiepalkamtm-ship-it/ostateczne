@@ -307,7 +307,7 @@ export function AuctionsPage() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.8 }}
-        className="relative z-10 pt-[250px] pb-12 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16"
+        className="relative z-10 pt-44 pb-12 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16"
       >
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl font-bold uppercase tracking-[0.5em] text-white/60 mb-6">Nasze Aukcje</h1>
