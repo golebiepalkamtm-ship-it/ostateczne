@@ -3,9 +3,9 @@
 import { UserStatus } from '@/components/auth/UserStatus';
 import { Footer } from '@/components/layout/Footer';
 import { LogoGlow } from '@/components/layout/LogoGlow';
-import { VerificationBanner, VerificationIndicator } from '@/components/ui/VerificationIndicator';
+
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import Image from 'next/image';
 
 const navItems = [
@@ -37,12 +37,23 @@ export function UnifiedLayout({
   className = '',
   isHomePage = false,
 }: UnifiedLayoutProps) {
+  useEffect(() => {
+    const removeBisAttributes = () => {
+      const elements = document.querySelectorAll('[bis_skin_checked]');
+      elements.forEach(el => el.removeAttribute('bis_skin_checked'));
+    };
+    removeBisAttributes();
+    const observer = new MutationObserver(removeBisAttributes);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className={`relative min-h-screen flex flex-col ${className}`}>
+    <div className={`relative min-h-screen flex flex-col ${className}`} suppressHydrationWarning={true}>
       {/* Tło strony */}
       {showBackground && (
         <>
-          <div className="fixed inset-0 w-full h-full -z-10">
+          <div className="fixed inset-0 w-full h-full -z-10" suppressHydrationWarning={true}>
             <Image
               src="/pigeon-lofts-background-sharp.jpg"
               alt="Tło gołębnika Pałka MTM"
@@ -59,53 +70,48 @@ export function UnifiedLayout({
 
       {/* Logo, Navigation Menu i User Status - IDENTYCZNE NA WSZYSTKICH STRONACH */}
       {showNavigation && (
-        <div className="absolute z-[1001] pointer-events-auto fade-in-fwd top-5 left-12 right-6" style={{ animationDelay: '0s' }}>
-          <div className="flex items-center justify-between w-full" style={{ perspective: '1500px' }}>
+        <div className="absolute z-[1001] pointer-events-auto top-5 left-12 right-6" suppressHydrationWarning={true}>
+          <div className="flex items-center justify-between w-full" suppressHydrationWarning={true}>
             {/* Logo i Navigation Menu po lewej */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6" suppressHydrationWarning={true}>
               {/* Logo */}
-              <div className="flex items-center scale-110 animate__animated animate__slow animate__backInDown" style={{ animationDelay: '0s' }}>
+              <div className="flex items-center scale-110" suppressHydrationWarning={true}>
                 <LogoGlow />
               </div>
 
               {/* Navigation Menu */}
-              <nav className="flex items-center">
-                <div className="flex items-center gap-4">
-                  {navItems.map((item, index) => {
-                    const directionClass = index % 2 === 0 ? 'animate__backInRight' : 'animate__backInLeft'
-                    // Zwiększone opóźnienia i wolniejsza prędkość animacji
-                    const baseDelay = 0.18
-                    const stagger = 0.08
-                    const delay = baseDelay + index * stagger
-                    return (
-                      <div
-                        key={item.href}
-                        className={`animate__animated animate__slow ${directionClass} flex items-center`}
-                        style={{
-                          animationDelay: `${delay.toFixed(2)}s`,
-                          transformStyle: 'preserve-3d'
+              <nav className="flex items-center" suppressHydrationWarning={true}>
+                <div className="flex items-center gap-4" suppressHydrationWarning={true}>
+                  {navItems.map((item, index) => (
+                    <div
+                      key={item.href}
+                      className="flex items-center magictime boingInUp"
+                      style={{ animationDelay: `${index * 0.08}s`, animationDuration: '0.8s', animationFillMode: 'both' }}
+                      suppressHydrationWarning={true}
+                    >
+                      <Link
+                        href={item.href as `/${string}`}
+                        className="glass-nav-button flex items-center justify-center scale-105"
+                        title={item.title}
+                        onClick={() => {
+                          /* console.log('Clicked:', item.href) */
                         }}
                       >
-                        <Link
-                          href={item.href as `/${string}`}
-                          className="glass-nav-button flex items-center justify-center scale-105"
-                          title={item.title}
-                          onClick={() => {
-                            /* console.log('Clicked:', item.href) */
-                          }}
-                        >
-                          <i className={`${item.icon} relative z-10 text-3xl`}></i>
-                          <span className="relative z-10 text-sm ml-2 font-medium">{item.label}</span>
-                        </Link>
-                      </div>
-                    )
-                  })}
+                        <i className={`${item.icon} relative z-10 text-3xl`}></i>
+                        <span className="relative z-10 text-sm ml-2 font-medium">{item.label}</span>
+                      </Link>
+                    </div>
+                  ))}
                 </div>
               </nav>
             </div>
 
             {/* User Status po prawej */}
-            <div className="flex items-center gap-4 scale-105 animate__animated animate__slow animate__backInUp" style={{ animationDelay: '1.00s' }}>
+            <div
+              className="flex items-center gap-4 scale-105 magictime spaceInRight"
+              style={{ animationDuration: '0.9s', animationDelay: `${navItems.length * 0.08}s`, animationFillMode: 'both' }}
+              suppressHydrationWarning={true}
+            >
               <UserStatus />
             </div>
           </div>
@@ -113,13 +119,13 @@ export function UnifiedLayout({
       )}
 
       {/* Main Content - dodany padding-top aby nie nachodziło na navigation tiles */}
-      <div className="relative z-20 flex-1 pt-40">
+      <div className="relative z-20 flex-1 pt-40" suppressHydrationWarning={true}>
         {children}
       </div>
 
       {/* Footer */}
       {showFooter && (
-        <div className="relative z-20 mt-32 pt-16">
+        <div className="relative z-20 mt-32 pt-16" suppressHydrationWarning={true}>
           <Footer />
         </div>
       )}

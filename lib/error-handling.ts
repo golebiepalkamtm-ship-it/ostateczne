@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server.js';
 import { ZodError } from 'zod';
-import { PrismaClientInitializationError, PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from '@prisma/client/runtime/library';
+import { PrismaClientInitializationError, PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from '@prisma/client-runtime-utils';
 import { captureError } from './sentry-helpers';
 
 // Typy błędów
@@ -29,7 +29,7 @@ export class AppError extends Error {
     type: ErrorType = ErrorType.INTERNAL_SERVER_ERROR,
     statusCode: number = 500,
     isOperational: boolean = true,
-    details?: unknown
+    details?: unknown,
   ) {
     super(message);
     this.type = type;
@@ -90,13 +90,13 @@ interface ErrorResponse {
   statusCode: number;
   details?: unknown;
   timestamp: string;
-  requestId?: string;
+  requestId?: string,
 }
 
 // Helper do tworzenia odpowiedzi błędu
 export function createErrorResponse(
   error: AppError | Error,
-  requestId?: string
+  requestId?: string,
 ): NextResponse<ErrorResponse> {
   let appError: AppError;
 
@@ -127,7 +127,7 @@ export function createErrorResponse(
 
 // Middleware do obsługi błędów
 export function withErrorHandling<T extends unknown[]>(
-  handler: (...args: T) => Promise<NextResponse>
+  handler: (...args: T) => Promise<NextResponse>,
 ) {
   return async (...args: T): Promise<NextResponse> => {
     try {
@@ -145,7 +145,7 @@ export function withErrorHandling<T extends unknown[]>(
 // Helper do walidacji z błędami
 export function validateWithError<T>(
   data: T,
-  validator: (data: T) => { isValid: boolean; error?: string; details?: unknown }
+  validator: (data: T) => { isValid: boolean; error?: string; details?: unknown },
 ): T {
   const result = validator(data);
 
@@ -159,7 +159,7 @@ export function validateWithError<T>(
 // Helper do sprawdzania istnienia zasobu
 export async function requireResource<T>(
   fetcher: () => Promise<T | null>,
-  resourceName: string = 'Zasób'
+  resourceName: string = 'Zasób',
 ): Promise<T> {
   const resource = await fetcher();
 
@@ -181,7 +181,7 @@ export function requirePermission(condition: boolean, message: string = 'Brak up
 export function requireOwnership(
   resourceOwnerId: string,
   currentUserId: string,
-  resourceName: string = 'zasób'
+  resourceName: string = 'zasób',
 ): void {
   if (resourceOwnerId !== currentUserId) {
     throw AppErrors.forbidden(`Nie masz uprawnień do tego ${resourceName}`);
@@ -369,7 +369,7 @@ export function handleFirebaseError(error: unknown): AppError {
 export function handleApiError(
   error: unknown,
   request?: NextRequest,
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ): NextResponse {
   // Zod validation errors
   if (error instanceof ZodError) {
@@ -382,7 +382,7 @@ export function handleApiError(
         error: zodError.message,
         details: zodError.details,
       },
-      { status: zodError.statusCode }
+      { status: zodError.statusCode },
     );
   }
 
@@ -423,7 +423,7 @@ export function handleApiError(
       {
         error: firebaseError.message,
       },
-      { status: firebaseError.statusCode }
+      { status: firebaseError.statusCode },
     );
   }
 
@@ -446,7 +446,7 @@ export function handleApiError(
       {
         error: prismaError.message,
       },
-      { status: prismaError.statusCode }
+      { status: prismaError.statusCode },
     );
   }
 
@@ -464,7 +464,7 @@ export function handleApiError(
           stack: error.stack,
         }),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -480,6 +480,6 @@ export function handleApiError(
         details: String(error),
       }),
     },
-    { status: 500 }
+    { status: 500 },
   );
 }

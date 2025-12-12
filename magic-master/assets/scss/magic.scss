@@ -1,0 +1,91 @@
+@charset "UTF-8";
+
+/*!
+ * Magic - https://www.minimamente.com
+ * Licensed under the MIT license - https://opensource.org/licenses/MIT
+ * Copyright (c) 2022 Christian Pucci
+ */
+
+// bling
+@import "bling/puffIn";
+@import url("bling/puffOut");
+@import url("bling/vanishIn");
+@import url("bling/vanishOut");
+// boing
+@import "boing/boingInUp";
+@import url("boing/boingOutDown");
+// bomb
+@import "bomb/bombLeftOut";
+@import url("bomb/bombRightOut");
+// magic_effects
+@import "magic_effects/magic";
+@import url("magic_effects/swap");
+@import url("magic_effects/twisterInDown");
+@import url("magic_effects/twisterInUp");
+// math
+@import "math/foolishIn";
+@import url("math/foolishOut");
+@import url("math/holeOut");
+@import url("math/swashIn");
+@import url("math/swashOut");
+// on_the_space
+@import "on_the_space/spaceInDown";
+@import url("on_the_space/spaceInLeft");
+@import url("on_the_space/spaceInRight");
+@import url("on_the_space/spaceInUp");
+@import url("on_the_space/spaceOutDown");
+@import url("on_the_space/spaceOutLeft");
+@import url("on_the_space/spaceOutRight");
+@import url("on_the_space/spaceOutUp");
+// perspective
+@import "perspective/perspectiveDown";
+@import url("perspective/perspectiveDownReturn");
+@import url("perspective/perspectiveLeft");
+@import url("perspective/perspectiveLeftReturn");
+@import url("perspective/perspectiveRight");
+@import url("perspective/perspectiveRightReturn");
+@import url("perspective/perspectiveUp");
+@import url("perspective/perspectiveUpReturn");
+// rotate
+@import "rotate/rotateDown";
+@import url("rotate/rotateLeft");
+@import url("rotate/rotateRight");
+@import url("rotate/rotateUp");
+// slide
+@import "slide/slideDown";
+@import url("slide/slideDownReturn");
+@import url("slide/slideLeft");
+@import url("slide/slideLeftReturn");
+@import url("slide/slideRight");
+@import url("slide/slideRightReturn");
+@import url("slide/slideUp");
+@import url("slide/slideUpReturn");
+// static_effects
+@import "static_effects/openDownLeft";
+@import url("static_effects/openDownLeftReturn");
+@import url("static_effects/openDownRight");
+@import url("static_effects/openDownRightReturn");
+@import url("static_effects/openUpLeft");
+@import url("static_effects/openUpLeftReturn");
+@import url("static_effects/openUpRight");
+@import url("static_effects/openUpRightReturn");
+// static_effects_out
+@import "static_effects_out/openDownLeftOut";
+@import url("static_effects_out/openDownRightOut");
+@import url("static_effects_out/openUpLeftOut");
+@import url("static_effects_out/openUpRightOut");
+// tin
+@import "tin/tinDownIn";
+@import url("tin/tinDownOut");
+@import url("tin/tinLeftIn");
+@import url("tin/tinLeftOut");
+@import url("tin/tinRightIn");
+@import url("tin/tinRightOut");
+@import url("tin/tinUpIn");
+@import url("tin/tinUpOut");
+
+// magictime
+@import "magictime";
+
+// media
+@import "media";

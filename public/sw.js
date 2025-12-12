@@ -827,7 +827,7 @@ define(['./workbox-ebf7dac2'], function (e) {
         },
         { url: '/uploads/image/test-auction.png', revision: 'b357a19c87624c7c4d131aeeb4ae677f' },
       ],
-      { ignoreURLParametersMatching: [] }
+      { ignoreURLParametersMatching: [] },
     ),
     e.cleanupOutdatedCaches(),
     e.registerRoute(
@@ -843,17 +843,17 @@ define(['./workbox-ebf7dac2'], function (e) {
           },
         ],
       }),
-      'GET'
+      'GET',
     ),
     e.registerRoute(
       /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
       new e.CacheFirst({ cacheName: 'google-fonts', plugins: [] }),
-      'GET'
+      'GET',
     ),
     e.registerRoute(
       /^\/_next\/image\?/,
       new e.StaleWhileRevalidate({ cacheName: 'next-image', plugins: [] }),
-      'GET'
+      'GET',
     ),
     e.registerRoute(
       /^\/api\/.*$/i,
@@ -862,7 +862,7 @@ define(['./workbox-ebf7dac2'], function (e) {
         networkTimeoutSeconds: 5,
         plugins: [new e.ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 3600 })],
       }),
-      'GET'
+      'GET',
     ));
 });
 //# sourceMappingURL=sw.js.map

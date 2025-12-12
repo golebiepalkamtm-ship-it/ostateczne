@@ -16,7 +16,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
             retry: 1,
           },
         },
-      })
+      }),
   );
 
   return (
@@ -24,7 +24,9 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <AuthErrorBanner />
         {children}
-        <ReactQueryDevtools initialIsOpen={false} />
+        <div suppressHydrationWarning>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </div>
       </AuthProvider>
     </QueryClientProvider>
   );

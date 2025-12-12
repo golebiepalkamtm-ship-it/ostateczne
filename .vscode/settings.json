@@ -1,0 +1,17 @@
+{
+    "WillLuke.nextjs.addTypesOnSave": true,
+    "WillLuke.nextjs.hasPrompted": true,
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    // Wyłącz diagnostykę dla znanego fałszywie pozytywnego ostrzeżenia TS71007
+    "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+    "prisma.pinToPrisma6": true,
+    "codium.codeCompletion.enable": true,
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "github.copilot.chat.localeOverride": "pl",
+    "git.ignoreLimitWarning": true,
+    "editor.tabCompletion": "on",
+    "diffEditor.codeLens": true,
+    "MutableAI.upsell": true,
+    "chat.allowAnonymousAccess": true
+}

@@ -43,7 +43,7 @@ export function formatDate(
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }
+  },
 ): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   return new Intl.DateTimeFormat('pl-PL', options).format(dateObj);
@@ -78,7 +78,7 @@ export function formatRelativeTime(date: Date | string): string {
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number
+  wait: number,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
   return (...args: Parameters<T>) => {
@@ -94,7 +94,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
  */
 export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number
+  wait: number,
 ): (...args: Parameters<T>) => void {
   let inThrottle = false;
   return (...args: Parameters<T>) => {

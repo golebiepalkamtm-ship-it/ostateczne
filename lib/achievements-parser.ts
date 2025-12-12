@@ -32,7 +32,7 @@ export function parseAchievementsData(raw: string): YearAchievements[] {
         title: `${org} ${title}`.trim(),
         place: title.trim() || '',
         coeff: coeffValue?.trim() || '-',
-        kon: konValue?.trim() || '-'
+        kon: konValue?.trim() || '-',
       })
     } else {
       // Fallback dla formatu bez wartości przed coeff: "2001 Oddział Lubań Kat A Mistrz coeff 20 kon"
@@ -46,13 +46,13 @@ export function parseAchievementsData(raw: string): YearAchievements[] {
           title: `${org} ${title}`.trim(),
           place: title.trim() || '',
           coeff: '-',
-          kon: konValue?.trim() || '-'
+          kon: konValue?.trim() || '-',
         })
       }
     }
   }
   return Object.entries(years).map(([year, achievements]) => ({
     year: Number(year),
-    achievements
+    achievements,
   }))
 }

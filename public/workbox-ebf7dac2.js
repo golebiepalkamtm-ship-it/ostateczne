@@ -32,7 +32,7 @@ define(['exports'], function (t) {
           if (s && (e.origin === location.origin || 0 === s.index)) return s.slice(1);
         },
         e,
-        s
+        s,
       );
     }
   }
@@ -59,7 +59,7 @@ define(['exports'], function (t) {
                 'string' == typeof e && (e = [e]);
                 const s = new Request(...e);
                 return this.handleRequest({ request: s, event: t });
-              })
+              }),
             );
           (t.waitUntil(s), t.ports && t.ports[0] && s.then(() => t.ports[0].postMessage(!0)));
         }
@@ -500,7 +500,7 @@ define(['exports'], function (t) {
           })(t),
         (e = t),
         (D || (D = [IDBDatabase, IDBObjectStore, IDBIndex, IDBCursor, IDBTransaction])).some(
-          t => e instanceof t
+          t => e instanceof t,
         )
           ? new Proxy(t, N)
           : t);
@@ -617,7 +617,7 @@ define(['exports'], function (t) {
           (this._ = await (function (
             t,
             e,
-            { blocked: s, upgrade: n, blocking: i, terminated: r } = {}
+            { blocked: s, upgrade: n, blocking: i, terminated: r } = {},
           ) {
             const a = indexedDB.open(t, e),
               o = B(a);
@@ -857,7 +857,7 @@ define(['exports'], function (t) {
             i = this.H.get(e),
             r = new Request(e, { integrity: n, cache: i, credentials: 'same-origin' });
           await Promise.all(
-            this.strategy.handleAll({ params: { cacheKey: s }, request: r, event: t })
+            this.strategy.handleAll({ params: { cacheKey: s }, request: r, event: t }),
           );
         }
         const { updatedURLs: s, notUpdatedURLs: n } = e;
@@ -916,7 +916,7 @@ define(['exports'], function (t) {
             directoryIndex: s = 'index.html',
             cleanURLs: n = !0,
             urlManipulation: i,
-          } = {}
+          } = {},
         ) {
           const r = new URL(t, location.href);
           ((r.hash = ''), yield r.href);
@@ -1030,7 +1030,7 @@ define(['exports'], function (t) {
         const a = this.st({ timeoutId: r, request: t, logs: n, handler: e });
         i.push(a);
         const o = await e.waitUntil(
-          (async () => (await e.waitUntil(Promise.race(i))) || (await a))()
+          (async () => (await e.waitUntil(Promise.race(i))) || (await a))(),
         );
         if (!o) throw new s('no-response', { url: t.url });
         return o;
@@ -1082,10 +1082,10 @@ define(['exports'], function (t) {
         t.waitUntil(
           (async (t, e = '-precache-') => {
             const s = (await self.caches.keys()).filter(
-              s => s.includes(e) && s.includes(self.registration.scope) && s !== t
+              s => s.includes(e) && s.includes(self.registration.scope) && s !== t,
             );
             return (await Promise.all(s.map(t => self.caches.delete(t))), s);
-          })(e).then(t => {})
+          })(e).then(t => {}),
         );
       });
     }),

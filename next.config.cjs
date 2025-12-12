@@ -5,10 +5,44 @@ const baseConfig = {
   reactStrictMode: true,
   generateEtags: false,
   poweredByHeader: false,
+  output: 'standalone',
 
   typescript: { ignoreBuildErrors: true },
 
-  
+  turbopack: {
+    // Example: Root directory configuration
+    root: path.join(__dirname),
+
+    // Example: Configure webpack loaders for SVG files
+    rules: {
+      '*.svg': {
+        loaders: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              icon: true,
+            },
+          },
+        ],
+        as: '*.js',
+      },
+    },
+
+    // Example: Resolve aliases
+    resolveAlias: {
+      '@components': './components',
+      '@lib': './lib',
+      '@utils': './utils',
+      '@types': './types',
+    },
+
+    // Example: Custom extensions resolution
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
+
+    // Example: Debug IDs for development builds
+    debugIds: process.env.NODE_ENV === 'development',
+  },
+
   // Disable instrumentationHook during build to avoid requiring optional OpenTelemetry modules
   experimental: {},
 
@@ -106,6 +140,7 @@ const baseConfig = {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    qualities: [75, 90],
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -221,9 +256,9 @@ nextConfig.webpack = (config, options) => {
     config.watchOptions.ignored = [
       ...(config.watchOptions.ignored || []),
       /(^|[\\/])node_modules([\\/]|$)/,
-      /(^|[\\/])C:[\\/](?:pagefile|swapfile)\.sys$/i
+      /(^|[\\/])C:[\\/](?:pagefile|swapfile)\.sys$/i,
     ]
-  } catch (e) {
+  } catch {
     // ignore
   }
 

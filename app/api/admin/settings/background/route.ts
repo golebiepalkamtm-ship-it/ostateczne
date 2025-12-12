@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const setting = await prisma.systemSetting.findUnique({
-      where: { key: 'siteBackgroundImageUrl' }
+      where: { key: 'siteBackgroundImageUrl' },
     });
 
     return NextResponse.json({
@@ -54,14 +54,14 @@ export async function POST(request: NextRequest) {
       where: { key: 'siteBackgroundImageUrl' },
       update: { 
         value: url,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       create: {
         key: 'siteBackgroundImageUrl',
         value: url,
         description: 'URL tła strony głównej',
-        type: 'STRING'
-      }
+        type: 'STRING',
+      },
     });
 
     // Revalidate relevant paths

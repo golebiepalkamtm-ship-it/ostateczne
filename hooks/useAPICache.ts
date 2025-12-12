@@ -221,7 +221,7 @@ export function useImageCache(src: string, config?: CacheConfig) {
 export function useBatchAPICache<T>(
   keys: string[],
   fetcher: (key: string) => Promise<T>,
-  config?: CacheConfig
+  config?: CacheConfig,
 ) {
   const [data, setData] = useState<Record<string, T>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -244,7 +244,7 @@ export function useBatchAPICache<T>(
           acc[key] = result;
           return acc;
         },
-        {} as Record<string, T>
+        {} as Record<string, T>,
       );
 
       setData(dataMap);
@@ -274,7 +274,7 @@ export function useBatchAPICache<T>(
         keys.forEach(k => cache.current.delete(k));
       }
     },
-    [keys]
+    [keys],
   );
 
   return {

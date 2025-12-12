@@ -73,7 +73,7 @@ export function initGlowingCards() {
 
   // Znajdź wszystkie karty i elementy interaktywne
   const cards = document.querySelectorAll<HTMLElement>(
-    '.card-glow-edge, .card-glass, .glass-container, .card, [class*="card"], [class*="glass"], .btn-primary, .btn-secondary, .glass-nav-button, input:not([type="checkbox"]):not([type="radio"]), textarea, select'
+    '.card-glow-edge, .card-glass, .glass-container, .card, [class*="card"], [class*="glass"], .btn-primary, .btn-secondary, .glass-nav-button, input:not([type="checkbox"]):not([type="radio"]), textarea, select',
   );
 
   cards.forEach(card => {
@@ -105,7 +105,7 @@ export function initGlowingCards() {
       mutation.addedNodes.forEach(node => {
         if (node instanceof HTMLElement) {
           const newCards = node.querySelectorAll<HTMLElement>(
-            '.card-glow-edge, .card-glass, .glass-container, .card, [class*="card"], [class*="glass"], .btn-primary, .btn-secondary, .glass-nav-button, input:not([type="checkbox"]):not([type="radio"]), textarea, select'
+            '.card-glow-edge, .card-glass, .glass-container, .card, [class*="card"], [class*="glass"], .btn-primary, .btn-secondary, .glass-nav-button, input:not([type="checkbox"]):not([type="radio"]), textarea, select',
           );
           newCards.forEach(card => {
             // Skip cards that are inside a no-hover container

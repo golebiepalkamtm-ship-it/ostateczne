@@ -3,50 +3,11 @@
 import GoogleMap from '@/components/contact/GoogleMap';
 import { Text3D } from '@/components/ui/Text3D';
 import { UnifiedButton } from '@/components/ui/UnifiedButton';
-import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-// Scroll reveal hook from AchievementTimeline
-const useScrollReveal = () => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    if (prefersReducedMotion.matches) {
-      setIsVisible(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.35 }
-    );
-
-    observer.observe(node);
-
-    return () => {
-      if (node) {
-        observer.unobserve(node);
-      }
-    };
-  }, []);
-
-  return { ref, isVisible };
-};
+// Scroll reveal hook - removed
 
 // Styled card component matching AchievementTimeline
 interface GoldenCardProps {
@@ -55,8 +16,6 @@ interface GoldenCardProps {
 }
 
 function GoldenCard({ children, className = '' }: GoldenCardProps) {
-  const { ref, isVisible } = useScrollReveal();
-
   return (
     <div className="relative">
       {/* 3D Shadow layers */}
@@ -64,7 +23,7 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
         const layer = 11 - i;
         const offset = layer * 1.5;
         const opacity = Math.max(0.2, 0.7 - layer * 0.05);
-        
+
         return (
           <div
             key={i}
@@ -73,7 +32,7 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
               borderColor: `rgba(0, 0, 0, ${opacity})`,
               backgroundColor: `rgba(0, 0, 0, ${opacity * 0.8})`,
               transform: `translateX(${offset}px) translateY(${offset / 2}px) translateZ(-${offset}px)`,
-              zIndex: i + 1
+              zIndex: i + 1,
             }}
             aria-hidden="true"
           />
@@ -81,16 +40,11 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
       })}
 
       <article
-        ref={ref}
-        className={`glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white transition-all duration-[2000ms] overflow-hidden backdrop-blur-xl ${className} ${
-          !isVisible ? 'opacity-0' : 'opacity-100'
-        }`}
+        className={`glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white overflow-hidden backdrop-blur-xl ${className}`}
         style={{
-          transform: !isVisible ? 'translateZ(-200px) scale(0.5)' : 'translateZ(0) scale(1)',
-          transition: 'all 2000ms cubic-bezier(0.34, 1.56, 0.64, 1)',
           background: 'linear-gradient(135deg, rgba(139, 117, 66, 1) 0%, rgba(133, 107, 56, 1) 25%, rgba(107, 91, 49, 1) 50%, rgba(89, 79, 45, 1) 75%, rgba(71, 61, 38, 1) 100%)',
           borderColor: 'rgba(218, 182, 98, 1)',
-          boxShadow: '0 0 30px rgba(218, 182, 98, 1), 0 0 50px rgba(189, 158, 88, 1), 0 0 70px rgba(165, 138, 78, 0.8), inset 0 0 40px rgba(71, 61, 38, 0.5), inset 0 2px 0 rgba(218, 182, 98, 1), inset 0 -2px 0 rgba(61, 51, 33, 0.6)'
+          boxShadow: '0 0 30px rgba(218, 182, 98, 1), 0 0 50px rgba(189, 158, 88, 1), 0 0 70px rgba(165, 138, 78, 0.8), inset 0 0 40px rgba(71, 61, 38, 0.5), inset 0 2px 0 rgba(218, 182, 98, 1), inset 0 -2px 0 rgba(61, 51, 33, 0.6)',
         }}
       >
         {/* Inner light effects */}
@@ -104,7 +58,7 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
             `,
             backdropFilter: 'blur(80px)',
             mixBlendMode: 'soft-light',
-            zIndex: 1
+            zIndex: 1,
           }}
         />
         <div className={`relative z-10 h-full ${className.includes('flex') ? 'flex flex-col justify-between' : ''}`}>
@@ -166,35 +120,27 @@ export default function ContactPageClient() {
   return (
     <>
       {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.8 }}
-        className="relative z-10 pt-44 px-4 sm:px-6 lg:px-8"
+      <section
+        className="relative z-10 pt-44 px-4 sm:px-6 lg:px-8 magictime twisterInDown"
+        style={{ animationDuration: '1s', animationDelay: '0.2s' }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold uppercase tracking-[0.5em] text-white/60 mb-6">Kontakt</h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto"
-          >
-            Skontaktuj się z nami, aby dowiedzieć się więcej o naszych gołębiach i hodowli
-          </motion.p>
+          <div className="gold-text-3d mb-6">
+            <div className="bg">Kontakt</div>
+            <div className="fg">Kontakt</div>
+          </div>
+          <div className="gold-text-3d-subtitle mb-8 max-w-3xl mx-auto">
+            <div className="bg">Skontaktuj się z nami, aby dowiedzieć się więcej o naszych gołębiach i hodowli</div>
+            <div className="fg">Skontaktuj się z nami, aby dowiedzieć się więcej o naszych gołębiach i hodowli</div>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Content Sections */}
       <div className="relative z-10 px-4 sm:px-6 lg:px-8 pb-96 mt-12" style={{ minHeight: '1200px' }}>
         <div className="max-w-6xl mx-auto space-y-24">
           {/* Contact Info */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
+          <section className="magictime twisterInUp" style={{ animationDuration: '1s', animationDelay: '0.7s' }}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-20 xl:gap-24">
               <GoldenCard className="text-center h-full min-h-[280px] flex flex-col justify-between">
                 <div>
@@ -242,25 +188,15 @@ export default function ContactPageClient() {
                 <p className="text-white/60 text-sm">Wizyty po umówieniu</p>
               </GoldenCard>
             </div>
-          </motion.section>
+          </section>
 
           {/* Google Map */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            viewport={{ once: true }}
-          >
+          <div className="magictime swap" style={{ animationDuration: '1s', animationDelay: '1.2s' }}>
             <GoogleMap />
-          </motion.div>
+          </div>
 
           {/* Contact Form */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
+          <section className="magictime twisterInDown" style={{ animationDuration: '1s', animationDelay: '1.7s' }}>
             <GoldenCard>
               <Text3D
                 variant="shimmer"
@@ -366,15 +302,10 @@ export default function ContactPageClient() {
                 </div>
               </form>
             </GoldenCard>
-          </motion.section>
+          </section>
 
           {/* Additional Info */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
+          <section className="magictime twisterInUp" style={{ animationDuration: '1s', animationDelay: '2.2s' }}>
             <GoldenCard>
               <Text3D
                 variant="glow"
@@ -398,7 +329,7 @@ export default function ContactPageClient() {
                 </div>
               </div>
             </GoldenCard>
-          </motion.section>
+          </section>
         </div>
       </div>
     </>

@@ -72,7 +72,7 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
 
   const handleAchievementChange = (index: number, field: string, value: string) => {
     setAchievements(prev =>
-      prev.map((achievement, i) => (i === index ? { ...achievement, [field]: value } : achievement))
+      prev.map((achievement, i) => (i === index ? { ...achievement, [field]: value } : achievement)),
     );
   };
 
@@ -80,7 +80,7 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
     achievementIndex: number,
     resultIndex: number,
     field: string,
-    value: string | number
+    value: string | number,
   ) => {
     setAchievements(prev =>
       prev.map((achievement, i) =>
@@ -88,11 +88,11 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
           ? {
               ...achievement,
               results: achievement.results.map((result, j) =>
-                j === resultIndex ? { ...result, [field]: value } : result
+                j === resultIndex ? { ...result, [field]: value } : result,
               ),
             }
-          : achievement
-      )
+          : achievement,
+      ),
     );
   };
 
@@ -119,8 +119,8 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
               ...achievement,
               results: [...achievement.results, { competition: '', place: 1, date: '' }],
             }
-          : achievement
-      )
+          : achievement,
+      ),
     );
   };
 
@@ -132,8 +132,8 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
               ...achievement,
               results: achievement.results.filter((_, j) => j !== resultIndex),
             }
-          : achievement
-      )
+          : achievement,
+      ),
     );
   };
 
@@ -155,9 +155,9 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
             achievement =>
               achievement.pigeon &&
               achievement.ringNumber &&
-              achievement.results.some(result => result.competition && result.date)
+              achievement.results.some(result => result.competition && result.date),
           ),
-        })
+        }),
       );
 
       const response = await fetch('/api/references', {
@@ -415,7 +415,7 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
                                 achievementIndex,
                                 resultIndex,
                                 'competition',
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -433,7 +433,7 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
                                 achievementIndex,
                                 resultIndex,
                                 'place',
-                                parseInt(e.target.value)
+                                parseInt(e.target.value),
                               )
                             }
                             className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -457,7 +457,7 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
                                 achievementIndex,
                                 resultIndex,
                                 'date',
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -475,7 +475,7 @@ export function AddReferenceForm({ onSuccess, onCancel }: AddReferenceFormProps)
                                 achievementIndex,
                                 resultIndex,
                                 'date',
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent datetime-fallback hidden"

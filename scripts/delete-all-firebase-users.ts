@@ -29,7 +29,7 @@ if (!initialized) {
     initialized = true
   } catch (err) {
     console.error(
-      '❌ Brak poświadczeń Firebase. Ustaw zmienne środowiskowe: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY lub dostarcz firebase-key.json'
+      '❌ Brak poświadczeń Firebase. Ustaw zmienne środowiskowe: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY lub dostarcz firebase-key.json',
     )
     process.exit(1)
   }

@@ -12,7 +12,7 @@ export default function TestModalPage() {
     setSelectedImage({
       id: 'test-image-1',
       src: '/logo.png',
-      alt: 'Test Image 1'
+      alt: 'Test Image 1',
     });
     setModalOpen(true);
     console.log('Test Modal: Modal state set to true');

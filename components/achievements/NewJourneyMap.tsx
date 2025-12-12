@@ -1,24 +1,20 @@
 'use client';
 
-import { useMemo } from 'react';
-import { Timeline3D } from '@/components/3D/Timeline3D';
-import type { YearAchievements } from '@/lib/achievements-parser';
-
 type NewJourneyMapProps = {
-  data: YearAchievements[];
   onYearSelect?: (year: number | null) => void;
 };
 
-export default function NewJourneyMap({ data, onYearSelect }: NewJourneyMapProps) {
-  const normalizedData = useMemo(
-    () => [...data].sort((a, b) => a.year - b.year),
-    [data],
-  );
+export default function NewJourneyMap({ onYearSelect }: NewJourneyMapProps) {
+  const handleYearSelect = (year: number) => {
+    onYearSelect?.(year);
+  };
 
   return (
     <div className="relative h-full w-full">
-      <Timeline3D data={normalizedData} onYearSelect={onYearSelect} />
+      {/* Timeline3D component removed */}
+      <div className="flex items-center justify-center h-full text-gray-500">
+        <p>Timeline component has been removed</p>
+      </div>
     </div>
   );
 }
-

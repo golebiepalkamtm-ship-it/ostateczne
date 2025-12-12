@@ -29,7 +29,7 @@ const useScrollReveal = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     observer.observe(currentRef);
@@ -250,7 +250,7 @@ const getAuctionById = async (id: string): Promise<Auction | null> => {
               bidder: { id: string; firstName?: string; lastName?: string };
               createdAt: string;
             },
-            index: number
+            index: number,
           ) => ({
             id: bid.id,
             amount: bid.amount,
@@ -262,7 +262,7 @@ const getAuctionById = async (id: string): Promise<Auction | null> => {
             },
             timestamp: new Date(bid.createdAt),
             isWinning: index === 0,
-          })
+          }),
         ) || [],
       watchersCount: auction._count?.watchlist || 0,
       viewsCount: 0,
@@ -449,7 +449,7 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
         `Aby licytować, musisz uzupełnić profil i zweryfikować numer telefonu. Brakujące pola: ${missingFields.join(', ')}`,
         {
           duration: 5000,
-        }
+        },
       );
       return;
     }
@@ -528,7 +528,7 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
                 },
                 timestamp: new Date(bid.createdAt),
                 isWinning: index === 0,
-              })
+              }),
             ) || [],
           });
         }
@@ -548,7 +548,7 @@ export default function AuctionDetails({ auctionId }: AuctionDetailsProps) {
         if (errorData.missingFields) {
           toast.error(
             `${errorData.message || 'Profil niekompletny'}. Brakujące pola: ${errorData.missingFields.join(', ')}`,
-            { duration: 5000 }
+            { duration: 5000 },
           );
         } else {
           toast.error(errorData.error || 'Błąd podczas składania licytacji', {

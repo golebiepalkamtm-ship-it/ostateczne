@@ -12,7 +12,7 @@ import { ApiSuccessResponse, ApiErrorResponse } from '@/types';
 export function createApiSuccessResponse<T = unknown>(
   data: T,
   message?: string,
-  status: number = 200
+  status: number = 200,
 ): NextResponse<ApiSuccessResponse<T>> {
   return NextResponse.json(
     {
@@ -21,7 +21,7 @@ export function createApiSuccessResponse<T = unknown>(
       ...(message && { message }),
       timestamp: new Date().toISOString(),
     },
-    { status }
+    { status },
   );
 }
 
@@ -33,7 +33,7 @@ export function createApiErrorResponse(
   status: number = 400,
   code?: string,
   field?: string,
-  details?: unknown
+  details?: unknown,
 ): NextResponse<ApiErrorResponse> {
   return NextResponse.json(
     {
@@ -48,7 +48,7 @@ export function createApiErrorResponse(
       })(),
       timestamp: new Date().toISOString(),
     },
-    { status }
+    { status },
   );
 }
 
@@ -57,7 +57,7 @@ export function createApiErrorResponse(
  * Type-safe wrapper dla fetch()
  */
 export async function parseApiResponse<T = unknown>(
-  response: Response
+  response: Response,
 ): Promise<ApiSuccessResponse<T> | ApiErrorResponse> {
   const data = await response.json();
   

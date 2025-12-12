@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Nieprawidłowy kod weryfikacyjny', details: validation.error.issues },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

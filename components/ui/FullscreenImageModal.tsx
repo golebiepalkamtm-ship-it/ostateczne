@@ -3,8 +3,33 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, RotateCw, X, ZoomIn, ZoomOut } from 'lucide-react';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+
+// Hook for magic animations
+function useMagicAnimation(trigger: boolean, animationName: string, duration: number = 1000) {
+  const [animationClass, setAnimationClass] = useState('');
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (trigger && elementRef.current) {
+      // Force reflow to ensure element is ready
+      void elementRef.current.offsetWidth;
+
+      // Add animation class
+      setAnimationClass(animationName);
+
+      // Reset animation class after animation completes
+      const timer = setTimeout(() => {
+        setAnimationClass('');
+      }, duration);
+
+      return () => clearTimeout(timer);
+    }
+  }, [trigger, animationName, duration]);
+
+  return { animationClass, elementRef };
+}
 
 interface FullscreenImageModalProps {
   isOpen: boolean;
@@ -154,7 +179,7 @@ export function FullscreenImageModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[99999] bg-black flex items-center justify-center"
+        className="fixed inset-0 z-[99999] bg-black flex items-center justify-center magictime vanishIn"
         onClick={onClose}
         role="dialog"
         aria-modal="true"
@@ -179,7 +204,7 @@ export function FullscreenImageModal({
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              className="p-2 hover:bg-white/10 rounded-full transition-colors magictime boingInUp"
               title="Zamknij (Esc)"
             >
               <X className="w-6 h-6" />
@@ -195,20 +220,20 @@ export function FullscreenImageModal({
                 e.stopPropagation();
                 handleZoomOut();
               }}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              className="p-2 hover:bg-white/10 rounded-full transition-colors magictime puffIn"
               title="Pomniejsz (-)"
             >
               <ZoomOut className="w-5 h-5" />
             </button>
 
-            <span className="text-sm px-2 min-w-[60px] text-center">{Math.round(zoom * 100)}%</span>
+            <span className="text-sm px-2 min-w-[60px] text-center magictime perspectiveUp">{Math.round(zoom * 100)}%</span>
 
             <button
               onClick={e => {
                 e.stopPropagation();
                 handleZoomIn();
               }}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              className="p-2 hover:bg-white/10 rounded-full transition-colors magictime puffIn"
               title="Powiększ (+)"
             >
               <ZoomIn className="w-5 h-5" />
@@ -219,7 +244,7 @@ export function FullscreenImageModal({
                 e.stopPropagation();
                 handleRotate();
               }}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              className="p-2 hover:bg-white/10 rounded-full transition-colors magictime twisterInUp"
               title="Obróć (R)"
             >
               <RotateCw className="w-5 h-5" />
@@ -230,7 +255,7 @@ export function FullscreenImageModal({
                 e.stopPropagation();
                 resetView();
               }}
-              className="px-3 py-1 text-sm hover:bg-white/10 rounded transition-colors"
+              className="px-3 py-1 text-sm hover:bg-white/10 rounded transition-colors magictime slideUp"
               title="Resetuj widok"
             >
               Reset
@@ -246,7 +271,7 @@ export function FullscreenImageModal({
                 e.stopPropagation();
                 goToPrevious();
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 text-white hover:bg-white/10 rounded-full transition-colors z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 text-white hover:bg-white/10 rounded-full transition-colors z-10 magictime rotateLeft"
               title="Poprzednie zdjęcie (←)"
             >
               <ChevronLeft className="w-8 h-8" />
@@ -257,7 +282,7 @@ export function FullscreenImageModal({
                 e.stopPropagation();
                 goToNext();
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-white hover:bg-white/10 rounded-full transition-colors z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-white hover:bg-white/10 rounded-full transition-colors z-10 magictime rotateRight"
               title="Następne zdjęcie (→)"
             >
               <ChevronRight className="w-8 h-8" />
@@ -305,7 +330,7 @@ export function FullscreenImageModal({
                 }}
                 className={`relative w-12 h-12 rounded overflow-hidden border-2 transition-colors ${
                   index === activeIndex ? 'border-white' : 'border-white/30 hover:border-white/60'
-                }`}
+                } ${index === activeIndex ? 'magictime bombLeftIn' : 'magictime vanishIn'}`}
                 title={`Przejdź do zdjęcia ${index + 1}`}
               >
                 <Image
@@ -321,6 +346,6 @@ export function FullscreenImageModal({
         )}
       </motion.div>
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }

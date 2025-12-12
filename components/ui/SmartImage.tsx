@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { ImageIcon, Loader2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
 interface SmartImageProps {
   src: string;
@@ -21,6 +21,7 @@ interface SmartImageProps {
   fitMode?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
   aspectRatio?: 'square' | 'video' | 'portrait' | 'landscape' | 'auto';
   cropFocus?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  imageStyle?: CSSProperties;
 }
 
 export function SmartImage({
@@ -40,9 +41,10 @@ export function SmartImage({
   fitMode = 'contain',
   aspectRatio = 'auto',
   cropFocus = 'center',
+  imageStyle,
 }: SmartImageProps) {
   // Sprawdź czy src jest prawidłowy - nie modyfikuj URL-i zewnętrznych
-  const isValidSrc = src && typeof src === 'string' && src.trim() !== '';
+  const isValidSrc = src && typeof src === 'string' && src.trim() !== '' && !/^\d+$/.test(src.trim());
 
   // Next/Image nie obsługuje blob: (URL.createObjectURL) ani niektórych data: URL poprawnie
   // Również API routes wymagają regularnych img tagów
@@ -56,6 +58,7 @@ export function SmartImage({
   const [isError, setIsError] = useState(false);
   const [isInView, setIsInView] = useState(priority || isApiRoute); // API routes load immediately
   const imgRef = useRef<HTMLDivElement>(null);
+  const baseImageStyle = { imageOrientation: 'from-image', ...(imageStyle || {}) } as CSSProperties;
 
   // Intersection Observer for lazy loading (skip for API routes and priority images)
   useEffect(() => {
@@ -80,7 +83,7 @@ export function SmartImage({
       {
         threshold: 0.1,
         rootMargin: '100px',
-      }
+      },
     );
 
     if (imgRef.current) {
@@ -183,6 +186,7 @@ export function SmartImage({
             className={getImageClasses()}
             onLoad={handleLoad}
             onError={handleError}
+            style={baseImageStyle}
             {...(width && height && !fill ? { width, height } : {})}
           />
         ) : (
@@ -198,6 +202,7 @@ export function SmartImage({
             priority={priority}
             quality={quality}
             sizes={sizes}
+            style={baseImageStyle}
             placeholder={placeholder === 'blur' && blurDataURL ? 'blur' : 'empty'}
             blurDataURL={blurDataURL}
           />

@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     if (!phoneNumber) {
       return NextResponse.json(
         { error: 'Brak numeru telefonu. Uzupełnij numer telefonu w profilu.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     if (!phoneRegex.test(phoneNumber.replace(/\s/g, ''))) {
       return NextResponse.json(
         { error: 'Nieprawidłowy format numeru telefonu. Użyj formatu: +48 123 456 789' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     const expires = new Date(Date.now() + 10 * 60 * 1000); // Ważny 10 minut
 
     info(
-      `📱 Generowanie kodu SMS dla użytkownika: ${dbUser.firstName} ${dbUser.lastName} (${phoneNumber})`
+      `📱 Generowanie kodu SMS dla użytkownika: ${dbUser.firstName} ${dbUser.lastName} (${phoneNumber})`,
     );
 
     // Zapisz kod w bazie danych (zawsze, niezależnie od Twilio)
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
         const { Twilio } = await import('twilio');
         const twilioClient = new Twilio(
           process.env.TWILIO_ACCOUNT_SID,
-          process.env.TWILIO_AUTH_TOKEN
+          process.env.TWILIO_AUTH_TOKEN,
         );
         const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(
           { error: 'Nie udało się wysłać SMS. Spróbuj ponownie później.' },
-          { status: 500 }
+          { status: 500 },
         );
       }
     } else {
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
           error: 'Usługa SMS nie jest skonfigurowana. Skontaktuj się z administratorem.',
           code: 'SMS_NOT_CONFIGURED',
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
   } catch (error) {

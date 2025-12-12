@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const items = await prisma.championGalleryItem.findMany({
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'asc' },
     });
 
     return NextResponse.json({
@@ -52,8 +52,8 @@ export async function PUT(request: NextRequest) {
         title,
         description: description || null,
         isActive: isActive !== undefined ? Boolean(isActive) : undefined,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
     return NextResponse.json({
@@ -86,7 +86,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const item = await prisma.championGalleryItem.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!item) {
@@ -95,7 +95,7 @@ export async function DELETE(request: NextRequest) {
 
     // Delete from database
     await prisma.championGalleryItem.delete({
-      where: { id }
+      where: { id },
     });
 
     // Note: File deletion from Firebase Storage should be handled by the server action
@@ -134,9 +134,9 @@ export async function PATCH(request: NextRequest) {
         where: { id },
         data: { 
           order: index + 1,
-          updatedAt: new Date()
-        }
-      })
+          updatedAt: new Date(),
+        },
+      }),
     );
 
     await Promise.all(updatePromises);

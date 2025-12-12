@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
           lastMessageAt: conversation.lastMessageAt,
           unreadCount: 0, // Będzie obliczone osobno
         };
-      }
+      },
     );
 
     // Oblicz liczbę nieprzeczytanych wiadomości dla każdej konwersacji
@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
     if (recipient.id === decodedToken.uid) {
       return NextResponse.json(
         { error: 'Nie możesz wysłać wiadomości do siebie' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -286,7 +286,7 @@ export async function POST(request: NextRequest) {
         },
         conversationId: conversation.id,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error, request, { endpoint: 'messages' });

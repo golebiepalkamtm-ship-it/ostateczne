@@ -36,7 +36,7 @@ async function setAdmin(email: string) {
         role: Role.ADMIN,
         // Upewnij się, że konto jest aktywne i zweryfikowane
         isActive: true,
-        isProfileVerified: true 
+        isProfileVerified: true, 
       },
     });
 

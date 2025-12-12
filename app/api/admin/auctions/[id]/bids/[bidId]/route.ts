@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; bidId: string }> }
+  { params }: { params: Promise<{ id: string; bidId: string }> },
 ) {
   try {
     // Rate limiting
@@ -80,7 +80,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; bidId: string }> }
+  { params }: { params: Promise<{ id: string; bidId: string }> },
 ) {
   try {
     // Rate limiting

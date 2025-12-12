@@ -48,10 +48,11 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
   return (
     <motion.div
       ref={cardRef}
-      className={`absolute left-1/2 ${isLeft ? '-translate-x-[120%]' : 'translate-x-[20%]'} w-[45%] max-w-md`}
+      className={`absolute left-1/2 ${isLeft ? '-translate-x-[120%]' : 'translate-x-[20%]'} w-[45%] max-w-md magictime ${isLeft ? 'slideRight' : 'slideLeft'}`}
       style={{
         top: `${10 + positionPercent * 0.8}%`,
         perspective: '1000px',
+        animationDelay: `${index * 0.2}s`,
       }}
       initial={{ opacity: 0, y: 100, rotateX: isLeft ? -30 : 30 }}
       animate={{
@@ -66,7 +67,7 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
       onClick={onClick}
     >
       <motion.div
-        className={`relative cursor-pointer group`}
+        className={`relative cursor-pointer group ${isSelected ? 'magictime twisterInUp' : ''}`}
         style={{
           rotateX,
           rotateY,
@@ -129,9 +130,7 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
             {/* Year Badge */}
             <div className="flex items-center justify-between mb-6">
               <motion.div
-                className={`text-6xl font-black ${
-                  isMasterYear ? 'text-yellow-400' : 'text-blue-400'
-                }`}
+                className={`text-6xl font-black ${isMasterYear ? 'text-yellow-400' : 'text-blue-400'} ${isSelected ? 'magictime puffIn' : ''}`}
                 animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
                 transition={{ duration: 0.6 }}
               >
@@ -139,6 +138,7 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
               </motion.div>
               {isMasterYear && (
                 <motion.div
+                  className={`${isSelected ? 'magictime boingInUp' : ''}`}
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                 >
@@ -152,7 +152,7 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <motion.div
-                className="bg-black/40 rounded-xl p-4 text-center border border-white/10"
+                className={`bg-black/40 rounded-xl p-4 text-center border border-white/10 ${isSelected ? 'magictime perspectiveUp' : ''}`}
                 whileHover={{ scale: 1.05, y: -5 }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
@@ -160,7 +160,7 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
                 <div className="text-xs text-gray-400 uppercase tracking-wider">Mistrzów</div>
               </motion.div>
               <motion.div
-                className="bg-black/40 rounded-xl p-4 text-center border border-white/10"
+                className={`bg-black/40 rounded-xl p-4 text-center border border-white/10 ${isSelected ? 'magictime perspectiveDown' : ''}`}
                 whileHover={{ scale: 1.05, y: -5 }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
@@ -192,7 +192,7 @@ function YearCard({ data, index, total, onClick, isSelected, isVisible }: YearCa
               {data.divisions.slice(0, 2).map((div, i) => (
                 <div
                   key={i}
-                  className="bg-black/30 rounded-lg p-2 text-center border border-white/5"
+                  className={`bg-black/30 rounded-lg p-2 text-center border border-white/05 ${isSelected ? 'magictime vanishIn' : ''}`}
                 >
                   <div className="text-xs text-gray-400 mb-1">{div.level}</div>
                   <div className="text-lg font-bold text-white">{div.results.length}</div>
@@ -282,7 +282,7 @@ export default function AchievementsTimeline3D({
           });
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
 
     const cards = containerRef.current.querySelectorAll('[data-index]');
@@ -300,7 +300,7 @@ export default function AchievementsTimeline3D({
     return (
       <div className="flex items-center justify-center h-full">
         <motion.div
-          className="text-white text-xl font-semibold"
+          className="text-white text-xl font-semibold magictime vanishIn"
           animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
@@ -349,7 +349,7 @@ export default function AchievementsTimeline3D({
             <div key={yearData.year} data-index={index}>
               {/* Central Marker */}
               <motion.div
-                className="fixed left-1/2 -translate-x-1/2 pointer-events-none z-5"
+                className={`fixed left-1/2 -translate-x-1/2 pointer-events-none z-5 magictime ${isMasterYear ? 'twisterInUp' : 'puffIn'}`}
                 style={{
                   top: `${10 + positionPercent * 0.8}%`,
                 }}
@@ -396,7 +396,7 @@ export default function AchievementsTimeline3D({
 
         {/* Scroll Indicator */}
         <motion.div
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 bg-black/80 backdrop-blur-md px-8 py-4 rounded-full border border-gray-700/50 text-white text-sm flex items-center gap-3"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 bg-black/80 backdrop-blur-md px-8 py-4 rounded-full border border-gray-700/50 text-white text-sm flex items-center gap-3 magictime slideUp"
           initial={{ opacity: 1 }}
           animate={{ opacity: [1, 0.7, 1] }}
           transition={{ duration: 2, repeat: Infinity }}

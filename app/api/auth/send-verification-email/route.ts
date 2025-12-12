@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       // Wygeneruj link weryfikacyjny
       const verificationLink = await adminAuth.generateEmailVerificationLink(
         user.email!,
-        actionCodeSettings
+        actionCodeSettings,
       );
 
       console.log(`✉️ Wysyłanie emaila weryfikacyjnego do ${user.email}`);

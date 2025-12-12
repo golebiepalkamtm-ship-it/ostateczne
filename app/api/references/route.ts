@@ -14,7 +14,7 @@ const achievementSchema = z.object({
       competition: z.string(),
       place: z.number(),
       date: z.string(),
-    })
+    }),
   ),
 });
 
@@ -86,7 +86,7 @@ export async function GET() {
           rating: ref.rating,
           date: ref.createdAt.toISOString().split('T')[0],
         };
-      }
+      },
     );
 
     return NextResponse.json(references);
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
         message: 'Referencja została dodana i oczekuje na zatwierdzenie',
         id: reference.id,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error, request, { endpoint: 'references' });

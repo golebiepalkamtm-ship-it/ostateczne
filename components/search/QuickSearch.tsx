@@ -36,7 +36,7 @@ export default function QuickSearch({
       const fetchSuggestions = async () => {
         try {
           const response = await fetch(
-            `/api/auctions/search-suggestions?q=${encodeURIComponent(query)}`
+            `/api/auctions/search-suggestions?q=${encodeURIComponent(query)}`,
           );
           if (response.ok) {
             const data = await response.json();

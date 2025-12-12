@@ -79,7 +79,7 @@ export function usePerformanceOptimization(componentName: string, config: Perfor
       }
       debounceTimeout.current = setTimeout(callback, debounceMs);
     },
-    [debounceMs]
+    [debounceMs],
   );
 
   // Memoized value getter
@@ -99,7 +99,7 @@ export function usePerformanceOptimization(componentName: string, config: Perfor
           {
             renderCount: renderCount.current,
             componentName,
-          }
+          },
         );
       }
     },
@@ -122,7 +122,7 @@ export function useListOptimization<T>(
     pageSize?: number;
     virtualScrolling?: boolean;
     preloadCount?: number;
-  } = {}
+  } = {},
 ) {
   const { pageSize = 20, virtualScrolling = false, preloadCount = 5 } = options;
 
@@ -193,7 +193,7 @@ export function useImageOptimization(
     preload?: boolean;
     lazy?: boolean;
     quality?: number;
-  } = {}
+  } = {},
 ) {
   const { preload = false, lazy = true, quality = 85 } = options;
 

@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       filesCount: files?.length,
       fileNames: files?.map(f => f.name),
       fileSizes: files?.map(f => f.size),
-      fileTypes: files?.map(f => f.type)
+      fileTypes: files?.map(f => f.type),
     });
 
     if (!files || files.length === 0) {

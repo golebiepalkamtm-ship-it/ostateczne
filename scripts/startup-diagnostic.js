@@ -21,7 +21,7 @@ try{
   try{
     const paths = [
       './node_modules/@opentelemetry/instrumentation-http',
-      '/app/node_modules/@opentelemetry/instrumentation-http'
+      '/app/node_modules/@opentelemetry/instrumentation-http',
     ]
     paths.forEach(p => log('exists', p, fs.existsSync(p)))
   }catch(e){

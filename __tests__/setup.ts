@@ -18,7 +18,7 @@ vi.mock('next/server', () => ({
   NextRequest: class MockNextRequest {
     constructor(
       public url: string,
-      public init?: RequestInit
+      public init?: RequestInit,
     ) {}
     json() {
       return Promise.resolve({});

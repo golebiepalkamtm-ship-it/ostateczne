@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     if (!to || !subject || (!emailHtml && !emailText)) {
       return NextResponse.json(
         { error: 'Missing required fields: to, subject, and html or text' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

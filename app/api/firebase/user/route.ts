@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!adminAuth) {
       return NextResponse.json(
         { error: 'Serwis tymczasowo niedostępny. Spróbuj ponownie później.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
     await adminAuth.setCustomUserClaims(uid, customClaims || {});
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     if (!adminAuth) {
       return NextResponse.json(
         { error: 'Serwis tymczasowo niedostępny. Spróbuj ponownie później.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
     const userRecord = await adminAuth.getUser(uid);

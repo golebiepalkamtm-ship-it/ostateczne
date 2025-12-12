@@ -21,7 +21,7 @@ async function main() {
         phoneNumber: true,
         firstName: true,
         lastName: true,
-      }
+      },
     });
 
     if (users.length === 0) {

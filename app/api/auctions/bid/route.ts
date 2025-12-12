@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     if (amount <= auction.currentPrice) {
       return NextResponse.json(
         { error: 'Kwota musi być wyższa od aktualnej ceny' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     if (highestBid && amount <= highestBid.amount) {
       return NextResponse.json(
         { error: 'Kwota musi być wyższa od najwyższej oferty' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

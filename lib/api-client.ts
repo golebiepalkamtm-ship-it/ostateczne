@@ -46,7 +46,7 @@ class ApiClient {
   private async fetchWithRetry(
     url: string,
     options: RequestInit,
-    retriesLeft: number = this.retries
+    retriesLeft: number = this.retries,
   ): Promise<Response> {
     try {
       const controller = new AbortController();
@@ -89,7 +89,7 @@ class ApiClient {
   async get<T = unknown>(
     endpoint: string,
     user: User | null = null,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const token = await this.getAuthToken(user);
     const headers: HeadersInit = {
@@ -114,7 +114,7 @@ class ApiClient {
     endpoint: string,
     data: unknown,
     user: User | null = null,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const token = await this.getAuthToken(user);
     const headers: HeadersInit = {
@@ -140,7 +140,7 @@ class ApiClient {
     endpoint: string,
     data: unknown,
     user: User | null = null,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const token = await this.getAuthToken(user);
     const headers: HeadersInit = {
@@ -165,7 +165,7 @@ class ApiClient {
   async delete<T = unknown>(
     endpoint: string,
     user: User | null = null,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const token = await this.getAuthToken(user);
     const headers: HeadersInit = {

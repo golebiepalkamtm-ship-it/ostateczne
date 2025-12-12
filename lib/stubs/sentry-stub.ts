@@ -22,7 +22,7 @@ export const withScope = (callback: (scope: ReturnType<typeof createNoopScope>) 
 };
 export const startSpan = async <T>(
   _options: { name: string; op?: string },
-  callback: () => Promise<T>
+  callback: () => Promise<T>,
 ): Promise<T> => {
   return callback();
 };

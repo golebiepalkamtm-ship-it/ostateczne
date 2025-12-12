@@ -29,7 +29,7 @@ const updateProfileSchema = z.object({
     .nullable()
     .refine(
       val => !val || val === '' || val === null || /^\+\d{1,4}\s?\d{3,}/.test(val),
-      'Numer telefonu musi być w formacie międzynarodowym (np. +48 123 456 789)'
+      'Numer telefonu musi być w formacie międzynarodowym (np. +48 123 456 789)',
     ),
 });
 

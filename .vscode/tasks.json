@@ -1,0 +1,70 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": [
+				"$eslint-compact"
+			],
+			"label": "npm: lint",
+			"detail": "next lint",
+			"group": "build"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"label": "npm: build",
+			"detail": "next build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": ["$tsc"]
+		},
+		{
+			"type": "shell",
+			"command": "npx prisma generate",
+			"label": "prisma: generate",
+			"group": "build",
+			"detail": "Generate Prisma client"
+		},
+		{
+			"type": "shell",
+			"command": "npx prisma migrate dev",
+			"label": "prisma: migrate dev",
+			"group": "build",
+			"detail": "Run Prisma migrations"
+		},
+		{
+			"type": "npm",
+			"script": "test",
+			"label": "npm: test",
+			"group": "test",
+			"detail": "Vitest unit tests"
+		},
+		{
+			"type": "npm",
+			"script": "playwright test",
+			"label": "playwright: e2e",
+			"group": "test",
+			"detail": "Playwright E2E tests"
+		},
+		{
+			"type": "shell",
+			"command": "npx firebase-tools deploy --only apphosting --project m-t-m-62972",
+			"label": "firebase: deploy",
+			"group": "build",
+			"detail": "Deploy to Firebase App Hosting",
+			"isBackground": true
+		},
+		{
+			"type": "shell",
+			"command": "docker-compose up -d",
+			"label": "docker: monitoring",
+			"group": "build",
+			"detail": "Start Prometheus/Grafana/Sentry stack",
+			"isBackground": true
+		}
+	]
+}

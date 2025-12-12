@@ -99,7 +99,7 @@ function CompleteProfileContent() {
     } catch (error) {
       console.error('Błąd uzupełniania profilu:', error);
       setError(
-        error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji profilu'
+        error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji profilu',
       );
     } finally {
       setIsLoading(false);

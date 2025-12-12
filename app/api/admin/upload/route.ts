@@ -3,7 +3,7 @@ import { handleApiError } from '@/lib/error-handling';
 import { requireAdminAuth } from '@/lib/admin-auth';
 import { 
   uploadSystemBackgroundImage, 
-  uploadChampionGalleryImages 
+  uploadChampionGalleryImages, 
 } from '@/app/actions/admin-storage';
 
 /**
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       // Validate that we have titles/descriptions for all files
       if (titles.length !== files.length || descriptions.length !== files.length) {
         return NextResponse.json({ 
-          error: 'Brak tytułów lub opisów dla niektórych obrazów championów' 
+          error: 'Brak tytułów lub opisów dla niektórych obrazów championów', 
         }, { status: 400 });
       }
 

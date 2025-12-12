@@ -16,7 +16,7 @@ import { debug, isDev } from './logger';
 export class FirebasePhoneAuthProvider implements SMSProvider {
   async sendSMS(
     phoneNumber: string,
-    _message: string
+    _message: string,
   ): Promise<{ success: boolean; error?: string }> {
     // Firebase Phone Auth wymaga konfiguracji Firebase
     if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
@@ -31,7 +31,7 @@ export class FirebasePhoneAuthProvider implements SMSProvider {
     // Ten endpoint tylko zapisuje kod w bazie danych
     if (isDev)
       debug(
-        `✅ Firebase Phone Auth - Kod weryfikacyjny zostanie wysłany przez Firebase do ${phoneNumber}`
+        `✅ Firebase Phone Auth - Kod weryfikacyjny zostanie wysłany przez Firebase do ${phoneNumber}`,
       );
     return { success: true };
   }
@@ -49,7 +49,7 @@ export class SMSService {
 
   async sendVerificationSMS(
     phoneNumber: string,
-    verificationCode: string
+    verificationCode: string,
   ): Promise<{ success: boolean; error?: string }> {
     // Uwaga: W Firebase Phone Auth, SMS jest wysyłany automatycznie przez Firebase
     // Ten kod tylko loguje, faktyczne wysyłanie odbywa się w komponencie klienta
@@ -59,7 +59,7 @@ export class SMSService {
 
   async sendNotificationSMS(
     phoneNumber: string,
-    message: string
+    message: string,
   ): Promise<{ success: boolean; error?: string }> {
     return this.provider.sendSMS(phoneNumber, message);
   }

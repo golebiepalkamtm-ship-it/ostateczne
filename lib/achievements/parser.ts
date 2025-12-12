@@ -19,7 +19,7 @@ export function parseAchievementData(raw: string): YearData[] {
         year: parseInt(yearMatch[1]),
         divisions: [],
         masteryScore: 0,
-        totalMasterTitles: 0
+        totalMasterTitles: 0,
       };
       continue;
     }
@@ -33,7 +33,7 @@ export function parseAchievementData(raw: string): YearData[] {
       currentDivision = {
         level: divMatch[1] as AchievementLevel,
         divisionName: divMatch[2],
-        results: []
+        results: [],
       };
       continue;
     }
@@ -94,7 +94,7 @@ export function parseAchievementData(raw: string): YearData[] {
       title,
       coefficient,
       concourses,
-      note
+      note,
     });
   }
   

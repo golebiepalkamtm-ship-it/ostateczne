@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         isApproved: ref.isApproved,
         createdAt: ref.createdAt.toISOString(),
         updatedAt: ref.updatedAt.toISOString(),
-      })
+      }),
     );
 
     return NextResponse.json({

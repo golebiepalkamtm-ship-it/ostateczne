@@ -44,7 +44,7 @@ function checkSmartImage() {
     }
     issues.push({
       level: 'warn',
-      message: 'Found suspicious regex /^\\/[^a]/ in SmartImage. This excludes any local path starting with "/a" (e.g. "/assets/...") and may misclassify local images as remote, causing Next/Image to be used or images not to load.'
+      message: 'Found suspicious regex /^\\/[^a]/ in SmartImage. This excludes any local path starting with "/a" (e.g. "/assets/...") and may misclassify local images as remote, causing Next/Image to be used or images not to load.',
     })
   }
 

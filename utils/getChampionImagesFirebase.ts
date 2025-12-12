@@ -67,7 +67,7 @@ export async function scanChampionFoldersFromFirebase(): Promise<ChampionImageDa
 // Funkcja do pobierania danych championa z Firebase Storage
 async function scanChampionFolderFromFirebase(
   folderId: string, 
-  folderRef: any
+  folderRef: any,
 ): Promise<ChampionImageData | null> {
   try {
     // Podstawowe dane championa
@@ -105,7 +105,7 @@ async function scanChampionFolderFromFirebase(
             url: url,
             alt: `Champion ${folderId} - zdjęcie ${index + 1}`,
           };
-        })
+        }),
       );
 
       champion.images = galleryImages;
@@ -129,7 +129,7 @@ async function scanChampionFolderFromFirebase(
             url: url,
             alt: `Champion ${folderId} - wideo ${index + 1}`,
           };
-        })
+        }),
       );
 
       champion.videos = videos;
@@ -149,7 +149,7 @@ async function scanChampionFolderFromFirebase(
       const pedigreeImages = await Promise.all(
         pedigreeList.items.map(async (item) => {
           return await getDownloadURL(item);
-        })
+        }),
       );
 
       if (pedigreeImages.length > 0) {

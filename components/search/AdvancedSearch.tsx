@@ -175,7 +175,7 @@ export default function AdvancedSearch() {
             bids: auction._count?.bids || 0,
             watchers: auction._count?.watchlist || 0,
             views: 0,
-          })
+          }),
         );
 
         setResults(transformedResults);

@@ -1,11 +1,13 @@
-Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error/**
+/**
  * Skrypt diagnostyczny do testowania walidacji aukcji
  * Uruchom: npx tsx scripts/test-auction-validation.ts
  */
 
 import { z } from 'zod';
+import { auctionCreateSchema } from '../lib/validations/schemas';
 
-// Schemat z API
+// Import the API schema directly from the route file
+// Since baseAuctionSchema is not exported, we'll recreate it here to match the API
 const baseAuctionSchema = z
   .object({
     title: z
@@ -17,9 +19,9 @@ const baseAuctionSchema = z
       .min(20, 'Opis musi mieć co najmniej 20 znaków')
       .max(2000, 'Opis może mieć maksymalnie 2000 znaków'),
     category: z.string().min(1, 'Kategoria jest wymagana'),
-    startingPrice: z.number().min(0, 'Cena startowa nie może być ujemna').optional(),
-    buyNowPrice: z.number().min(0, 'Cena kup teraz nie może być ujemna').optional(),
-    reservePrice: z.number().min(0, 'Cena rezerwowa nie może być ujemna').optional(),
+    startingPrice: z.number().min(0, 'Wartość nie może być ujemna').optional(),
+    buyNowPrice: z.number().min(0, 'Wartość nie może być ujemna').optional(),
+    reservePrice: z.number().min(0, 'Wartość nie może być ujemna').optional(),
     startTime: z.string().datetime('Nieprawidłowa data rozpoczęcia'),
     endTime: z.string().datetime('Nieprawidłowa data zakończenia'),
     images: z.array(z.string().min(1, 'URL obrazu nie może być pusty')).optional(),
@@ -35,6 +37,15 @@ const baseAuctionSchema = z
         eyeColor: z.string().optional(),
         featherColor: z.string().optional(),
         purpose: z.array(z.string()).optional(),
+        // Additional characteristics
+        vitality: z.string().optional(),
+        length: z.string().optional(),
+        endurance: z.string().optional(),
+        forkStrength: z.string().optional(),
+        forkAlignment: z.string().optional(),
+        muscles: z.string().optional(),
+        balance: z.string().optional(),
+        back: z.string().optional(),
       })
       .optional(),
     csrfToken: z.string().min(1, 'Token CSRF jest wymagany'),
@@ -49,7 +60,7 @@ const baseAuctionSchema = z
     {
       message: 'Cena kup teraz musi być większa lub równa cenie startowej',
       path: ['buyNowPrice'],
-    }
+    },
   )
   .refine(
     data => {
@@ -61,64 +72,7 @@ const baseAuctionSchema = z
     {
       message: 'Dla aukcji gołębia wymagane są: numer obrączki, linia krwi i płeć',
       path: ['pigeon'],
-    }
-  );
-
-// Schema z klienta
-const auctionCreateSchema = z
-  .object({
-    title: z
-      .string()
-      .min(5, 'Tytuł musi mieć co najmniej 5 znaków')
-      .max(200, 'Tytuł może mieć maksymalnie 200 znaków'),
-    description: z
-      .string()
-      .min(20, 'Opis musi mieć co najmniej 20 znaków')
-      .max(2000, 'Opis może mieć maksymalnie 2000 znaków'),
-    category: z.string().min(1, 'Kategoria jest wymagana'),
-    startingPrice: z.number().min(0, 'Cena startowa nie może być ujemna').optional(),
-    buyNowPrice: z.number().min(0, 'Cena kup teraz nie może być ujemna').optional(),
-    reservePrice: z.number().min(0, 'Cena rezerwowa nie może być ujemna').optional(),
-    startTime: z.string().datetime('Nieprawidłowa data rozpoczęcia').optional(),
-    endTime: z.string().datetime('Nieprawidłowa data zakończenia').optional(),
-    images: z.array(z.string().min(1, 'URL obrazu nie może być pusty')).optional(),
-    videos: z.array(z.string().min(1, 'URL wideo nie może być pusty')).optional(),
-    documents: z.array(z.string().min(1, 'URL dokumentu nie może być pusty')).optional(),
-    location: z.string().optional(),
-    pigeon: z
-      .object({
-        ringNumber: z.string().min(1, 'Numer obrączki jest wymagany dla gołębia'),
-        bloodline: z.string().min(1, 'Linia krwi jest wymagana dla gołębia'),
-        sex: z.enum(['male', 'female'], { message: 'Płeć jest wymagana dla gołębia' }),
-        eyeColor: z.string().optional(),
-        featherColor: z.string().optional(),
-        purpose: z.array(z.string()).optional(),
-      })
-      .optional(),
-  })
-  .refine(
-    data => {
-      if (data.buyNowPrice && data.startingPrice) {
-        return data.buyNowPrice >= data.startingPrice;
-      }
-      return true;
     },
-    {
-      message: 'Cena kup teraz musi być większa lub równa cenie startowej',
-      path: ['buyNowPrice'],
-    }
-  )
-  .refine(
-    data => {
-      if (data.category === 'Pigeon') {
-        return data.pigeon && data.pigeon.ringNumber && data.pigeon.bloodline && data.pigeon.sex;
-      }
-      return true;
-    },
-    {
-      message: 'Dla aukcji gołębia wymagane są: numer obrączki, linia krwi i płeć',
-      path: ['pigeon'],
-    }
   );
 
 console.log('\n🔍 DIAGNOSTYKA WALIDACJI AUKCJI\n');
@@ -159,7 +113,7 @@ console.log('\n' + '='.repeat(60));
 console.log('\n✅ TEST 1: Walidacja schema klienta (auctionCreateSchema)\n');
 
 try {
-  const clientResult = auctionCreateSchema.parse(testData);
+  const _clientResult = auctionCreateSchema.parse(testData);
   console.log('✅ SUKCES - dane przeszły walidację kliencką');
 } catch (err) {
   if (err instanceof z.ZodError) {
@@ -174,7 +128,7 @@ console.log('\n' + '='.repeat(60));
 console.log('\n✅ TEST 2: Walidacja schema API (baseAuctionSchema)\n');
 
 try {
-  const apiResult = baseAuctionSchema.parse(testData);
+  const _apiResult = baseAuctionSchema.parse(testData);
   console.log('✅ SUKCES - dane przeszły walidację API');
 } catch (err) {
   if (err instanceof z.ZodError) {

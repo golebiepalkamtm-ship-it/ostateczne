@@ -14,7 +14,7 @@ export function captureError(_error: Error | AppError, _context?: Record<string,
 export function captureMessage(
   _message: string,
   _level: 'debug' | 'info' | 'warning' | 'error' | 'fatal' = 'info',
-  _context?: Record<string, unknown>
+  _context?: Record<string, unknown>,
 ) {
   // No-op
 }
@@ -36,7 +36,7 @@ export function addBreadcrumb(
   _message: string,
   _category?: string,
   _level: 'debug' | 'info' | 'warning' | 'error' | 'fatal' = 'info',
-  _data?: Record<string, unknown>
+  _data?: Record<string, unknown>,
 ) {
   // No-op
 }
@@ -44,7 +44,7 @@ export function addBreadcrumb(
 export async function withSentrySpan<T>(
   _name: string,
   _operation: string,
-  callback: () => Promise<T>
+  callback: () => Promise<T>,
 ): Promise<T> {
   return callback();
 }

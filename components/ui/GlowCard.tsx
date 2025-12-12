@@ -77,7 +77,7 @@ export function GlowCard({
         baseClasses,
         variantClasses[variant],
         hoverClasses,
-        className
+        className,
       )}
       style={intensityStyles[intensity]}
       aria-label={ariaLabel}
@@ -139,7 +139,7 @@ export function GlowButton({
         'relative overflow-hidden font-semibold py-3 px-6 text-sm rounded-2xl transition-all duration-500 ease-out',
         fullWidth && 'w-full',
         disabled && 'opacity-50 cursor-not-allowed',
-        className
+        className,
       )}
     >
       <span className="glow" aria-hidden="true" />
@@ -197,7 +197,7 @@ export function GlowInput({
           'transition-all duration-500 ease-out placeholder:text-white/40 text-white',
           'hover:border-white/30',
           error && 'border-red-400/50 focus:ring-red-400/30 focus:border-red-400/50',
-          className
+          className,
         )}
         aria-invalid={!!error}
         aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
@@ -256,7 +256,7 @@ export function GlowTextarea({
           'transition-all duration-500 ease-out placeholder:text-white/40 text-white',
           'hover:border-white/30 resize-vertical min-h-[100px]',
           error && 'border-red-400/50 focus:ring-red-400/30 focus:border-red-400/50',
-          className
+          className,
         )}
         aria-invalid={!!error}
         aria-describedby={error ? `${textareaId}-error` : helperText ? `${textareaId}-helper` : undefined}

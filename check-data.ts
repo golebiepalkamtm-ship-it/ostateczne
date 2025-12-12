@@ -20,7 +20,7 @@ async function checkData() {
 
     const adminUser = await prisma.user.findFirst({
       where: { email: 'admin@palka-mtm.pl' },
-      select: { id: true, email: true, role: true, firebaseUid: true }
+      select: { id: true, email: true, role: true, firebaseUid: true },
     });
     console.log('Admin user:', adminUser);
 

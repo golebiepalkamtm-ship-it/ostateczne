@@ -71,7 +71,7 @@ export function useCardHover(options: UseCardHoverOptions = {}) {
         pointerFromCenter: Math.min(distance, 1),
       })
     },
-    [disabled, intensity, maxRotation]
+    [disabled, intensity, maxRotation],
   )
 
   const handleMouseEnter = useCallback(() => {

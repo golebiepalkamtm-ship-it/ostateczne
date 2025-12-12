@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Nieprawidłowe dane', details: validation.error.issues },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

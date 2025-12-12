@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Nieprawidłowe dane wejściowe', details: validation.error.issues },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!adminAuth) {
       return NextResponse.json(
         { error: 'Serwis tymczasowo niedostępny. Spróbuj ponownie później.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Użytkownik nie został znaleziony',
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Użytkownik nie został znaleziony w Firebase',
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Email nie został zweryfikowany w Firebase',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

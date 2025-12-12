@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Brak numeru telefonu w żądaniu.',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

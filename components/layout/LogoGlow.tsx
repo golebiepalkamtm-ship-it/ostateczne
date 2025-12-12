@@ -5,9 +5,9 @@ import Link from 'next/link';
 
 export function LogoGlow() {
   return (
-    <div className="relative z-[100]">
-      <Link href="/">
-        <div className="relative">
+    <div className="relative z-[100]" suppressHydrationWarning={true}>
+      <Link href="/" suppressHydrationWarning={true}>
+        <div className="relative" suppressHydrationWarning={true}>
           {/* Główne logo z podświetleniem - dopasowane */}
           <Image
             src="/logo.png"

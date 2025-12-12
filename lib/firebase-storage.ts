@@ -100,8 +100,8 @@ export function convertPublicPathToStorageUrl(publicPath: string): string {
   // In development, use local URLs from public/ folder
   if (process.env.NODE_ENV === 'development') {
     const localPath = cleanPath.replace('public/', '')
-    // Ensure proper URL encoding for spaces and special characters
-    return `/${encodeURIComponent(localPath).replace(/%2F/g, '/')}`
+    // For local development, don't encode spaces to avoid issues with static file serving
+    return `/${localPath}`
   }
 
   return getFirebaseStorageUrlSync(cleanPath)

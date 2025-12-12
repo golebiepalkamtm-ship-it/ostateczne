@@ -109,7 +109,7 @@ function withRateLimit(handler: (request: NextRequest) => Promise<NextResponse>)
  */
 function withAuth(
   handler: (request: NextRequest) => Promise<NextResponse>,
-  requireAdmin: boolean = false
+  requireAdmin: boolean = false,
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
     if (requireAdmin) {
@@ -213,7 +213,7 @@ export const middlewareConfigs = {
  */
 export function createApiRoute(
   handler: (request: NextRequest) => Promise<NextResponse>,
-  config: keyof typeof middlewareConfigs | ApiMiddlewareOptions = 'protected'
+  config: keyof typeof middlewareConfigs | ApiMiddlewareOptions = 'protected',
 ) {
   const middlewareOptions = typeof config === 'string' ? middlewareConfigs[config] : config;
 
@@ -225,7 +225,7 @@ export function createApiRoute(
  */
 export function validateUrlParams(
   request: NextRequest,
-  requiredParams: string[] = []
+  requiredParams: string[] = [],
 ): { isValid: boolean; params: Record<string, string>; error?: string } {
   const url = new URL(request.url);
   const params: Record<string, string> = {};
@@ -251,7 +251,7 @@ export function validateUrlParams(
 export function createJsonResponse<T = unknown>(
   data: T,
   status: number = 200,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
 ): NextResponse {
   return NextResponse.json(data, {
     status,
@@ -268,14 +268,14 @@ export function createJsonResponse<T = unknown>(
 export function createErrorResponse(
   message: string,
   status: number = 400,
-  details?: Record<string, unknown>
+  details?: Record<string, unknown>,
 ): NextResponse {
   return createJsonResponse(
     {
       error: message,
       ...(details && { details }),
     },
-    status
+    status,
   );
 }
 
@@ -285,14 +285,14 @@ export function createErrorResponse(
 export function createSuccessResponse<T = unknown>(
   data: T,
   message?: string,
-  status: number = 200
+  status: number = 200,
 ): NextResponse {
   return createJsonResponse(
     {
       ...(message && { message }),
       ...data,
     },
-    status
+    status,
   );
 }
 
@@ -304,7 +304,7 @@ export function createPaginatedResponse<T = unknown>(
   page: number,
   limit: number,
   total: number,
-  additionalData: Record<string, unknown> = {}
+  additionalData: Record<string, unknown> = {},
 ): NextResponse {
   return createJsonResponse({
     data,
@@ -326,7 +326,7 @@ export function createPaginatedResponse<T = unknown>(
 export function logUserActionHelper(
   _userId: string,
   _action: string,
-  _context?: Record<string, unknown>
+  _context?: Record<string, unknown>,
 ) {
   // logger.logUserAction(userId, action, context);
 }
@@ -343,7 +343,7 @@ export function logBusinessEventHelper(_event: string, _context?: Record<string,
  */
 export function requireHttpMethod(
   request: NextRequest,
-  allowedMethods: string[]
+  allowedMethods: string[],
 ): { isValid: boolean; error?: string } {
   if (!allowedMethods.includes(request.method)) {
     return {
@@ -360,7 +360,7 @@ export function requireHttpMethod(
  */
 export function requireContentType(
   request: NextRequest,
-  expectedType: string = 'application/json'
+  expectedType: string = 'application/json',
 ): { isValid: boolean; error?: string } {
   const contentType = request.headers.get('content-type');
 

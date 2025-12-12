@@ -20,9 +20,23 @@ export const dynamic = 'force-dynamic';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
+const emptyAuctionsResponse = (status = 200) =>
+  NextResponse.json(
+    {
+      auctions: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false,
+      },
+    },
+    { status },
+  );
+
 async function getAuctionsHandler(request: NextRequest) {
-  // Temporary debug switch: when set to 'true' in env, return simple OK
-  // This allows testing whether the route/middleware or DB logic causes 500.
   if (process.env.FORCE_SIMPLE_AUCTIONS_HANDLER === 'true') {
     return NextResponse.json({ ok: true });
   }
@@ -30,23 +44,9 @@ async function getAuctionsHandler(request: NextRequest) {
   try {
     // Sprawdź dostępność bazy danych i załaduj klienta tylko jeśli skonfigurowano
     const prismaModule = await import('@/lib/prisma');
-    const { isDatabaseConfigured } = prismaModule;
-    if (!isDatabaseConfigured()) {
-      return NextResponse.json(
-        {
-          auctions: [],
-          pagination: {
-            page: 1,
-            limit: 10,
-            total: 0,
-            totalPages: 0,
-            hasNext: false,
-            hasPrev: false,
-          },
-        },
-        { status: 200 }
-      );
-    }
+    const { isDatabaseConfigured, prisma } = prismaModule;
+    if (!isDatabaseConfigured()) return emptyAuctionsResponse(200);
+    if (!prisma) return emptyAuctionsResponse(200);
 
     // Pobierz parametry z URL
     const url = new URL(request.url);
@@ -88,7 +88,6 @@ async function getAuctionsHandler(request: NextRequest) {
     const { skip, take } = createPagination(page, limit);
 
     // Wykonaj zapytania równolegle (prisma załadowany leniwie)
-    const prisma = prismaModule.prisma;
     const [auctions, total] = await Promise.all([
       prisma.auction.findMany({
         where,
@@ -163,7 +162,7 @@ async function createAuctionHandler(request: NextRequest) {
   // Helper to convert NaN to undefined for optional number fields
   const optionalNumber = z.preprocess(
     (val) => (typeof val === 'number' && isNaN(val) ? undefined : val),
-    z.number().min(0, 'Wartość nie może być ujemna').optional()
+    z.number().min(0, 'Wartość nie może być ujemna').optional(),
   );
 
   const baseAuctionSchema = z
@@ -218,7 +217,7 @@ async function createAuctionHandler(request: NextRequest) {
       {
         message: 'Cena kup teraz musi być większa lub równa cenie startowej',
         path: ['buyNowPrice'],
-      }
+      },
     )
     .refine(
       data => {
@@ -230,7 +229,7 @@ async function createAuctionHandler(request: NextRequest) {
       {
         message: 'Dla aukcji gołębia wymagane są: numer obrączki, linia krwi i płeć',
         path: ['pigeon'],
-      }
+      },
     );
 
   let validatedData;
@@ -322,7 +321,7 @@ async function createAuctionHandler(request: NextRequest) {
           auctionId: auction.id,
           type: 'IMAGE' as const,
           url,
-        }))
+        })),
       );
     }
     if (validatedData.videos) {
@@ -331,7 +330,7 @@ async function createAuctionHandler(request: NextRequest) {
           auctionId: auction.id,
           type: 'VIDEO' as const,
           url,
-        }))
+        })),
       );
     }
     if (validatedData.documents) {
@@ -340,7 +339,7 @@ async function createAuctionHandler(request: NextRequest) {
           auctionId: auction.id,
           type: 'DOCUMENT' as const,
           url,
-        }))
+        })),
       );
     }
 

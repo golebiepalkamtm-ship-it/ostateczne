@@ -101,7 +101,7 @@ export const auctionCreateSchema = z
     {
       message: 'Musisz ustawić cenę startową (licytacja) lub cenę kup teraz (lub obie)',
       path: ['startingPrice'],
-    }
+    },
   )
   .refine(
     data => {
@@ -117,7 +117,7 @@ export const auctionCreateSchema = z
     {
       message: 'Cena kup teraz musi być większa lub równa cenie startowej',
       path: ['buyNowPrice'],
-    }
+    },
   )
   .refine(
     data => {
@@ -129,7 +129,7 @@ export const auctionCreateSchema = z
     {
       message: 'Dla aukcji gołębia wymagane są: numer obrączki, linia krwi i płeć',
       path: ['pigeon'],
-    }
+    },
   )
 
 const baseAuctionSchema = z.object({
@@ -218,7 +218,7 @@ export const searchSchema = z
     {
       message: 'Maksymalna cena musi być większa lub równa minimalnej cenie',
       path: ['maxPrice'],
-    }
+    },
   )
 
 // ============================================
@@ -265,7 +265,7 @@ export const passwordSchema = z
       .min(8, 'Nowe hasło musi mieć co najmniej 8 znaków')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        'Nowe hasło musi zawierać małą literę, wielką literę i cyfrę'
+        'Nowe hasło musi zawierać małą literę, wielką literę i cyfrę',
       ),
     confirmPassword: z.string().min(1, 'Potwierdzenie hasła jest wymagane'),
   })

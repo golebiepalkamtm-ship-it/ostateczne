@@ -33,7 +33,7 @@ const useScrollReveal = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     observer.observe(currentRef);
@@ -334,7 +334,7 @@ export default function CreateAuctionForm({
         
         console.log('📤 [Frontend] Rozpoczynam upload zdjęć:', {
           count: pigeonImages.length,
-          files: pigeonImages.map(f => ({ name: f.file.name, size: f.file.size, type: f.file.type }))
+          files: pigeonImages.map(f => ({ name: f.file.name, size: f.file.size, type: f.file.type })),
         });
 
         const imageFormData = new FormData();

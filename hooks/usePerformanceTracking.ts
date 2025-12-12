@@ -41,14 +41,14 @@ export function usePerformanceTracking(componentName: string, metadata?: Record<
         {
           ...metadata,
           renderCount: renderCount.current,
-        }
+        },
       );
     },
     trackEvent: (eventName: string, value: number = 1) => {
       monitoring.trackBusinessMetric(
         `component_event:${componentName}:${eventName}`,
         value,
-        metadata as Record<string, string>
+        metadata as Record<string, string>,
       );
     },
     renderCount: renderCount.current,

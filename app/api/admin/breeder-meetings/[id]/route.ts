@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 // DELETE - Usuń spotkanie z hodowcą
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Rate limiting

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     // 4. Aukcje zakończone (moje)
     const endedAuctions = myAuctions.filter(
-      a => a.status === 'ENDED' || new Date(a.endTime) < new Date()
+      a => a.status === 'ENDED' || new Date(a.endTime) < new Date(),
     );
 
     // 5. Aukcje sprzedane (moje, które mają licytacje lub kup teraz)

@@ -3,6 +3,9 @@ import type { Viewport } from 'next';
 import './globals.css';
 import './loading-animation.css';
 import ClientRoot from '@/components/layout/ClientRoot';
+import { metadata } from './metadata';
+
+export { metadata };
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -13,7 +16,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pl" data-scroll-behavior="smooth">
+    <html lang="pl" data-scroll-behavior="smooth" suppressHydrationWarning={true}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/logo.png" />
@@ -23,13 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
           precedence="default"
         />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-          precedence="default"
-        />
+        <link rel="stylesheet" href="/magic.css" />
+
       </head>
-      <body className="relative">
+      <body className="relative" suppressHydrationWarning={true}>
         <ClientRoot>{children}</ClientRoot>
       </body>
     </html>

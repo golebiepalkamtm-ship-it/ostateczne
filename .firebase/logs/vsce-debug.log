@@ -1,0 +1,260 @@
+[debug] [2025-12-12T08:30:28.857Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-12-12T08:30:48.544Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-12-12T08:30:48.546Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-12T08:30:48.547Z] > authorizing via signed-in user (golebie.palka.mtm@gmail.com)
+[debug] [2025-12-12T08:30:48.553Z] Checked if tokens are valid: false, expires at: 1765508939485
+[debug] [2025-12-12T08:30:48.553Z] Checked if tokens are valid: false, expires at: 1765508939485
+[debug] [2025-12-12T08:30:48.554Z] > refreshing access token with scopes: []
+[debug] [2025-12-12T08:30:48.557Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-12-12T08:30:48.558Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-12T08:30:48.573Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.17.0) on port 50001
+[debug] [2025-12-12T08:30:51.011Z] W1212 09:30:50.994644   24484 control.go:68] [/emulator/pigeon-aucion-41d68-service d515] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 09:30:51.005805   24484 control.go:94] [/emulator/pigeon-aucion-41d68-service d515] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"W1212 09:30:50.994644   24484 control.go:68] [/emulator/pigeon-aucion-41d68-service d515] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 09:30:51.005805   24484 control.go:94] [/emulator/pigeon-aucion-41d68-service d515] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \n"}}
+[debug] [2025-12-12T08:30:51.013Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-12-12T08:30:51.013Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-12-12T08:30:51.014Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\Marcin_Palka\\.cache\\firebase\\emulators\\dataconnect-emulator-2.17.0.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50001","--config_dir=c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\Marcin_Palka\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.17.0.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50001\",\"--config_dir=c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-12-12T08:30:51.110Z] I1212 09:30:51.054182   24804 load.go:31] Reloading schema and connectors...
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 09:30:51.054182   24804 load.go:31] Reloading schema and connectors...\n"}}
+[debug] [2025-12-12T08:30:51.175Z] W1212 09:30:51.148894   24804 control.go:68] [/emulator/pigeon-aucion-41d68-service 7b23] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 09:30:51.148894   24804 control.go:94] [/emulator/pigeon-aucion-41d68-service 7b23] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+E1212 09:30:51.150916   24804 load.go:73] Could not load sources: 
+Errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+I1212 09:30:51.162051   24804 collector.go:107] schema extensions wrote into "c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect\\.dataconnect\\schema"
+Generated sources: main\input.gql [55371B] main\relation.gql [30048B] prelude.gql [73219B] main\query.gql [7373B] main\mutation.gql [19804B] main\implicit.gql [3153B] 
+I1212 09:30:51.163699   24804 load.go:74] Finished reloading
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"W1212 09:30:51.148894   24804 control.go:68] [/emulator/pigeon-aucion-41d68-service 7b23] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 09:30:51.148894   24804 control.go:94] [/emulator/pigeon-aucion-41d68-service 7b23] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \nE1212 09:30:51.150916   24804 load.go:73] Could not load sources: \nErrors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\nI1212 09:30:51.162051   24804 collector.go:107] schema extensions wrote into \"c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\\\\.dataconnect\\\\schema\"\nGenerated sources: main\\input.gql [55371B] main\\relation.gql [30048B] prelude.gql [73219B] main\\query.gql [7373B] main\\mutation.gql [19804B] main\\implicit.gql [3153B] \nI1212 09:30:51.163699   24804 load.go:74] Finished reloading\n"}}
+[debug] [2025-12-12T08:30:51.236Z] I1212 09:30:51.201300   24804 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50001
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 09:30:51.201300   24804 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50001\n"}}
+[debug] [2025-12-12T08:30:51.379Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-12-12T08:30:51.379Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-12T08:30:51.393Z] [Firebase Plugin] User found:  golebie.palka.mtm@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-12-12T08:30:51.395Z] Checked if tokens are valid: true, expires at: 1765531850380
+[debug] [2025-12-12T08:30:51.396Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-12-12T08:30:51.529Z] I1212 09:30:51.527765   24804 engine.go:171] [/emulator/pigeon-aucion-41d68-service 7b23] ExecuteGraphqlRead IntrospectionQuery: succeeded. 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 09:30:51.527765   24804 engine.go:171] [/emulator/pigeon-aucion-41d68-service 7b23] ExecuteGraphqlRead IntrospectionQuery: succeeded. \n"}}
+[debug] [2025-12-12T08:30:52.538Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-12-12T08:30:52.538Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[debug] [2025-12-12T09:47:23.022Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-12-12T09:47:43.393Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-12-12T09:47:53.140Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-12-12T09:47:53.142Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-12T09:47:53.142Z] > authorizing via signed-in user (golebie.palka.mtm@gmail.com)
+[debug] [2025-12-12T09:47:53.145Z] Checked if tokens are valid: false, expires at: 1765531850380
+[debug] [2025-12-12T09:47:53.145Z] Checked if tokens are valid: false, expires at: 1765531850380
+[debug] [2025-12-12T09:47:53.146Z] > refreshing access token with scopes: []
+[debug] [2025-12-12T09:47:53.147Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-12-12T09:47:53.147Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-12T09:47:53.156Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.17.0) on port 50002
+[debug] [2025-12-12T09:47:57.822Z] W1212 10:47:57.807372   27400 control.go:68] [/emulator/pigeon-aucion-41d68-service 46cf] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 10:47:57.817904   27400 control.go:94] [/emulator/pigeon-aucion-41d68-service 46cf] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"W1212 10:47:57.807372   27400 control.go:68] [/emulator/pigeon-aucion-41d68-service 46cf] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 10:47:57.817904   27400 control.go:94] [/emulator/pigeon-aucion-41d68-service 46cf] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \n"}}
+[debug] [2025-12-12T09:47:57.823Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-12-12T09:47:57.823Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-12-12T09:47:57.823Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\Marcin_Palka\\.cache\\firebase\\emulators\\dataconnect-emulator-2.17.0.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50002","--config_dir=c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\Marcin_Palka\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.17.0.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50002\",\"--config_dir=c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-12-12T09:47:58.274Z] I1212 10:47:57.855746   18804 load.go:31] Reloading schema and connectors...
+W1212 10:47:57.945605   18804 control.go:68] [/emulator/pigeon-aucion-41d68-service c12b] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 10:47:57.945605   18804 control.go:94] [/emulator/pigeon-aucion-41d68-service c12b] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+E1212 10:47:57.948617   18804 load.go:73] Could not load sources: 
+Errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+I1212 10:47:57.955669   18804 collector.go:107] schema extensions wrote into "c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect\\.dataconnect\\schema"
+Generated sources: main\mutation.gql [19804B] prelude.gql [73219B] main\implicit.gql [3153B] main\input.gql [55371B] main\relation.gql [30048B] main\query.gql [7373B] 
+I1212 10:47:57.955669   18804 load.go:74] Finished reloading
+I1212 10:47:57.991274   18804 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50002
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 10:47:57.855746   18804 load.go:31] Reloading schema and connectors...\nW1212 10:47:57.945605   18804 control.go:68] [/emulator/pigeon-aucion-41d68-service c12b] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 10:47:57.945605   18804 control.go:94] [/emulator/pigeon-aucion-41d68-service c12b] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \nE1212 10:47:57.948617   18804 load.go:73] Could not load sources: \nErrors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\nI1212 10:47:57.955669   18804 collector.go:107] schema extensions wrote into \"c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\\\\.dataconnect\\\\schema\"\nGenerated sources: main\\mutation.gql [19804B] prelude.gql [73219B] main\\implicit.gql [3153B] main\\input.gql [55371B] main\\relation.gql [30048B] main\\query.gql [7373B] \nI1212 10:47:57.955669   18804 load.go:74] Finished reloading\nI1212 10:47:57.991274   18804 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50002\n"}}
+[debug] [2025-12-12T09:48:02.041Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-12-12T09:48:02.042Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-12T09:48:02.058Z] [Firebase Plugin] User found:  golebie.palka.mtm@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-12-12T09:48:02.060Z] Checked if tokens are valid: true, expires at: 1765536481042
+[debug] [2025-12-12T09:48:02.061Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-12-12T09:48:02.823Z] I1212 10:48:02.441646   18804 engine.go:171] [/emulator/pigeon-aucion-41d68-service c12b] ExecuteGraphqlRead IntrospectionQuery: succeeded. 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 10:48:02.441646   18804 engine.go:171] [/emulator/pigeon-aucion-41d68-service c12b] ExecuteGraphqlRead IntrospectionQuery: succeeded. \n"}}
+[debug] [2025-12-12T09:48:04.022Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-12-12T09:48:04.023Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[debug] [2025-12-12T09:51:51.207Z] [Firebase Plugin] Value of process.env.MONOSPACE_ENV: undefined
+[debug] [2025-12-12T09:51:51.207Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-12-12T09:51:51.208Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-12T09:51:51.208Z] > authorizing via signed-in user (golebie.palka.mtm@gmail.com)
+[debug] [2025-12-12T09:51:51.209Z] Checked if tokens are valid: true, expires at: 1765536481042
+[debug] [2025-12-12T09:51:51.209Z] [Firebase Plugin] User found:  golebie.palka.mtm@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-12-12T09:51:51.210Z] Checked if tokens are valid: true, expires at: 1765536481042
+[debug] [2025-12-12T09:51:51.212Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-12-12T09:51:51.219Z] [Firebase Plugin] Value of process.env.MONOSPACE_ENV: undefined
+[debug] [2025-12-12T09:51:51.219Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-12-12T09:51:51.220Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-12T09:51:51.220Z] > authorizing via signed-in user (golebie.palka.mtm@gmail.com)
+[debug] [2025-12-12T09:51:51.221Z] Checked if tokens are valid: true, expires at: 1765536481042
+[debug] [2025-12-12T09:51:51.221Z] [Firebase Plugin] User found:  golebie.palka.mtm@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-12-12T09:51:51.222Z] Checked if tokens are valid: true, expires at: 1765536481042
+[debug] [2025-12-12T09:51:51.222Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-12-12T09:51:51.230Z] Emulator locator file path: C:\Users\MARCIN~1\AppData\Local\Temp\hub-m-t-m-62972.json
+[debug] [2025-12-12T09:51:51.646Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-12-12T09:51:51.647Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[debug] [2025-12-12T09:51:51.658Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-12-12T09:51:51.659Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] [Firebase Plugin] Stopping Data Connect toolkit
+[warn] !  Data Connect Emulator has exited upon receiving signal: SIGINT 
+[debug] [2025-12-12T11:34:17.274Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-12-12T11:34:52.648Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-12-12T11:34:52.651Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-12T11:34:52.652Z] > authorizing via signed-in user (golebie.palka.mtm@gmail.com)
+[debug] [2025-12-12T11:34:52.657Z] Checked if tokens are valid: false, expires at: 1765536481042
+[debug] [2025-12-12T11:34:52.658Z] Checked if tokens are valid: false, expires at: 1765536481042
+[debug] [2025-12-12T11:34:52.659Z] > refreshing access token with scopes: []
+[debug] [2025-12-12T11:34:52.662Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-12-12T11:34:52.663Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-12T11:34:52.686Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.17.0) on port 50002
+[debug] [2025-12-12T11:34:53.628Z] W1212 12:34:53.610542    6944 control.go:68] [/emulator/pigeon-aucion-41d68-service 2dcd] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 12:34:53.622594    6944 control.go:94] [/emulator/pigeon-aucion-41d68-service 2dcd] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"W1212 12:34:53.610542    6944 control.go:68] [/emulator/pigeon-aucion-41d68-service 2dcd] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 12:34:53.622594    6944 control.go:94] [/emulator/pigeon-aucion-41d68-service 2dcd] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \n"}}
+[debug] [2025-12-12T11:34:53.629Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-12-12T11:34:53.630Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-12-12T11:34:53.630Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\Marcin_Palka\\.cache\\firebase\\emulators\\dataconnect-emulator-2.17.0.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50002","--config_dir=c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\Marcin_Palka\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.17.0.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50002\",\"--config_dir=c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-12-12T11:34:53.705Z] I1212 12:34:53.682465   21172 load.go:31] Reloading schema and connectors...
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 12:34:53.682465   21172 load.go:31] Reloading schema and connectors...\n"}}
+[debug] [2025-12-12T11:34:53.791Z] W1212 12:34:53.783129   21172 control.go:68] [/emulator/pigeon-aucion-41d68-service ce32] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 12:34:53.783129   21172 control.go:94] [/emulator/pigeon-aucion-41d68-service ce32] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+E1212 12:34:53.787518   21172 load.go:73] Could not load sources: 
+Errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"W1212 12:34:53.783129   21172 control.go:68] [/emulator/pigeon-aucion-41d68-service ce32] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 12:34:53.783129   21172 control.go:94] [/emulator/pigeon-aucion-41d68-service ce32] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \nE1212 12:34:53.787518   21172 load.go:73] Could not load sources: \nErrors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n"}}
+[debug] [2025-12-12T11:34:53.809Z] I1212 12:34:53.794971   21172 collector.go:107] schema extensions wrote into "c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect\\.dataconnect\\schema"
+Generated sources: main\relation.gql [30048B] main\query.gql [7373B] main\mutation.gql [19804B] main\implicit.gql [3153B] main\input.gql [55371B] prelude.gql [73219B] 
+I1212 12:34:53.795699   21172 load.go:74] Finished reloading
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 12:34:53.794971   21172 collector.go:107] schema extensions wrote into \"c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\\\\.dataconnect\\\\schema\"\nGenerated sources: main\\relation.gql [30048B] main\\query.gql [7373B] main\\mutation.gql [19804B] main\\implicit.gql [3153B] main\\input.gql [55371B] prelude.gql [73219B] \nI1212 12:34:53.795699   21172 load.go:74] Finished reloading\n"}}
+[debug] [2025-12-12T11:34:53.898Z] I1212 12:34:53.840754   21172 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50002
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 12:34:53.840754   21172 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50002\n"}}
+[debug] [2025-12-12T11:34:54.011Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-12-12T11:34:54.012Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-12T11:34:54.035Z] [Firebase Plugin] User found:  golebie.palka.mtm@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-12-12T11:34:54.038Z] Checked if tokens are valid: true, expires at: 1765542893013
+[debug] [2025-12-12T11:34:54.040Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-12-12T11:34:54.114Z] I1212 12:34:54.089832   21172 engine.go:171] [/emulator/pigeon-aucion-41d68-service ce32] ExecuteGraphqlRead IntrospectionQuery: succeeded. 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 12:34:54.089832   21172 engine.go:171] [/emulator/pigeon-aucion-41d68-service ce32] ExecuteGraphqlRead IntrospectionQuery: succeeded. \n"}}
+[debug] [2025-12-12T11:34:54.589Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-12-12T11:34:54.590Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] [Firebase Plugin] Stopping Data Connect toolkit
+[warn] !  Data Connect Emulator has exited upon receiving signal: SIGINT 
+[debug] [2025-12-12T11:39:29.765Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-12-12T11:39:38.529Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-12-12T11:39:38.532Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-12T11:39:38.532Z] > authorizing via signed-in user (golebie.palka.mtm@gmail.com)
+[debug] [2025-12-12T11:39:38.537Z] Checked if tokens are valid: true, expires at: 1765542893013
+[debug] [2025-12-12T11:39:38.537Z] Checked if tokens are valid: true, expires at: 1765542893013
+[debug] [2025-12-12T11:39:38.538Z] [Firebase Plugin] User found:  golebie.palka.mtm@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-12-12T11:39:38.540Z] Checked if tokens are valid: true, expires at: 1765542893013
+[debug] [2025-12-12T11:39:38.541Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-12-12T11:39:38.554Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.17.0) on port 50002
+[debug] [2025-12-12T11:39:44.946Z] W1212 12:39:44.910164    4060 control.go:68] [/emulator/pigeon-aucion-41d68-service b042] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 12:39:44.935598    4060 control.go:94] [/emulator/pigeon-aucion-41d68-service b042] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"W1212 12:39:44.910164    4060 control.go:68] [/emulator/pigeon-aucion-41d68-service b042] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 12:39:44.935598    4060 control.go:94] [/emulator/pigeon-aucion-41d68-service b042] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \n"}}
+[debug] [2025-12-12T11:39:44.947Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-12-12T11:39:44.948Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-12-12T11:39:44.949Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\Marcin_Palka\\.cache\\firebase\\emulators\\dataconnect-emulator-2.17.0.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50002","--config_dir=c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\Marcin_Palka\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.17.0.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50002\",\"--config_dir=c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-12-12T11:39:46.119Z] I1212 12:39:45.008889    8988 load.go:31] Reloading schema and connectors...
+W1212 12:39:45.113394    8988 control.go:68] [/emulator/pigeon-aucion-41d68-service 1f5a] connector "example" has errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+
+sources: example\queries.gql [1159B] 
+I1212 12:39:45.113394    8988 control.go:94] [/emulator/pigeon-aucion-41d68-service 1f5a] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1159B] 
+E1212 12:39:45.117439    8988 load.go:73] Could not load sources: 
+Errors: example\queries.gql:13:6: Cannot query field "id" on type "List_KeyOutput".
+example\queries.gql:3:4: Field "list_insert" must not have a selection since type "List_KeyOutput" has no subfields.
+example\queries.gql:31:6: Cannot query field "listId" on type "ListMovie_KeyOutput".
+example\queries.gql:32:6: Cannot query field "movieId" on type "ListMovie_KeyOutput".
+example\queries.gql:30:4: Field "listMovie_insert" must not have a selection since type "ListMovie_KeyOutput" has no subfields.
+I1212 12:39:45.122460    8988 collector.go:107] schema extensions wrote into "c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect\\.dataconnect\\schema"
+Generated sources: prelude.gql [73219B] main\mutation.gql [19804B] main\implicit.gql [3153B] main\input.gql [55371B] main\relation.gql [30048B] main\query.gql [7373B] 
+I1212 12:39:45.122460    8988 load.go:74] Finished reloading
+I1212 12:39:45.161231    8988 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50002
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1212 12:39:45.008889    8988 load.go:31] Reloading schema and connectors...\nW1212 12:39:45.113394    8988 control.go:68] [/emulator/pigeon-aucion-41d68-service 1f5a] connector \"example\" has errors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\n\nsources: example\\queries.gql [1159B] \nI1212 12:39:45.113394    8988 control.go:94] [/emulator/pigeon-aucion-41d68-service 1f5a] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1159B] \nE1212 12:39:45.117439    8988 load.go:73] Could not load sources: \nErrors: example\\queries.gql:13:6: Cannot query field \"id\" on type \"List_KeyOutput\".\nexample\\queries.gql:3:4: Field \"list_insert\" must not have a selection since type \"List_KeyOutput\" has no subfields.\nexample\\queries.gql:31:6: Cannot query field \"listId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:32:6: Cannot query field \"movieId\" on type \"ListMovie_KeyOutput\".\nexample\\queries.gql:30:4: Field \"listMovie_insert\" must not have a selection since type \"ListMovie_KeyOutput\" has no subfields.\nI1212 12:39:45.122460    8988 collector.go:107] schema extensions wrote into \"c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\\\\.dataconnect\\\\schema\"\nGenerated sources: prelude.gql [73219B] main\\mutation.gql [19804B] main\\implicit.gql [3153B] main\\input.gql [55371B] main\\relation.gql [30048B] main\\query.gql [7373B] \nI1212 12:39:45.122460    8988 load.go:74] Finished reloading\nI1212 12:39:45.161231    8988 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50002\n"}}
+[debug] [2025-12-12T11:39:56.161Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-12-12T11:39:56.161Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] [Firebase Plugin] Stopping Data Connect toolkit
+[warn] !  Data Connect Emulator has exited upon receiving signal: SIGINT 

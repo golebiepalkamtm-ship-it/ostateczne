@@ -54,7 +54,7 @@ function initFirebase() {
         throw new Error(
           'Firebase credentials not found. Either:\n' +
           '  1. Create firebase-key.json in project root, OR\n' +
-          '  2. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY in .env'
+          '  2. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY in .env',
         )
       }
       
@@ -137,7 +137,7 @@ function getContentType(filename: string): string {
 async function uploadFile(
   localPath: string,
   storagePath: string,
-  bucket: any
+  bucket: any,
 ): Promise<boolean> {
   try {
     const fileBuffer = readFileSync(localPath)

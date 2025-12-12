@@ -107,9 +107,9 @@ function initializeFirebaseAdmin() {
     let adminAppModules: any;
     let adminAuthModule: any;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       adminAppModules = require('firebase-admin/app');
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+       
       adminAuthModule = require('firebase-admin/auth');
     } catch (err) {
       error('❌ Could not require firebase-admin modules at runtime:', err instanceof Error ? err.message : String(err));

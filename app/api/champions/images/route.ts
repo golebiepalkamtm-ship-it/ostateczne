@@ -86,7 +86,7 @@ export async function GET(_request: NextRequest) {
     console.error('API ERROR /api/champions/images:', error);
     return NextResponse.json(
       { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

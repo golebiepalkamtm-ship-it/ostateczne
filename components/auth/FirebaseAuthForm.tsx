@@ -48,11 +48,11 @@ export default function FirebaseAuthForm({
     const emailVerified = searchParams.get('emailVerified') === 'true';
     if (verified && emailVerified) {
       setSuccess(
-        '✅ Email zweryfikowany! Poziom 2 odblokowany. Teraz możesz przejść do Panelu Użytkownika. Aby uzyskać pełny dostęp do aukcji (Poziom 3), uzupełnij profil i zweryfikuj telefon.'
+        '✅ Email zweryfikowany! Poziom 2 odblokowany. Teraz możesz przejść do Panelu Użytkownika. Aby uzyskać pełny dostęp do aukcji (Poziom 3), uzupełnij profil i zweryfikuj telefon.',
       );
     } else if (verified) {
       setSuccess(
-        '✅ Email zweryfikowany! Poziom 2 odblokowany. Teraz możesz przejść do Panelu Użytkownika. Aby uzyskać pełny dostęp do aukcji (Poziom 3), uzupełnij profil i zweryfikuj telefon.'
+        '✅ Email zweryfikowany! Poziom 2 odblokowany. Teraz możesz przejść do Panelu Użytkownika. Aby uzyskać pełny dostęp do aukcji (Poziom 3), uzupełnij profil i zweryfikuj telefon.',
       );
     }
   }, [searchParams]);
@@ -178,12 +178,12 @@ export default function FirebaseAuthForm({
           } as const;
           await sendEmailVerification(user, actionCodeSettings);
           setSuccess(
-            '⚠️ Twoje konto wymaga weryfikacji emaila. Wysłaliśmy ponownie link aktywacyjny - sprawdź skrzynkę (także SPAM). Po weryfikacji będziesz mógł uzupełnić dane i zweryfikować telefon, aby uzyskać pełny dostęp do licytacji.'
+            '⚠️ Twoje konto wymaga weryfikacji emaila. Wysłaliśmy ponownie link aktywacyjny - sprawdź skrzynkę (także SPAM). Po weryfikacji będziesz mógł uzupełnić dane i zweryfikować telefon, aby uzyskać pełny dostęp do licytacji.',
           );
         } catch (emailError) {
           logger.error('Błąd ponownego wysłania email weryfikacyjnego:', emailError);
           setSuccess(
-            '⚠️ Twoje konto wymaga weryfikacji emaila. Sprawdź skrzynkę odbiorczą (także SPAM) i kliknij link aktywacyjny.'
+            '⚠️ Twoje konto wymaga weryfikacji emaila. Sprawdź skrzynkę odbiorczą (także SPAM) i kliknij link aktywacyjny.',
           );
         }
         // Nie ustawiaj błędu, pozwól na zalogowanie
@@ -251,12 +251,12 @@ export default function FirebaseAuthForm({
             handleCodeInApp: false,
           });
           setSuccess(
-            '✅ Rejestracja przez Google zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź skrzynkę (także SPAM) i kliknij link, aby uzyskać dostęp do panelu użytkownika i możliwości licytacji.'
+            '✅ Rejestracja przez Google zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź skrzynkę (także SPAM) i kliknij link, aby uzyskać dostęp do panelu użytkownika i możliwości licytacji.',
           );
         } catch (emailError) {
           logger.error('Błąd wysyłania email weryfikacyjnego dla OAuth:', emailError);
           setSuccess(
-            '✅ Zalogowano przez Google! Aby uzyskać dostęp do panelu, zweryfikuj email. Sprawdź skrzynkę odbiorczą.'
+            '✅ Zalogowano przez Google! Aby uzyskać dostęp do panelu, zweryfikuj email. Sprawdź skrzynkę odbiorczą.',
           );
         }
       }
@@ -266,7 +266,7 @@ export default function FirebaseAuthForm({
         await syncUser('✅ Zalogowano pomyślnie przez Google! Przekierowywanie na stronę główną...');
       } else {
         setSuccess(
-          '✅ Zalogowano pomyślnie! Aby uzyskać pełny dostęp do aukcji, uzupełnij swój profil i zweryfikuj numer telefonu.'
+          '✅ Zalogowano pomyślnie! Aby uzyskać pełny dostęp do aukcji, uzupełnij swój profil i zweryfikuj numer telefonu.',
         );
         setTimeout(() => {
           router.push('/auth/complete-profile');
@@ -291,7 +291,7 @@ export default function FirebaseAuthForm({
           break;
         case 'auth/unauthorized-domain':
           setError(
-            'Domena nie jest autoryzowana w Firebase Console. Dodaj domenę 192.168.177.1 do autoryzowanych domen OAuth w ustawieniach projektu Firebase.'
+            'Domena nie jest autoryzowana w Firebase Console. Dodaj domenę 192.168.177.1 do autoryzowanych domen OAuth w ustawieniach projektu Firebase.',
           );
           break;
         default:
@@ -328,12 +328,12 @@ export default function FirebaseAuthForm({
             handleCodeInApp: false,
           });
           setSuccess(
-            '✅ Rejestracja przez Facebook zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź skrzynkę (także SPAM) i kliknij link, aby uzyskać dostęp do panelu użytkownika i możliwości licytacji.'
+            '✅ Rejestracja przez Facebook zakończona! Na Twój email wysłaliśmy link aktywacyjny. Sprawdź skrzynkę (także SPAM) i kliknij link, aby uzyskać dostęp do panelu użytkownika i możliwości licytacji.',
           );
         } catch (emailError) {
           logger.error('Błąd wysyłania email weryfikacyjnego dla OAuth:', emailError);
           setSuccess(
-            '✅ Zalogowano przez Facebook! Aby uzyskać dostęp do panelu, zweryfikuj email. Sprawdź skrzynkę odbiorczą.'
+            '✅ Zalogowano przez Facebook! Aby uzyskać dostęp do panelu, zweryfikuj email. Sprawdź skrzynkę odbiorczą.',
           );
         }
       }
@@ -362,12 +362,12 @@ export default function FirebaseAuthForm({
           break;
         case 'auth/unauthorized-domain':
           setError(
-            'Domena nie jest autoryzowana w Firebase Console. Dodaj domenę 192.168.177.1 do autoryzowanych domen OAuth w ustawieniach projektu Firebase.'
+            'Domena nie jest autoryzowana w Firebase Console. Dodaj domenę 192.168.177.1 do autoryzowanych domen OAuth w ustawieniach projektu Firebase.',
           );
           break;
         default:
           setError(
-            `Wystąpił błąd podczas logowania przez Facebook: ${error.message || error.code}`
+            `Wystąpił błąd podczas logowania przez Facebook: ${error.message || error.code}`,
           );
       }
     } finally {

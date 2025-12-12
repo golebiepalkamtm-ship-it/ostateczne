@@ -197,7 +197,7 @@ export default function AdminDashboard() {
   const [references, setReferences] = useState<Reference[]>([]);
   const [, setReferencesTotal] = useState(0);
   const [referencesStatus, setReferencesStatus] = useState<'pending' | 'approved' | 'all'>(
-    'pending'
+    'pending',
   );
 
   // Meetings state
@@ -377,7 +377,7 @@ export default function AdminDashboard() {
         setDeleting(false);
       }
     },
-    [loadUsers, firebaseUser]
+    [loadUsers, firebaseUser],
   );
 
   // Auction handlers
@@ -404,7 +404,7 @@ export default function AdminDashboard() {
         setApproving(null);
       }
     },
-    [loadAuctions, loadActiveAuctions, firebaseUser]
+    [loadAuctions, loadActiveAuctions, firebaseUser],
   );
 
   const handleRejectAuction = useCallback(
@@ -426,7 +426,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas odrzucania aukcji:', error);
       }
     },
-    [loadAuctions, firebaseUser]
+    [loadAuctions, firebaseUser],
   );
 
   const handleEditAuction = useCallback((auction: Auction) => {
@@ -570,7 +570,7 @@ export default function AdminDashboard() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.ok) {
         const data = await response.json();
@@ -593,7 +593,7 @@ export default function AdminDashboard() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.ok) {
         const data = await response.json();
@@ -627,7 +627,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas aktualizacji referencji:', error);
       }
     },
-    [loadReferences, firebaseUser]
+    [loadReferences, firebaseUser],
   );
 
   const deleteReference = useCallback(
@@ -651,7 +651,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas usuwania referencji:', error);
       }
     },
-    [loadReferences, firebaseUser]
+    [loadReferences, firebaseUser],
   );
 
   // Meeting handlers
@@ -676,7 +676,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas aktualizacji spotkania:', error);
       }
     },
-    [loadMeetings, firebaseUser]
+    [loadMeetings, firebaseUser],
   );
 
   const deleteMeeting = useCallback(
@@ -700,7 +700,7 @@ export default function AdminDashboard() {
         console.error('Błąd podczas usuwania spotkania:', error);
       }
     },
-    [loadMeetings, firebaseUser]
+    [loadMeetings, firebaseUser],
   );
 
   // Effects
@@ -1145,7 +1145,7 @@ export default function AdminDashboard() {
                                     {achievement.results
                                       ?.map(
                                         result =>
-                                          `${result.place} miejsce w ${result.competition} (${result.date})`
+                                          `${result.place} miejsce w ${result.competition} (${result.date})`,
                                       )
                                       .join(', ')}
                                   </div>

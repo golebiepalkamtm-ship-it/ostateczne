@@ -42,13 +42,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const result = await updateMaxBid(
       auctionId,
       authResult.userId,
-      validatedData.maxBid
+      validatedData.maxBid,
     );
 
     if (!result.success) {
       return NextResponse.json(
         { error: result.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

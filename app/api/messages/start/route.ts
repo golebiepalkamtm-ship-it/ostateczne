@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     if (recipient.id === authResult.userId) {
       return NextResponse.json(
         { error: 'Nie możesz wysłać wiadomości do siebie' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     if (existingConversation) {
       return NextResponse.json(
         { error: 'Konwersacja z tym użytkownikiem już istnieje' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
           createdAt: result.message.createdAt,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error, request, { endpoint: 'messages/start' });

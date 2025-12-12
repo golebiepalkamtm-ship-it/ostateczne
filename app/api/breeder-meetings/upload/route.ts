@@ -36,21 +36,21 @@ export async function POST(request: NextRequest) {
     if (!title || typeof title !== 'string' || title.trim().length < 3) {
       return NextResponse.json(
         { error: 'Tytuł jest wymagany i musi mieć co najmniej 3 znaki' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!breederName || typeof breederName !== 'string' || breederName.trim().length < 2) {
       return NextResponse.json(
         { error: 'Nazwa hodowcy jest wymagana i musi mieć co najmniej 2 znaki' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!Array.isArray(files) || files.length === 0) {
       return NextResponse.json(
         { error: 'Przynajmniej jedno zdjęcie jest wymagane' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       if (file.size > MAX_FILE_SIZE) {
         return NextResponse.json(
           { error: `Plik jest za duży. Maksymalny rozmiar to ${MAX_FILE_SIZE / (1024 * 1024)}MB` },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         {
           error: `Można przesłać maksymalnie ${MAX_FILES} plików`,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
           {
             error: `Nieprawidłowy typ pliku: ${file.type}. Dozwolone typy: ${ALLOWED_FILE_TYPES.join(', ')}`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
           {
             error: `Plik ${file.name} jest za duży. Maksymalny rozmiar: ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }

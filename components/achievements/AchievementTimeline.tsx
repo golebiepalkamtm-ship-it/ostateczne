@@ -28,6 +28,25 @@ interface AchievementTimelineProps {
 const mergeClasses = (...classes: Array<string | false | undefined>) =>
   classes.filter(Boolean).join(' ');
 
+// Animation variants for timeline cards
+const getAnimationClass = (index: number): string => {
+  const animations = [
+    'vanishIn',
+    'spaceInUp',
+    'spaceInDown',
+    'perspectiveLeftReturn',
+    'perspectiveRightReturn',
+    'tinUpIn',
+    'tinDownIn',
+    'boingInUp',
+    'puffIn',
+    'twisterInDown',
+    'slideLeftReturn',
+    'slideRightReturn',
+  ];
+  return animations[index % animations.length];
+};
+
 const useScrollReveal = () => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -52,7 +71,10 @@ const useScrollReveal = () => {
           }
         });
       },
-      { threshold: 0.35 }
+      {
+        threshold: 0.2, // wyzwalaj nieco wcześniej
+        rootMargin: '120px 0px -80px 0px', // zaczynaj animację zanim karta w pełni wejdzie
+      },
     );
 
     observer.observe(node);
@@ -70,10 +92,16 @@ const useScrollReveal = () => {
 type TimelineCardProps = {
   item: AchievementTimelineItem;
   align: 'left' | 'right';
+  animationDelay?: number;
+  animationIndex: number;
 };
 
-function TimelineCard({ item, align }: TimelineCardProps) {
+function TimelineCard({ item, align, animationDelay, animationIndex }: TimelineCardProps) {
   const { ref, isVisible } = useScrollReveal();
+  const animationClass = isVisible ? mergeClasses('magictime', getAnimationClass(animationIndex)) : '';
+  const visibilityClass = isVisible
+    ? 'opacity-100 translate-y-0'
+    : 'opacity-0 translate-y-10';
 
   return (
     <div className="relative max-w-7xl mx-auto">
@@ -88,36 +116,36 @@ function TimelineCard({ item, align }: TimelineCardProps) {
         "relative",
         align === 'left'
           ? 'md:w-[calc(50%-3rem)] md:ml-0 md:mr-auto'
-          : 'md:w-[calc(50%-3rem)] md:ml-auto md:mr-0'
+          : 'md:w-[calc(50%-3rem)] md:ml-auto md:mr-0',
       )}>
 
         <article
           ref={ref}
           className={mergeClasses(
-            'glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white transition-all duration-[2000ms] overflow-hidden',
+            'glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white overflow-hidden',
+            'transition-all duration-700 ease-out will-change-transform',
+            visibilityClass,
+            animationClass,
             'backdrop-blur-xl',
             align === 'left'
               ? 'md:pr-16 md:text-right pl-14'
               : 'md:pl-16 pl-14',
-            !isVisible && 'opacity-0 translate-z-[-200px] scale-50',
-            isVisible && 'opacity-100 translate-z-0 scale-100'
           )}
           style={{
-            transform: !isVisible ? 'translateZ(-200px) scale(0.5)' : 'translateZ(0) scale(1)',
-            transition: 'all 2000ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+            animationDelay: isVisible ? `${animationDelay || 0}s` : undefined,
             background: 'linear-gradient(135deg, rgba(139, 117, 66, 1) 0%, rgba(133, 107, 56, 1) 25%, rgba(107, 91, 49, 1) 50%, rgba(89, 79, 45, 1) 75%, rgba(71, 61, 38, 1) 100%)',
             borderColor: 'rgba(218, 182, 98, 1)',
-            boxShadow: '0 0 30px rgba(218, 182, 98, 1), 0 0 50px rgba(189, 158, 88, 1), 0 0 70px rgba(165, 138, 78, 0.8), inset 0 0 40px rgba(71, 61, 38, 0.5), inset 0 2px 0 rgba(218, 182, 98, 1), inset 0 -2px 0 rgba(61, 51, 33, 0.6)'
+            boxShadow: '0 0 30px rgba(218, 182, 98, 1), 0 0 50px rgba(189, 158, 88, 1), 0 0 70px rgba(165, 138, 78, 0.8), inset 0 0 40px rgba(71, 61, 38, 0.5), inset 0 2px 0 rgba(218, 182, 98, 1), inset 0 -2px 0 rgba(61, 51, 33, 0.6)',
           }}
         >
         <div className={mergeClasses(
           "flex flex-col gap-2",
-          align === 'left' ? 'text-left md:text-right' : 'text-left'
+          align === 'left' ? 'text-left md:text-right' : 'text-left',
         )}>
           <div
             className={mergeClasses(
               'flex flex-wrap items-baseline gap-3',
-              align === 'left' ? 'md:justify-end' : 'md:justify-start'
+              align === 'left' ? 'md:justify-end' : 'md:justify-start',
             )}
           >
             <span className="text-2xl md:text-3xl font-bold text-gradient">{item.year}</span>
@@ -145,12 +173,12 @@ function TimelineCard({ item, align }: TimelineCardProps) {
                         'flex flex-wrap items-baseline gap-2 text-lg md:text-xl',
                         isMasterTitle 
                           ? 'bg-yellow-500/20 border-2 border-yellow-500/50 rounded-lg px-3 py-2 text-yellow-100' 
-                          : 'text-white'
+                          : 'text-white',
                       )}
                     >
                       <span className={mergeClasses(
                         'font-semibold',
-                        isMasterTitle ? 'text-yellow-200' : 'text-white'
+                        isMasterTitle ? 'text-yellow-200' : 'text-white',
                       )}>
                         {entry.label}
                       </span>
@@ -181,7 +209,7 @@ export function AchievementTimeline({ items, className = '' }: AchievementTimeli
       className={mergeClasses(
         'relative isolate space-y-12 md:space-y-16',
         'before:absolute before:inset-y-0 before:left-4 before:w-px before:bg-white/15 before:content-[""] md:before:left-1/2',
-        className
+        className,
       )}
     >
       {items.map((item, index) => (
@@ -189,6 +217,8 @@ export function AchievementTimeline({ items, className = '' }: AchievementTimeli
           key={item.year}
           item={item}
           align={index % 2 === 0 ? 'left' : 'right'}
+          animationDelay={index * 0.2}
+          animationIndex={index}
         />
       ))}
     </section>
@@ -928,4 +958,3 @@ export function AchievementTimelineDemo() {
     </div>
   );
 }
-

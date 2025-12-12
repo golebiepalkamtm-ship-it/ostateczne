@@ -166,7 +166,7 @@ class MonitoringService {
             metrics.reduce((sum, m) => sum + m.responseTime, 0) / metrics.length;
           if (avgResponseTime > alert.threshold) {
             this.triggerAlert(
-              `High response time: ${avgResponseTime.toFixed(2)}ms (threshold: ${alert.threshold}ms)`
+              `High response time: ${avgResponseTime.toFixed(2)}ms (threshold: ${alert.threshold}ms)`,
             );
           }
           break;
@@ -176,7 +176,7 @@ class MonitoringService {
           const errorRate = errors / metrics.length;
           if (errorRate > alert.threshold) {
             this.triggerAlert(
-              `High error rate: ${(errorRate * 100).toFixed(2)}% (threshold: ${alert.threshold * 100}%)`
+              `High error rate: ${(errorRate * 100).toFixed(2)}% (threshold: ${alert.threshold * 100}%)`,
             );
           }
           break;
@@ -185,7 +185,7 @@ class MonitoringService {
           const serverErrors = metrics.filter(m => m.statusCode >= alert.threshold).length;
           if (serverErrors > 0) {
             this.triggerAlert(
-              `${serverErrors} server errors (${alert.threshold}+) in last ${alert.window} minutes`
+              `${serverErrors} server errors (${alert.threshold}+) in last ${alert.window} minutes`,
             );
           }
           break;
@@ -281,6 +281,6 @@ export async function healthCheck() {
       },
       metrics: health.metrics,
     },
-    { status }
+    { status },
   );
 }

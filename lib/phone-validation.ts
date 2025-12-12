@@ -20,7 +20,7 @@ export interface PhoneValidationResult {
  */
 export function validatePhoneNumber(
   phoneNumber: string,
-  countryCode: string = 'PL'
+  countryCode: string = 'PL',
 ): PhoneValidationResult {
   if (!phoneNumber || typeof phoneNumber !== 'string') {
     return {
@@ -209,7 +209,7 @@ function isValidPolishNationalNumber(nationalNumber: string): boolean {
  */
 function validateInternationalPhoneNumber(
   phoneNumber: string,
-  countryCode: string
+  countryCode: string,
 ): PhoneValidationResult {
   // Usuń wszystkie znaki niebędące cyframi
   const digits = phoneNumber.replace(/\D/g, '');
@@ -280,7 +280,7 @@ import { useState } from 'react';
 export function usePhoneValidation(initialValue: string = '', countryCode: string = 'PL') {
   const [phoneNumber, setPhoneNumber] = useState(initialValue);
   const [validation, setValidation] = useState<PhoneValidationResult>(() =>
-    validatePhoneNumber(initialValue, countryCode)
+    validatePhoneNumber(initialValue, countryCode),
   );
 
   const updatePhoneNumber = (newValue: string) => {

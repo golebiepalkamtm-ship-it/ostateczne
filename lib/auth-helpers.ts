@@ -12,7 +12,7 @@ interface UserUpdateData {
  */
 export function prepareUserUpdateData(
   validatedData: UserUpdateData,
-  existingUser: Pick<User, 'firstName' | 'lastName' | 'phoneNumber'>
+  existingUser: Pick<User, 'firstName' | 'lastName' | 'phoneNumber'>,
 ) {
   return {
     firstName:
@@ -36,7 +36,7 @@ export function prepareUserUpdateData(
 export async function checkFirebaseUserExists(
   adminAuth: ReturnType<typeof import('@/lib/firebase-admin').getAdminAuth>,
   email?: string,
-  uid?: string
+  uid?: string,
 ): Promise<{ exists: boolean; user: UserRecord | null }> {
   if (!adminAuth) {
     return { exists: false, user: null };

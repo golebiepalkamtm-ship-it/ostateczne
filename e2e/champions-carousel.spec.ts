@@ -159,7 +159,7 @@ test.describe('Karuzela 3D Championów - Testy E2E', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({ champions: [] })
+          body: JSON.stringify({ champions: [] }),
         });
       });
       

@@ -65,7 +65,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
   const uploadFiles = useCallback(async (
     files: File[],
     type: 'background' | 'champion',
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, any>,
   ) => {
     const validationError = validateFiles(files);
     if (validationError) {
@@ -201,7 +201,7 @@ export function useDragAndDropFileUpload(options: UseFileUploadOptions = {}) {
 
   const uploadSelectedFiles = useCallback((
     type: 'background' | 'champion',
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, any>,
   ) => {
     fileUpload.uploadFiles(selectedFiles, type, additionalData);
   }, [selectedFiles, fileUpload]);

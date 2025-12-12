@@ -8,7 +8,7 @@
 export default function requireInTheMiddle(
   _moduleName?: string | string[],
   _options?: unknown,
-  _onrequire?: (exports: unknown, name: string, basedir: string) => unknown
+  _onrequire?: (exports: unknown, name: string, basedir: string) => unknown,
 ) {
   // W development nie robimy nic - zwracamy noop
   return {

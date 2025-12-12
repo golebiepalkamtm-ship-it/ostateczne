@@ -20,8 +20,8 @@ async function listAdmins() {
         id: true,
         firstName: true,
         lastName: true,
-        isActive: true
-      }
+        isActive: true,
+      },
     });
 
     console.log('📋 Lista Administratorów w Bazie Danych:');

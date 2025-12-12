@@ -55,7 +55,7 @@ export async function getAuthUser(request: NextRequest): Promise<AuthUserResult 
   if (!user) {
     return NextResponse.json(
       { error: 'Użytkownik nie został znaleziony w bazie danych' },
-      { status: 404 }
+      { status: 404 },
     );
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+
 import { ArrowRight, Heart, Quote, Target, Users } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
@@ -31,12 +31,7 @@ export function PhilosophySection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Philosophy Text */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true, amount: 0.3 }}
-          >
+          <div className="magictime spaceInLeft">
             <GlowingEdgeCard className="p-8">
               <div className="mb-10">
                 <Quote className="w-12 h-12 text-primary-400 mb-6" />
@@ -64,23 +59,15 @@ export function PhilosophySection() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
             </GlowingEdgeCard>
-          </motion.div>
+          </div>
 
           {/* Right Column - Values */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
+          <div className="space-y-8 magictime spaceInRight">
             {philosophyValues.map((value, index) => (
-              <motion.div
+              <div
                 key={value.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
+                className={`magictime puffIn`}
+                style={{ animationDelay: `${index * 0.2}s` }}
               >
                 <GlowingEdgeCard className="p-6 flex items-start space-x-6">
                   <div className="flex-shrink-0 w-14 h-14 bg-white/10 rounded-lg flex items-center justify-center ring-1 ring-white/20">
@@ -95,9 +82,9 @@ export function PhilosophySection() {
                     </div>
                   </React.Fragment>
                 </GlowingEdgeCard>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

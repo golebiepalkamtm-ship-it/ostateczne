@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           message: getProfileCompletenessMessage(profileCompleteness),
           missingFields: profileCompleteness.missingFields,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!result.success) {
       return NextResponse.json(
         { error: result.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           outbidNotificationsSent: result.outbidNotificationsSent,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error, request, { endpoint: 'auctions/[id]/bids', method: 'POST' });

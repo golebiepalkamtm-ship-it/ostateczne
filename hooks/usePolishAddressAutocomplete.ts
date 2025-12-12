@@ -81,7 +81,7 @@ export function usePolishAddressAutocomplete(): UsePolishAddressAutocompleteRetu
 
       // Usuwamy duplikaty
       const uniqueSuggestions = addressSuggestions.filter(
-        (item, index, self) => index === self.findIndex(t => t.label === item.label)
+        (item, index, self) => index === self.findIndex(t => t.label === item.label),
       );
 
       setSuggestions(uniqueSuggestions.slice(0, 10));

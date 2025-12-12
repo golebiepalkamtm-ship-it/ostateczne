@@ -5,9 +5,9 @@ async function checkData() {
     const auctions = await prisma.auction.findMany({
       include: {
         assets: true,
-        _count: { select: { assets: true } }
+        _count: { select: { assets: true } },
       },
-      take: 5
+      take: 5,
     });
 
     console.log('Auctions with assets:');

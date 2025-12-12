@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!auction) {
       return NextResponse.json(
         { error: 'Aukcja nie została znaleziona' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -60,14 +60,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!isOwner && !isAdmin && !hasEnded) {
       return NextResponse.json(
         { error: 'Brak uprawnień do zakończenia tej aukcji' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     if (auction.status !== 'ACTIVE') {
       return NextResponse.json(
         { error: 'Aukcja nie jest aktywna' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!result.success) {
       return NextResponse.json(
         { error: result.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

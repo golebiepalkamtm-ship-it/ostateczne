@@ -45,8 +45,8 @@ const corsConfig = [
   {
     origin: ['*'],
     method: ['GET'],
-    maxAgeSeconds: 3600
-  }
+    maxAgeSeconds: 3600,
+  },
 ];
 
 async function setCors() {

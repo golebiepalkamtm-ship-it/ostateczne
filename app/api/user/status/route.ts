@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
           error: 'Użytkownik nie jest zalogowany',
           reason: 'Brak ważnego tokena Firebase',
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
           reason: 'Konto Firebase istnieje, ale nie ma odpowiadającego rekordu w Prisma',
           suggestion: 'Spróbuj się wylogować i zalogować ponownie',
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -80,13 +80,13 @@ export async function GET(request: NextRequest) {
 
     if (!user.isPhoneVerified) {
       blockers.push(
-        '❌ Telefon nie jest zweryfikowany - przejdź do panelu użytkownika i zweryfikuj telefon'
+        '❌ Telefon nie jest zweryfikowany - przejdź do panelu użytkownika i zweryfikuj telefon',
       );
     }
 
     if (!user.isProfileVerified) {
       blockers.push(
-        '⚠️ Profil nie jest kompletny - uzupełnij imię, nazwisko, adres w panelu użytkownika'
+        '⚠️ Profil nie jest kompletny - uzupełnij imię, nazwisko, adres w panelu użytkownika',
       );
     }
 

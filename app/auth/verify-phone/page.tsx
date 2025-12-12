@@ -15,7 +15,7 @@ import {
   RecaptchaVerifier, 
   PhoneAuthProvider,
   ConfirmationResult,
-  updateProfile
+  updateProfile,
 } from 'firebase/auth';
 
 function VerifyPhoneContent() {
@@ -63,7 +63,7 @@ function VerifyPhoneContent() {
         },
         'expired-callback': () => {
           setError('reCAPTCHA wygasł. Spróbuj ponownie.');
-        }
+        },
       });
 
       createdVerifierRef.current = verifier;
@@ -158,7 +158,7 @@ function VerifyPhoneContent() {
         },
         body: JSON.stringify({ 
           code: verificationCode,
-          verificationId: confirmationResult.verificationId 
+          verificationId: confirmationResult.verificationId, 
         }),
       });
 

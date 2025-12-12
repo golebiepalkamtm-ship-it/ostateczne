@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (!code || !verificationId) {
       return NextResponse.json(
         { error: 'Brak kodu lub identyfikatora weryfikacji.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     if (!dbUser.phoneNumber) {
       return NextResponse.json(
         { error: 'Brak numeru telefonu w profilu. Najpierw dodaj numer telefonu.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

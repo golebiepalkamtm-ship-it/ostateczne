@@ -15,7 +15,7 @@ const sendMessageSchema = z.object({
 // GET /api/messages/[conversationId] - Pobierz wiadomości z konwersacji
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ conversationId: string }> }
+  { params }: { params: Promise<{ conversationId: string }> },
 ) {
   try {
     const authResult = await getActiveUser(request);
@@ -65,7 +65,7 @@ export async function GET(
     if (!conversation) {
       return NextResponse.json(
         { error: 'Konwersacja nie istnieje lub brak dostępu' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -120,7 +120,7 @@ export async function GET(
         senderImage: msg.sender.image,
         isRead: msg.isRead,
         createdAt: msg.createdAt,
-      })
+      }),
     );
 
     const total = await prisma.userMessage.count({
@@ -161,7 +161,7 @@ export async function GET(
 // POST /api/messages/[conversationId] - Wyślij wiadomość do konwersacji
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ conversationId: string }> }
+  { params }: { params: Promise<{ conversationId: string }> },
 ) {
   try {
     const authResult = await getActiveUser(request);
@@ -189,7 +189,7 @@ export async function POST(
     if (!conversation) {
       return NextResponse.json(
         { error: 'Konwersacja nie istnieje lub brak dostępu' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -231,7 +231,7 @@ export async function POST(
           createdAt: message.createdAt,
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error, request, { endpoint: 'messages/[conversationId]' });

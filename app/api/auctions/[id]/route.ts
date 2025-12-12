@@ -226,7 +226,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 // DELETE /api/auctions/[id] - Usuń aukcję
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Rate limiting
@@ -259,7 +259,7 @@ export async function DELETE(
     if (authResult.userId !== existingAuction.sellerId && authResult.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Brak uprawnień do usunięcia tej aukcji' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -267,7 +267,7 @@ export async function DELETE(
     if (existingAuction.status === 'ACTIVE' && existingAuction.bids.length > 0) {
       return NextResponse.json(
         { error: 'Nie można usunąć aukcji z aktywnymi licytacjami' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

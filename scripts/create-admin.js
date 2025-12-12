@@ -23,7 +23,7 @@
 
       if (!projectId || !clientEmail || !privateKey) {
         throw new Error(
-          'Firebase Admin credentials not configured. Required: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY'
+          'Firebase Admin credentials not configured. Required: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY',
         );
       }
 

@@ -155,12 +155,12 @@ export const useAppStore = create<AppState>()(
           switch (sortBy) {
             case 'newest':
               filtered.sort(
-                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
               );
               break;
             case 'oldest':
               filtered.sort(
-                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
               );
               break;
             case 'price-low':
@@ -171,7 +171,7 @@ export const useAppStore = create<AppState>()(
               break;
             case 'ending-soon':
               filtered.sort(
-                (a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime()
+                (a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime(),
               );
               break;
           }
@@ -186,7 +186,7 @@ export const useAppStore = create<AppState>()(
             champion =>
               champion.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
               champion.ringNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              champion.bloodline.toLowerCase().includes(searchTerm.toLowerCase())
+              champion.bloodline.toLowerCase().includes(searchTerm.toLowerCase()),
           );
         },
       }),
@@ -201,12 +201,12 @@ export const useAppStore = create<AppState>()(
           currency: state.currency,
           ratePLNperEUR: state.ratePLNperEUR,
         }),
-      }
+      },
     ),
     {
       name: 'app-store',
-    }
-  )
+    },
+  ),
 );
 
 // Selectors for better performance

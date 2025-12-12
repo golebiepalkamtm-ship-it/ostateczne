@@ -20,7 +20,7 @@ export async function requireAdminAuth(request: NextRequest) {
     if (!adminAuth) {
       return NextResponse.json(
         { error: 'Serwis tymczasowo niedostępny. Spróbuj ponownie później.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
     const decodedToken = await adminAuth.verifyIdToken(idToken);
@@ -48,7 +48,7 @@ export async function requireAdminAuth(request: NextRequest) {
     console.error('Błąd weryfikacji tokenu Firebase:', error);
     return NextResponse.json(
       { error: 'Nieprawidłowy lub wygasły token autoryzacji' },
-      { status: 401 }
+      { status: 401 },
     );
   }
 }
@@ -72,7 +72,7 @@ export async function requireAdminOrOwnerAuth(request: NextRequest, resourceOwne
     if (!adminAuth) {
       return NextResponse.json(
         { error: 'Serwis tymczasowo niedostępny. Spróbuj ponownie później.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
     const decodedToken = await adminAuth.verifyIdToken(idToken);
@@ -106,7 +106,7 @@ export async function requireAdminOrOwnerAuth(request: NextRequest, resourceOwne
     console.error('Błąd weryfikacji tokenu Firebase:', error);
     return NextResponse.json(
       { error: 'Nieprawidłowy lub wygasły token autoryzacji' },
-      { status: 401 }
+      { status: 401 },
     );
   }
 }

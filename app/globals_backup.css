@@ -1,0 +1,390 @@
+/* UnifiedCard hover highlight effect */
+/* stylelint-disable at-rule-no-unknown */
+
+/* csslint ignore:start */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Basic card styles without holographic effects */
+.card,
+.card-glass,
+.glass-container {
+  border-radius: 1rem;
+  border: 2px solid rgb(255 255 255 / 20%);
+  background: rgb(0 0 0 / 80%);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
+  transition: all 0.3s ease;
+}
+
+.card:hover,
+.card-glass:hover,
+.glass-container:hover {
+  border-color: rgb(255 255 255 / 50%);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 40%);
+}
+
+/* ========================================
+   3D EMBOSSED/RAISED CARDS - WYPUKŁE KARTY
+   ======================================== */
+
+/* Base 3D embossed card style */
+.card-3d-raised {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: all 0.3s ease;
+  
+  /* Wypukły efekt - cienie tworzące wrażenie wypukłości */
+  box-shadow: 
+    /* Zewnętrzne cienie - głębia */
+    0 1px 1px rgb(0 0 0 / 5%),
+    0 2px 4px rgb(0 0 0 / 5%),
+    0 4px 8px rgb(0 0 0 / 5%),
+    0 8px 16px rgb(0 0 0 / 5%),
+    /* Wewnętrzny highlight - "wypukłość" */
+    inset 0 -1px 2px rgb(255 255 255 / 10%),
+    inset 0 1px 1px rgb(255 255 255 / 20%);
+  
+  /* Gradient dla efektu 3D */
+  background: linear-gradient(
+    145deg,
+    rgb(255 255 255 / 15%) 0%,
+    rgb(255 255 255 / 5%) 50%,
+    rgb(0 0 0 / 5%) 100%
+  );
+}
+
+.card-3d-raised:hover {
+  transform: translateY(-4px) translateZ(20px);
+  
+  /* Intensywniejsze cienie przy hover */
+  box-shadow: 
+    0 2px 2px rgb(0 0 0 / 6%),
+    0 4px 8px rgb(0 0 0 / 6%),
+    0 8px 16px rgb(0 0 0 / 6%),
+    0 16px 32px rgb(0 0 0 / 8%),
+    0 32px 64px rgb(0 0 0 / 10%),
+    inset 0 -2px 4px rgb(255 255 255 / 15%),
+    inset 0 2px 2px rgb(255 255 255 / 25%);
+}
+
+/* Wariant: Bardzo wypukły (strong emboss) */
+.card-3d-raised-strong {
+  box-shadow: 
+    /* Mocniejsze zewnętrzne cienie */
+    0 2px 4px rgb(0 0 0 / 8%),
+    0 4px 8px rgb(0 0 0 / 8%),
+    0 8px 16px rgb(0 0 0 / 8%),
+    0 16px 32px rgb(0 0 0 / 10%),
+    /* Mocniejszy wewnętrzny highlight */
+    inset 0 -2px 4px rgb(255 255 255 / 20%),
+    inset 0 2px 3px rgb(255 255 255 / 30%),
+    /* Dodatkowy efekt "krawędzi" */
+    inset -1px 0 1px rgb(255 255 255 / 15%),
+    inset 1px 0 1px rgb(0 0 0 / 10%);
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 20%) 0%,
+    rgb(255 255 255 / 8%) 40%,
+    rgb(0 0 0 / 5%) 60%,
+    rgb(0 0 0 / 10%) 100%
+  );
+}
+
+.card-3d-raised-strong:hover {
+  transform: translateY(-6px) translateZ(30px);
+  box-shadow:
+    0 4px 8px rgb(0 0 0 / 10%),
+    0 8px 16px rgb(0 0 0 / 10%),
+    0 16px 32px rgb(0 0 0 / 12%),
+    0 32px 64px rgb(0 0 0 / 15%);
+}
+
+/* Essential glass navigation button */
+.glass-nav-button {
+  --size: 8.5rem;
+  --transition-duration: 380ms;
+  --transition-easing: cubic-bezier(.2,.9,.28,1);
+
+  width: var(--size);
+  height: var(--size);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #fef3c7;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-shadow: 0 2px 6px rgb(0 0 0 / 60%);
+  background: linear-gradient(to bottom,
+    rgb(210 185 125 / 95%) 0%,
+    rgb(190 160 95 / 85%) 30%,
+    rgb(160 135 75 / 75%) 60%,
+    rgb(90 70 40 / 60%) 100%);
+  border: 3px solid rgb(218 182 98 / 100%);
+  border-radius: 1.6rem;
+  box-shadow:
+    0 18px 40px rgb(0 0 0 / 45%),
+    0 8px 20px rgb(0 0 0 / 35%),
+    0 0 24px rgb(218 182 98 / 12%),
+    6px 6px 0 rgb(0 0 0 / 25%),
+    10px 10px 6px rgb(0 0 0 / 18%),
+    inset 0 10px 20px rgb(255 255 255 / 8%),
+    inset 0 -8px 12px rgb(0 0 0 / 50%);
+  transition:
+    transform var(--transition-duration) var(--transition-easing),
+    box-shadow var(--transition-duration) var(--transition-easing),
+    border-color var(--transition-duration) var(--transition-easing),
+    background var(--transition-duration) var(--transition-easing);
+  overflow: hidden;
+  position: relative;
+  backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  margin: 0;
+}
+
+.glass-nav-button:hover {
+  transform: scale(1.03);
+  box-shadow:
+    0 34px 64px rgb(0 0 0 / 55%),
+    0 16px 36px rgb(0 0 0 / 42%),
+    0 0 36px rgb(218 182 98 / 18%),
+    inset 0 14px 28px rgb(255 255 255 / 12%),
+    inset 0 -12px 18px rgb(0 0 0 / 60%);
+}
+
+.glass-nav-button.no-glow:hover {
+  transform: scale(1.02) !important;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 30%),
+    0 2px 4px rgb(0 0 0 / 25%),
+    0 4px 8px rgb(0 0 0 / 20%),
+    0 8px 16px rgb(0 0 0 / 15%),
+    0 16px 32px rgb(0 0 0 / 10%),
+    inset 0 1px 0 rgb(255 248 220 / 15%),
+    inset 0 -1px 0 rgb(0 0 0 / 20%) !important;
+  border-color: rgb(255 191 0 / 50%) !important;
+}
+
+.glass-nav-button.no-glow:hover::before {
+  left: 150% !important;
+}
+
+/* Disable hover/float/scale transforms globally for glass-nav-button
+   Required: no floating/hover transform anywhere in the app */
+.glass-nav-button,
+.glass-nav-button:hover,
+.glass-nav-button:focus,
+.glass-nav-button:active {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Hero title styling like navigation tiles */
+.hero-title-nav-style {
+  font-weight: 800;
+  background: linear-gradient(to bottom,
+    rgb(255 250 210 / 100%) 0%,
+    rgb(255 245 200 / 95%) 25%,
+    rgb(218 182 98 / 90%) 50%,
+    rgb(160 135 75 / 80%) 75%,
+    rgb(120 100 55 / 70%) 100%);
+  background-clip: text;
+
+/* GLOBAL OVERRIDE: Disable all transform/hover effects across the entire site
+   User requested removal of floating/hover effects for containers on the page.
+   This will neutralize CSS transforms and transition animations on hover/focus/active.
+   NOTE: This is an aggressive global override — it intentionally uses !important.
+*/
+body *:hover,
+body *:focus,
+body *:active {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* More aggressive neutralization to stop framer-motion and any inline transforms/animations */
+body * {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  will-change: auto !important;
+}
+
+/* Scoped: more targeted disable for admin panel to override Tailwind hover utilities and shadows */
+.no-hover *:hover,
+.no-hover *:focus,
+.no-hover *:active {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    1px 1px 0 rgb(120 100 60 / 90%),
+    2px 2px 2px rgb(100 80 50 / 80%),
+    3px 3px 4px rgb(80 65 40 / 70%),
+    4px 4px 6px rgb(60 50 30 / 60%);
+  filter: drop-shadow(0 4px 8px rgb(80 65 35 / 50%));
+  position: relative;
+  z-index: 1000;
+
+.hero-title-nav-style::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgb(255 235 180 / 10%) 0%, transparent 70%);
+  z-index: 900;
+  pointer-events: none;
+}
+
+/* Extra enforced overrides specifically for admin panel to stop ALL floating effects */
+.no-hover .card-3d-raised,
+.no-hover .card-3d-raised-strong,
+.no-hover .card,
+.no-hover .card-glass,
+.no-hover .card-glow-edge,
+.no-hover .glass-container,
+.no-hover .glass-nav-button,
+.no-hover .btn-primary,
+.no-hover .btn-secondary,
+.no-hover [class*="rounded-"],
+.no-hover [class*="rounded-"]::before,
+.no-hover [class*="rounded-"]::after {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* Neutralize group-hover effects that may target children */
+.no-hover .group:hover,
+.no-hover .group:hover * {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* Extra specificity for Tailwind utilities (hover:scale-*) applied via class names */
+.no-hover [class*="hover:scale"],
+.no-hover [class*="hover:shadow"],
+.no-hover [class*="hover:from"],
+.no-hover [class*="hover:to"],
+.no-hover [class*="hover:bg"],
+.no-hover [class*="hover:border"] {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure pseudo elements are also neutralized */
+.no-hover *::before,
+.no-hover *::after {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* In case framer-motion applies inline styles, this attempts to override transform/translate inline values */
+.no-hover [style] {
+  /* leaving this mainly to override transforms with !important in rules above */
+}
+
+/* Super-enforced rule: disable all hover/transform/animation/shadow inside admin root */
+.no-hover,
+.no-hover * {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+  will-change: auto !important;
+}
+
+.hero-title-nav-style::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  background: linear-gradient(45deg, rgb(255 245 200 / 5%) 0%, rgb(255 235 180 / 8%) 50%, rgb(255 245 200 / 5%) 100%);
+  z-index: 900;
+  pointer-events: none;
+  border-radius: 8px;
+}
+
+.hero-title-nav-style span::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  background: radial-gradient(circle at 30% 30%, rgb(255 255 220 / 15%) 0%, transparent 50%);
+  z-index: 900;
+  pointer-events: none;
+  border-radius: 50%;
+}
+}
+
+/* === Site base improvements - added for cleaner default look === */
+html, body {
+  height: 100%;
+  background: linear-gradient(180deg, #0f1724 0%, #071023 60%);
+  color: #e6eef8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Container helper */
+.site-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Links and accessible focus */
+a {
+  color: #a5f3fc;
+  text-decoration: none;
+}
+
+a:focus,
+a:focus-visible,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 3px solid rgb(165 243 252 / 15%);
+  outline-offset: 2px;
+}
+
+/* Improve headings contrast and spacing */
+h1, h2, h3, h4 {
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+/* Make primary buttons more visible by default */
+.btn-primary {
+  background: linear-gradient(180deg, #6ee7b7 0%, #34d399 100%);
+  color: #04202a;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 0.6rem;
+  box-shadow: 0 8px 24px rgb(16 185 129 / 12%);
+}
+
+/* Small utility to center content vertically */
+.center-vertical {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* End of site base improvements */

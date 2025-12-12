@@ -60,7 +60,7 @@ export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
           ? sanitizeText(item)
           : typeof item === 'object'
             ? sanitizeObject(item)
-            : item
+            : item,
       ) as T[keyof T];
     } else if (typeof value === 'object' && value !== null) {
       sanitized[key as keyof T] = sanitizeObject(value) as T[keyof T];

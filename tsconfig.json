@@ -18,7 +18,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": false,
     "plugins": [
       {
@@ -56,14 +56,14 @@
     "**/*.tsx",
     "types/**/*.d.ts",
     ".next/types/**/*.ts",
-    "./.next/types/**/*.ts"
+    "./.next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "aucion",
     "pigeon",
     "functions",
-    "scripts",
     "__tests__",
     ".next",
     ".next-temp"

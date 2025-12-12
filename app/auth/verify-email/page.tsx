@@ -107,7 +107,7 @@ function VerifyEmailContent() {
             borderColor: `rgba(0, 0, 0, ${opacity})`,
             backgroundColor: `rgba(0, 0, 0, ${opacity * 0.8})`,
             transform: `translateX(${offset}px) translateY(${offset / 2}px) translateZ(-${offset}px)`,
-            zIndex: i + 1
+            zIndex: i + 1,
           }}
           aria-hidden="true"
         />

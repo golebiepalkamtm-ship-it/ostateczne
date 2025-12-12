@@ -162,7 +162,7 @@ export function trackHttpRequest(
   method: string,
   route: string,
   statusCode: number,
-  duration: number
+  duration: number,
 ) {
   const labels = { method, route, status_code: statusCode.toString() };
 

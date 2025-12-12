@@ -86,25 +86,25 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const uniqueBidders = biddersWithStats.reduce(
       (acc: typeof biddersWithStats, current: (typeof biddersWithStats)[0]) => {
         const existing = acc.find(
-          (bidder: (typeof biddersWithStats)[0]) => bidder.id === current.id
+          (bidder: (typeof biddersWithStats)[0]) => bidder.id === current.id,
         );
         if (!existing) {
           acc.push(current);
         } else if (current.amount > existing.amount) {
           // Zachowaj najwyższą ofertę tego użytkownika
           const index = acc.findIndex(
-            (bidder: (typeof biddersWithStats)[0]) => bidder.id === current.id
+            (bidder: (typeof biddersWithStats)[0]) => bidder.id === current.id,
           );
           acc[index] = current;
         }
         return acc;
       },
-      [] as typeof biddersWithStats
+      [] as typeof biddersWithStats,
     );
 
     // Posortuj według wysokości oferty
     uniqueBidders.sort(
-      (a: (typeof biddersWithStats)[0], b: (typeof biddersWithStats)[0]) => b.amount - a.amount
+      (a: (typeof biddersWithStats)[0], b: (typeof biddersWithStats)[0]) => b.amount - a.amount,
     );
 
     return NextResponse.json({

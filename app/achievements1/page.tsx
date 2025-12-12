@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { achievementsData } from '@/lib/achievements/data';
 import AchievementDetailsPanel from '@/components/achievements/AchievementDetailsPanel';
-import type { YearAchievements } from '@/lib/achievements-parser';
 
 // Dynamiczny import nowej mapy
 const NewJourneyMap = dynamic(() => import('@/components/achievements/NewJourneyMap'), {
@@ -21,33 +20,18 @@ const NewJourneyMap = dynamic(() => import('@/components/achievements/NewJourney
 export default function AchievementsStageOnePage() {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
-  const timelineData: YearAchievements[] = useMemo(() => {
-    return achievementsData.map(yearData => ({
-      year: yearData.year,
-      achievements: yearData.divisions.flatMap(div =>
-        div.results.map(result => ({
-          category: result.category || div.level,
-          title: result.title || `${div.level} - ${result.category || ''}`,
-          place: result.title || '',
-          coeff: result.coefficient?.toString() || '-',
-          kon: result.concourses?.toString() || '-',
-        }))
-      ),
-    }));
-  }, []);
-
   const selectedYearData = selectedYear
     ? achievementsData.find(d => d.year === selectedYear) ?? null
     : null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 w-screen h-screen bg-black overflow-hidden z-[9999]"
       style={{ zoom: 1 / 0.7 }}
     >
       {/* Nowa Mapa 3D */}
       <div className="absolute inset-0 w-full h-full z-10">
-        <NewJourneyMap data={timelineData} onYearSelect={setSelectedYear} />
+        <NewJourneyMap onYearSelect={setSelectedYear} />
       </div>
 
       {/* Panel Szczegółów - Używamy tego samego bo jest dobry, ale podpinamy pod nową logikę */}

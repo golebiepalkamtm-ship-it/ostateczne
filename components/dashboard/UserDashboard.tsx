@@ -137,7 +137,7 @@ export function UserDashboard() {
       { id: 'security', label: 'Bezpieczeństwo', icon: Shield, requiresVerification: false },
       { id: 'notifications', label: 'Powiadomienia', icon: Bell, requiresVerification: false },
     ],
-    []
+    [],
   );
 
   // Używamy ref do śledzenia czy już pobraliśmy profil (zapisujemy UID użytkownika)
@@ -330,7 +330,7 @@ export function UserDashboard() {
             style={{
               background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.9) 0%, rgba(133, 107, 56, 0.85) 25%, rgba(107, 91, 49, 0.8) 50%, rgba(89, 79, 45, 0.75) 75%, rgba(71, 61, 38, 0.7) 100%)',
               borderColor: 'rgba(218, 182, 98, 1)',
-              boxShadow: '0 0 20px rgba(218, 182, 98, 1), 0 0 35px rgba(189, 158, 88, 0.8), 0 0 50px rgba(165, 138, 78, 0.5), inset 0 0 40px rgba(71, 61, 38, 0.3), inset 0 2px 0 rgba(218, 182, 98, 0.6), inset 0 -2px 0 rgba(61, 51, 33, 0.4)'
+              boxShadow: '0 0 20px rgba(218, 182, 98, 1), 0 0 35px rgba(189, 158, 88, 0.8), 0 0 50px rgba(165, 138, 78, 0.5), inset 0 0 40px rgba(71, 61, 38, 0.3), inset 0 2px 0 rgba(218, 182, 98, 0.6), inset 0 -2px 0 rgba(61, 51, 33, 0.4)',
             }}
           >
             {/* Radial gradient overlay jak w AchievementTimeline */}
@@ -344,7 +344,7 @@ export function UserDashboard() {
                 `,
                 backdropFilter: 'blur(80px)',
                 mixBlendMode: 'soft-light',
-                zIndex: 1
+                zIndex: 1,
               }}
             />
             <div className="relative z-10">
@@ -443,7 +443,7 @@ export function UserDashboard() {
             style={{
               background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.9) 0%, rgba(133, 107, 56, 0.85) 25%, rgba(107, 91, 49, 0.8) 50%, rgba(89, 79, 45, 0.75) 75%, rgba(71, 61, 38, 0.7) 100%)',
               borderColor: 'rgba(218, 182, 98, 1)',
-              boxShadow: '0 0 20px rgba(218, 182, 98, 1), 0 0 35px rgba(189, 158, 88, 0.8), 0 0 50px rgba(165, 138, 78, 0.5), inset 0 0 40px rgba(71, 61, 38, 0.3), inset 0 2px 0 rgba(218, 182, 98, 0.6), inset 0 -2px 0 rgba(61, 51, 33, 0.4)'
+              boxShadow: '0 0 20px rgba(218, 182, 98, 1), 0 0 35px rgba(189, 158, 88, 0.8), 0 0 50px rgba(165, 138, 78, 0.5), inset 0 0 40px rgba(71, 61, 38, 0.3), inset 0 2px 0 rgba(218, 182, 98, 0.6), inset 0 -2px 0 rgba(61, 51, 33, 0.4)',
             }}
           >
             {/* Radial gradient overlay jak w AchievementTimeline */}
@@ -457,7 +457,7 @@ export function UserDashboard() {
                 `,
                 backdropFilter: 'blur(80px)',
                 mixBlendMode: 'soft-light',
-                zIndex: 1
+                zIndex: 1,
               }}
             />
             <div className="relative z-10">
@@ -600,7 +600,7 @@ export function UserDashboard() {
                               if (isDev)
                                 debug(
                                   'Rozpocznij weryfikację SMS dla numeru:',
-                                  profileData.phoneNumber
+                                  profileData.phoneNumber,
                                 );
 
                               // Wyślij kod weryfikacyjny SMS
@@ -636,7 +636,7 @@ export function UserDashboard() {
                                       fontWeight: 'bold',
                                       padding: '20px',
                                     },
-                                  }
+                                  },
                                 );
                                 info(`🔑 DEV MODE - Kod SMS: ${data.code}`);
                               } else {
@@ -647,7 +647,7 @@ export function UserDashboard() {
                                     duration: 6000,
                                     position: 'top-center',
                                     icon: '✉️',
-                                  }
+                                  },
                                 );
                               }
 
@@ -657,14 +657,14 @@ export function UserDashboard() {
                             } catch (err) {
                               error(
                                 'Błąd weryfikacji telefonu:',
-                                err instanceof Error ? err.message : err
+                                err instanceof Error ? err.message : err,
                               );
                               toast.error(
                                 `❌ ${err instanceof Error ? err.message : 'Nie udało się wysłać kodu SMS'}`,
                                 {
                                   duration: 5000,
                                   position: 'top-center',
-                                }
+                                },
                               );
                             }
                           }}
@@ -903,14 +903,14 @@ export function UserDashboard() {
                         } catch (err) {
                           error(
                             'Błąd zapisywania profilu:',
-                            err instanceof Error ? err.message : err
+                            err instanceof Error ? err.message : err,
                           );
                           toast.error(
                             `❌ Błąd: ${err instanceof Error ? err.message : 'Nie udało się zapisać profilu'}`,
                             {
                               duration: 5000,
                               position: 'top-center',
-                            }
+                            },
                           );
                         }
                       }}
@@ -973,7 +973,7 @@ export function UserDashboard() {
                         style={{
                           background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.9) 0%, rgba(133, 107, 56, 0.85) 25%, rgba(107, 91, 49, 0.8) 50%, rgba(89, 79, 45, 0.75) 75%, rgba(71, 61, 38, 0.7) 100%)',
                           border: '1px solid rgba(218, 182, 98, 1)',
-                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)'
+                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)',
                         }}
                       >
                         <div className="flex items-center gap-3">
@@ -991,7 +991,7 @@ export function UserDashboard() {
                         style={{
                           background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.9) 0%, rgba(133, 107, 56, 0.85) 25%, rgba(107, 91, 49, 0.8) 50%, rgba(89, 79, 45, 0.75) 75%, rgba(71, 61, 38, 0.7) 100%)',
                           border: '1px solid rgba(218, 182, 98, 1)',
-                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)'
+                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)',
                         }}
                       >
                         <div className="flex items-center gap-3">
@@ -1009,7 +1009,7 @@ export function UserDashboard() {
                         style={{
                           background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.9) 0%, rgba(133, 107, 56, 0.85) 25%, rgba(107, 91, 49, 0.8) 50%, rgba(89, 79, 45, 0.75) 75%, rgba(71, 61, 38, 0.7) 100%)',
                           border: '1px solid rgba(218, 182, 98, 1)',
-                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)'
+                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)',
                         }}
                       >
                         <div className="flex items-center gap-3">
@@ -1025,7 +1025,7 @@ export function UserDashboard() {
                         style={{
                           background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.9) 0%, rgba(133, 107, 56, 0.85) 25%, rgba(107, 91, 49, 0.8) 50%, rgba(89, 79, 45, 0.75) 75%, rgba(71, 61, 38, 0.7) 100%)',
                           border: '1px solid rgba(218, 182, 98, 1)',
-                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)'
+                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)',
                         }}
                       >
                         <div className="flex items-center gap-3">
@@ -1083,7 +1083,7 @@ export function UserDashboard() {
                                   style={{
                                     background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.85) 0%, rgba(107, 91, 49, 0.8) 50%, rgba(71, 61, 38, 0.75) 100%)',
                                     border: '1px solid rgba(218, 182, 98, 1)',
-                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)'
+                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)',
                                   }}
                                 >
                                   <div className="flex items-center justify-between">
@@ -1135,7 +1135,7 @@ export function UserDashboard() {
                                   style={{
                                     background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.85) 0%, rgba(107, 91, 49, 0.8) 50%, rgba(71, 61, 38, 0.75) 100%)',
                                     border: '1px solid rgba(218, 182, 98, 1)',
-                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)'
+                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)',
                                   }}
                                 >
                                   <div className="flex items-center justify-between">
@@ -1180,7 +1180,7 @@ export function UserDashboard() {
                                   style={{
                                     background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.85) 0%, rgba(107, 91, 49, 0.8) 50%, rgba(71, 61, 38, 0.75) 100%)',
                                     border: '1px solid rgba(218, 182, 98, 1)',
-                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)'
+                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)',
                                   }}
                                 >
                                   <div className="flex items-center justify-between">
@@ -1230,7 +1230,7 @@ export function UserDashboard() {
                                   style={{
                                     background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.85) 0%, rgba(107, 91, 49, 0.8) 50%, rgba(71, 61, 38, 0.75) 100%)',
                                     border: '1px solid rgba(218, 182, 98, 1)',
-                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)'
+                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)',
                                   }}
                                 >
                                   <div className="flex items-center justify-between">
@@ -1274,7 +1274,7 @@ export function UserDashboard() {
                                   style={{
                                     background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.85) 0%, rgba(107, 91, 49, 0.8) 50%, rgba(71, 61, 38, 0.75) 100%)',
                                     border: '1px solid rgba(218, 182, 98, 1)',
-                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)'
+                                    boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)',
                                   }}
                                 >
                                   <div className="flex items-center justify-between">
@@ -1344,7 +1344,7 @@ export function UserDashboard() {
                     style={{
                       background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.4) 0%, rgba(133, 107, 56, 0.35) 25%, rgba(107, 91, 49, 0.32) 50%, rgba(89, 79, 45, 0.3) 75%, rgba(71, 61, 38, 0.28) 100%)',
                       border: '1px solid rgba(218, 182, 98, 0.6)',
-                      boxShadow: '0 0 15px rgba(218, 182, 98, 0.3), inset 0 1px 0 rgba(218, 182, 98, 0.4)'
+                      boxShadow: '0 0 15px rgba(218, 182, 98, 0.3), inset 0 1px 0 rgba(218, 182, 98, 0.4)',
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1362,7 +1362,7 @@ export function UserDashboard() {
                       style={{
                         background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.35) 0%, rgba(107, 91, 49, 0.3) 50%, rgba(71, 61, 38, 0.25) 100%)',
                         border: '1px solid rgba(218, 182, 98, 0.5)',
-                        boxShadow: '0 0 10px rgba(218, 182, 98, 0.2)'
+                        boxShadow: '0 0 10px rgba(218, 182, 98, 0.2)',
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -1412,7 +1412,7 @@ export function UserDashboard() {
                         style={{
                           background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.85) 0%, rgba(107, 91, 49, 0.8) 50%, rgba(71, 61, 38, 0.75) 100%)',
                           border: '1px solid rgba(218, 182, 98, 1)',
-                          boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)'
+                          boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)',
                         }}
                       >
                         <div className="flex items-center gap-3">
@@ -1446,7 +1446,7 @@ export function UserDashboard() {
                           style={{
                             background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.35) 0%, rgba(107, 91, 49, 0.3) 50%, rgba(71, 61, 38, 0.25) 100%)',
                             border: '1px solid rgba(218, 182, 98, 0.5)',
-                            boxShadow: '0 0 10px rgba(218, 182, 98, 0.2)'
+                            boxShadow: '0 0 10px rgba(218, 182, 98, 0.2)',
                           }}
                         >
                           <div className="flex items-center gap-3">
@@ -1470,14 +1470,14 @@ export function UserDashboard() {
                               } catch (err) {
                                 error(
                                   'Błąd wysyłania email:',
-                                  err instanceof Error ? err.message : err
+                                  err instanceof Error ? err.message : err,
                                 );
                                 toast.error(
                                   'Wystąpił błąd podczas wysyłania email. Spróbuj ponownie.',
                                   {
                                     duration: 4000,
                                     position: 'bottom-right',
-                                  }
+                                  },
                                 );
                               }
                             }}
@@ -1493,7 +1493,7 @@ export function UserDashboard() {
                         style={{
                           background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.9) 0%, rgba(133, 107, 56, 0.85) 25%, rgba(107, 91, 49, 0.8) 50%, rgba(89, 79, 45, 0.75) 75%, rgba(71, 61, 38, 0.7) 100%)',
                           border: '1px solid rgba(218, 182, 98, 1)',
-                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)'
+                          boxShadow: '0 0 20px rgba(218, 182, 98, 0.6), inset 0 1px 0 rgba(218, 182, 98, 0.8)',
                         }}
                       >
                         <div className="flex items-center gap-3">
@@ -1512,7 +1512,7 @@ export function UserDashboard() {
                         style={{
                           background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.85) 0%, rgba(107, 91, 49, 0.8) 50%, rgba(71, 61, 38, 0.75) 100%)',
                           border: '1px solid rgba(218, 182, 98, 1)',
-                          boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)'
+                          boxShadow: '0 0 15px rgba(218, 182, 98, 0.5)',
                         }}
                       >
                         <div className="flex items-center gap-3">
@@ -1558,7 +1558,7 @@ export function UserDashboard() {
                     style={{
                       background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.4) 0%, rgba(133, 107, 56, 0.35) 25%, rgba(107, 91, 49, 0.32) 50%, rgba(89, 79, 45, 0.3) 75%, rgba(71, 61, 38, 0.28) 100%)',
                       border: '1px solid rgba(218, 182, 98, 0.6)',
-                      boxShadow: '0 0 15px rgba(218, 182, 98, 0.3), inset 0 1px 0 rgba(218, 182, 98, 0.4)'
+                      boxShadow: '0 0 15px rgba(218, 182, 98, 0.3), inset 0 1px 0 rgba(218, 182, 98, 0.4)',
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1685,7 +1685,7 @@ export function UserDashboard() {
                           duration: 8000,
                           position: 'top-center',
                           icon: '🚀',
-                        }
+                        },
                       );
 
                       setShowSmsVerification(false);
@@ -1704,7 +1704,7 @@ export function UserDashboard() {
                         `❌ ${err instanceof Error ? err.message : 'Nieprawidłowy kod'}`,
                         {
                           duration: 5000,
-                        }
+                        },
                       );
                     } finally {
                       setIsVerifyingSms(false);

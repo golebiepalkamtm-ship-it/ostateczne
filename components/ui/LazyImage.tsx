@@ -56,7 +56,7 @@ export default function LazyImage({
       {
         rootMargin: '50px', // Start loading 50px before the image comes into view
         threshold: 0.1,
-      }
+      },
     );
 
     if (imgRef.current) {
@@ -88,7 +88,7 @@ export default function LazyImage({
       className={cn(
         'relative overflow-hidden transition-opacity duration-300',
         isLoaded ? 'opacity-100' : 'opacity-0',
-        className
+        className,
       )}
       style={width && height ? { width: `${width}px`, height: `${height}px` } : undefined}
     >

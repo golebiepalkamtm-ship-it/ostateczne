@@ -156,7 +156,7 @@ export const ToastContainer: FC = () => {
         <div
           key={toast.id}
           className={`p-4 rounded-lg border ${getColor(
-            toast.type
+            toast.type,
           )} shadow-md animate-in fade-in slide-in-from-top-2`}
         >
           <div className="flex items-start">

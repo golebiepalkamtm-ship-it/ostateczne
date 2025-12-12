@@ -22,8 +22,8 @@ async function showAllUsers() {
         email: true,
         role: true,
         isActive: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     users.forEach((user, index) => {

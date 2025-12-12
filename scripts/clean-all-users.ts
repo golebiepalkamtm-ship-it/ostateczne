@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 // Ładuj zmienne środowiskowe z .env.local (jeśli istnieje)
 try {
   require('dotenv').config({ path: '.env.local' });
-} catch (e) {
+} catch (_) {
   // .env.local może nie istnieć, to OK
 }
 

@@ -1,0 +1,36 @@
+.perspectiveUp {
+  animation-name: perspectiveUp;
+  animation-name: perspectiveUp;
+}
+
+@keyframes perspectiveUp {
+  0% {
+    transform-origin: 0 0;
+    transform-origin: 0 0;
+    transform: perspective(800px) rotateX(0deg);
+    transform: perspective(800px) rotateX(0deg);
+  }
+
+  100% {
+    transform-origin: 0 0;
+    transform-origin: 0 0;
+    transform: perspective(800px) rotateX(180deg);
+    transform: perspective(800px) rotateX(180deg);
+  }
+}
+
+@keyframes perspectiveUp {
+  0% {
+    transform-origin: 0 0;
+    transform-origin: 0 0;
+    transform: perspective(800px) rotateX(0deg);
+    transform: perspective(800px) rotateX(0deg);
+  }
+
+  100% {
+    transform-origin: 0 0;
+    transform-origin: 0 0;
+    transform: perspective(800px) rotateX(180deg);
+    transform: perspective(800px) rotateX(180deg);
+  }
+}

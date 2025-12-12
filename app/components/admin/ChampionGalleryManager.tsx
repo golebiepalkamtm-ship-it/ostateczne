@@ -6,7 +6,7 @@ import {
   updateChampionGalleryItem,
   deleteChampionGalleryItem,
   reorderChampionGalleryItems,
-  type FileUploadResult
+  type FileUploadResult,
 } from '@/app/actions/admin-storage';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
@@ -35,7 +35,7 @@ interface NewItemData {
 
 export default function ChampionGalleryManager({
   items,
-  onItemsChange
+  onItemsChange,
 }: ChampionGalleryManagerProps) {
   const [galleryItems, setGalleryItems] = useState<ChampionGalleryItem[]>(items);
   const [isLoading, setIsLoading] = useState(false);
@@ -130,7 +130,7 @@ export default function ChampionGalleryManager({
         setGalleryItems(prev => prev.map(item => 
           item.id === id 
             ? { ...item, title, description, isActive }
-            : item
+            : item,
         ));
         
         if (onItemsChange) {
@@ -198,7 +198,7 @@ export default function ChampionGalleryManager({
     // Update orders
     const reorderedItems = newItems.map((item, index) => ({
       ...item,
-      order: index + 1
+      order: index + 1,
     }));
 
     setGalleryItems(reorderedItems);
@@ -233,7 +233,7 @@ export default function ChampionGalleryManager({
 
   const updateNewItem = (index: number, field: keyof NewItemData, value: string | File) => {
     setNewItems(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
+      i === index ? { ...item, [field]: value } : item,
     ));
   };
 
@@ -256,7 +256,7 @@ export default function ChampionGalleryManager({
 
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
-        body: createFormData(files, 'champion', { titles, descriptions })
+        body: createFormData(files, 'champion', { titles, descriptions }),
       });
 
       if (response.ok) {
@@ -503,7 +503,7 @@ export default function ChampionGalleryManager({
 function EditForm({
   item,
   onSave,
-  onCancel
+  onCancel,
 }: {
   item: ChampionGalleryItem;
   onSave: (title: string, description: string, isActive: boolean) => void;

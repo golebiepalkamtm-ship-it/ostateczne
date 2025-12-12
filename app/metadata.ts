@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`
+    process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`,
   ),
   title: 'Palka Auctions: Mistrzowie Sprintu Gołębie Pocztowe…',
   description: 'Ekskluzywna platforma aukcyjna dla hodowcow golebi pocztowych',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     locale: 'pl_PL',
     images: [
       {
-        url: new URL('/logo.png', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').toString(),
+        url: '/logo.png',
         width: 1200,
         height: 630,
         alt: 'Palka MTM - Mistrzowie Sprintu',
@@ -41,6 +41,6 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Palka MTM - Mistrzowie Sprintu',
     description: 'Ekskluzywna platforma aukcyjna dla hodowcow golebi pocztowych',
-    images: [new URL('/logo.png', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').toString()],
+    images: ['/logo.png'],
   },
 };

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
           error: 'Nieprawidłowe dane wejściowe.',
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       captureMessage('CRITICAL: Firebase Admin Auth not initialized during registration.', 'fatal')
       return NextResponse.json(
         { error: 'Serwis jest tymczasowo niedostępny.' },
-        { status: 503 }
+        { status: 503 },
       )
     }
 
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     if (existingDbUser) {
       return NextResponse.json(
         { error: 'Użytkownik o tym adresie e-mail już istnieje. Proszę się zalogować.' },
-        { status: 409 } // 409 Conflict
+        { status: 409 }, // 409 Conflict
       )
     }
 
@@ -75,13 +75,13 @@ export async function POST(request: NextRequest) {
       if (error.code === 'auth/email-already-exists') {
         return NextResponse.json(
           { error: 'Użytkownik o tym adresie e-mail już istnieje w systemie uwierzytelniania. Proszę się zalogować.' },
-          { status: 409 }
+          { status: 409 },
         )
       }
       if (error.code === 'auth/weak-password') {
         return NextResponse.json(
           { error: 'Podane hasło jest za słabe. Musi mieć co najmniej 8 znaków.' },
-          { status: 400 }
+          { status: 400 },
         )
       }
       // Przekaż inne błędy Firebase do ogólnej obsługi
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
           userId: newUser.id,
           firebaseUid: firebaseUser.uid,
         },
-        { status: 201 }
+        { status: 201 },
       )
     } catch (dbError) {
       // Jeśli zapis do bazy danych się nie powiedzie, cofnij utworzenie użytkownika w Firebase
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       // Zwróć generyczny błąd serwera
       return NextResponse.json(
         { error: 'Wystąpił błąd podczas tworzenia konta. Spróbuj ponownie.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 

@@ -60,7 +60,7 @@ async function requireRole(request: NextRequest, requiredRole: Role): Promise<Ne
             currentRole: user.role,
             requiredRole,
           },
-          { status: 403 }
+          { status: 403 },
         )
       }
 
@@ -78,7 +78,7 @@ async function requireRole(request: NextRequest, requiredRole: Role): Promise<Ne
             isPhoneVerified: user.isPhoneVerified,
             isProfileVerified: user.isProfileVerified,
           },
-          { status: 403 }
+          { status: 403 },
         )
       }
 
@@ -88,7 +88,7 @@ async function requireRole(request: NextRequest, requiredRole: Role): Promise<Ne
           currentRole: user.role,
           requiredRole,
         },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -98,7 +98,7 @@ async function requireRole(request: NextRequest, requiredRole: Role): Promise<Ne
     captureException(error as Error, { firebaseUid: decodedToken.uid, requiredRole })
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas sprawdzania uprawnień.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -150,13 +150,13 @@ export async function requirePhoneVerification(request: NextRequest) {
         error: 'Weryfikacja numeru telefonu jest wymagana.',
         requiresPhoneVerification: true,
       },
-      { status: 403 }
+      { status: 403 },
     )
   } catch (error) {
     logError('Error checking phone verification', error, decodedToken.uid)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas sprawdzania weryfikacji telefonu.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -209,7 +209,7 @@ export async function requireCompleteProfile(request: NextRequest) {
           error: 'Profil użytkownika jest niekompletny.',
           requiresProfileCompletion: true,
         },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -219,7 +219,7 @@ export async function requireCompleteProfile(request: NextRequest) {
     captureException(error as Error, { firebaseUid: decodedToken.uid })
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas sprawdzania profilu.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

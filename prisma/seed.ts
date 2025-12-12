@@ -20,26 +20,26 @@ const ROLES_SEED_DATA: RoleSeedData[] = [
     name: 'USER_REGISTERED',
     description: 'User with basic registration - Level 1 verification',
     level: 1,
-    permissions: ['view_auctions', 'register']
+    permissions: ['view_auctions', 'register'],
   },
   {
     name: 'USER_EMAIL_VERIFIED', 
     description: 'User with email verified - Level 2 verification',
     level: 2,
-    permissions: ['view_auctions', 'register', 'access_dashboard', 'complete_profile']
+    permissions: ['view_auctions', 'register', 'access_dashboard', 'complete_profile'],
   },
   {
     name: 'USER_FULL_VERIFIED',
     description: 'Fully verified user - Level 3 verification',
     level: 3,
-    permissions: ['view_auctions', 'register', 'access_dashboard', 'complete_profile', 'create_auctions', 'bid', 'add_references']
+    permissions: ['view_auctions', 'register', 'access_dashboard', 'complete_profile', 'create_auctions', 'bid', 'add_references'],
   },
   {
     name: 'ADMIN',
     description: 'System administrator - full access',
     level: 4,
-    permissions: ['*']
-  }
+    permissions: ['*'],
+  },
 ];
 
 async function seedRoles() {
@@ -49,7 +49,7 @@ async function seedRoles() {
     // Check if roles already exist
     const existingRoles = await prisma.user.findMany({
       select: { role: true },
-      distinct: ['role']
+      distinct: ['role'],
     });
 
     const existingRoleNames = existingRoles.map(u => u.role);

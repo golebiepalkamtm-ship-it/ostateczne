@@ -9,59 +9,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Camera, CheckCircle, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// Scroll reveal hook from AchievementTimeline
-const useScrollReveal = () => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    if (prefersReducedMotion.matches) {
-      setIsVisible(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.35 }
-    );
-
-    observer.observe(node);
-
-    return () => {
-      if (node) {
-        observer.unobserve(node);
-      }
-    };
-  }, []);
-
-  return { ref, isVisible };
-};
+// Scroll reveal hook - removed
 
 // Styled card component matching AchievementTimeline
 interface MeetingCardProps {
   children: React.ReactNode;
   className?: string;
+  style?: CSSProperties;
 }
 
-function MeetingCard({ children, className = '' }: MeetingCardProps) {
-  const { ref, isVisible } = useScrollReveal();
-
+function MeetingCard({ children, className = '', style }: MeetingCardProps) {
   return (
     <div className="relative">
       {/* 3D Shadow layers */}
@@ -69,7 +30,7 @@ function MeetingCard({ children, className = '' }: MeetingCardProps) {
         const layer = 11 - i;
         const offset = layer * 1.5;
         const opacity = Math.max(0.2, 0.7 - layer * 0.05);
-        
+
         return (
           <div
             key={i}
@@ -78,7 +39,7 @@ function MeetingCard({ children, className = '' }: MeetingCardProps) {
               borderColor: `rgba(0, 0, 0, ${opacity})`,
               backgroundColor: `rgba(0, 0, 0, ${opacity * 0.8})`,
               transform: `translateX(${offset}px) translateY(${offset / 2}px) translateZ(-${offset}px)`,
-              zIndex: i + 1
+              zIndex: i + 1,
             }}
             aria-hidden="true"
           />
@@ -86,16 +47,14 @@ function MeetingCard({ children, className = '' }: MeetingCardProps) {
       })}
 
       <article
-        ref={ref}
-        className={`glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white transition-all duration-[2000ms] overflow-hidden backdrop-blur-xl ${className} ${
-          !isVisible ? 'opacity-0' : 'opacity-100'
-        }`}
+        className={`glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white overflow-hidden backdrop-blur-xl ${className}`}
         style={{
-          transform: !isVisible ? 'translateZ(-200px) scale(0.5)' : 'translateZ(0) scale(1)',
-          transition: 'all 2000ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-          background: 'linear-gradient(135deg, rgba(139, 117, 66, 0.4) 0%, rgba(133, 107, 56, 0.35) 25%, rgba(107, 91, 49, 0.32) 50%, rgba(89, 79, 45, 0.3) 75%, rgba(71, 61, 38, 0.28) 100%)',
+          background:
+            'linear-gradient(135deg, rgba(139, 117, 66, 0.4) 0%, rgba(133, 107, 56, 0.35) 25%, rgba(107, 91, 49, 0.32) 50%, rgba(89, 79, 45, 0.3) 75%, rgba(71, 61, 38, 0.28) 100%)',
           borderColor: 'rgba(218, 182, 98, 1)',
-          boxShadow: '0 0 20px rgba(218, 182, 98, 1), 0 0 35px rgba(189, 158, 88, 0.8), 0 0 50px rgba(165, 138, 78, 0.5), inset 0 0 40px rgba(71, 61, 38, 0.15), inset 0 2px 0 rgba(218, 182, 98, 0.6), inset 0 -2px 0 rgba(61, 51, 33, 0.4)'
+          boxShadow:
+            '0 0 20px rgba(218, 182, 98, 1), 0 0 35px rgba(189, 158, 88, 0.8), 0 0 50px rgba(165, 138, 78, 0.5), inset 0 0 40px rgba(71, 61, 38, 0.15), inset 0 2px 0 rgba(218, 182, 98, 0.6), inset 0 -2px 0 rgba(61, 51, 33, 0.4)',
+          ...style,
         }}
       >
         {/* Inner light effects */}
@@ -109,16 +68,25 @@ function MeetingCard({ children, className = '' }: MeetingCardProps) {
             `,
             backdropFilter: 'blur(80px)',
             mixBlendMode: 'soft-light',
-            zIndex: 1
+            zIndex: 1,
           }}
         />
-        <div className="relative z-10">
-          {children}
-        </div>
+        <div className="relative z-10">{children}</div>
       </article>
     </div>
   );
 }
+
+const getContainerAnim = (index: number) => {
+  switch (index) {
+    case 0: return 'slideUpReturn';
+    case 1: return 'swashIn';
+    case 2: return 'swashIn';
+    case 3: return 'slideDownReturn';
+    case 4: return 'slideDownReturn';
+    default: return 'slideDownReturn';
+  }
+};
 
 interface BreederMeeting {
   id: string;
@@ -271,38 +239,30 @@ export default function BreederMeetingsPage() {
 
   return (
     <UnifiedLayout isHomePage={true}>
-      {/* Hero Section - z padding-top dla miejsca na logo i nawigację, delay 0.8s czeka na animację fade-in-fwd */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.8 }}
+      {/* Hero Section - z padding-top dla miejsca na logo i nawigację */}
+      <section
         className="relative z-10 pt-40 pb-12 px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-12"
       >
         <div className="w-full mx-auto text-center">
-          <h1 className="text-4xl font-bold uppercase tracking-[0.5em] text-white/60 mb-6">Spotkania z Hodowcami</h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto"
-          >
-            Galeria zdjęć z naszych spotkań z hodowcami gołębi pocztowych
-          </motion.p>
+          <div className="gold-text-3d mb-6">
+            <div className="bg">Spotkania z Hodowcami</div>
+            <div className="fg">Spotkania z Hodowcami</div>
+          </div>
+          <div className="gold-text-3d-subtitle mb-8 max-w-3xl mx-auto">
+            <div className="bg">Galeria zdjęć z naszych spotkań z hodowcami gołębi pocztowych</div>
+            <div className="fg">Galeria zdjęć z naszych spotkań z hodowcami gołębi pocztowych</div>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Content */}
-      <div className="relative z-10 px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-12 pb-20">
+      <div
+        className="relative z-10 px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-12 pb-20"
+      >
         <div className="max-w-7xl mx-auto">
           {/* Add Meeting Form Section */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="mb-20"
-          >
-            <MeetingCard>
+          <section className="mb-20">
+            <MeetingCard className="">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold mb-4 text-gradient">Dodaj Zdjęcia ze Spotkania</h2>
                 <p className="text-white/80 text-lg">
@@ -440,10 +400,8 @@ export default function BreederMeetingsPage() {
                           </p>
                           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                             {previewImages.map((preview, index) => (
-                              <motion.div
+                              <div
                                 key={index}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
                                 className="relative group aspect-square"
                               >
                                 <SmartImage
@@ -463,7 +421,7 @@ export default function BreederMeetingsPage() {
                                 >
                                   <X className="w-4 h-4" />
                                 </button>
-                              </motion.div>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -514,27 +472,21 @@ export default function BreederMeetingsPage() {
                 </div>
               )}
             </MeetingCard>
-          </motion.section>
+          </section>
 
           {/* Breeder Meetings Grid */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
+          <section>
             <div className="space-y-12">
               {breederMeetings &&
                 Array.isArray(breederMeetings) &&
                 breederMeetings.map((meeting, index) => (
-                  <motion.div
+                  <div
                     key={meeting.id}
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: index * 0.1 }}
-                    viewport={{ once: true }}
                   >
-                    <MeetingCard className="p-6">
+                    <MeetingCard
+                      className={`p-6 magictime ${getContainerAnim(index)}`}
+                      style={{ animationDelay: `${index * 120}ms`, animationDuration: '0.85s', animationFillMode: 'both' }}
+                    >
                       {/* Meeting Title */}
                       <div className="mb-6">
                         <h3 className="text-2xl md:text-3xl font-bold text-gradient text-center">{meeting.name}</h3>
@@ -549,12 +501,8 @@ export default function BreederMeetingsPage() {
                       <div className="grid gap-5 rounded-2xl border border-white/10 bg-white/5 p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                           {meeting.images.map((image, imageIndex) => (
-                            <motion.div
+                            <div
                               key={imageIndex}
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              whileInView={{ opacity: 1, scale: 1 }}
-                              transition={{ duration: 0.5, delay: imageIndex * 0.05 }}
-                              viewport={{ once: true }}
                               className="relative h-48 overflow-hidden rounded-xl cursor-pointer group border border-white/5 bg-black/20"
                               onClick={() => handleImageClick(meeting.id, imageIndex)}
                             >
@@ -563,7 +511,7 @@ export default function BreederMeetingsPage() {
                                 alt={`${meeting.name} - zdjęcie ${imageIndex + 1}`}
                                 width={300}
                                 height={192}
-                                fitMode="contain"
+                                fitMode="cover"
                                 aspectRatio="landscape"
                                 className="w-full h-full transition-transform duration-500 group-hover:scale-110"
                                 priority={imageIndex === 0}
@@ -575,12 +523,12 @@ export default function BreederMeetingsPage() {
                                   </span>
                                 </div>
                               </div>
-                            </motion.div>
+                            </div>
                           ))}
                         </div>
                       </div>
                     </MeetingCard>
-                  </motion.div>
+                  </div>
                 ))}
             </div>
 
@@ -604,7 +552,7 @@ export default function BreederMeetingsPage() {
                 )}
               </MeetingCard>
             )}
-          </motion.section>
+          </section>
         </div>
       </div>
 

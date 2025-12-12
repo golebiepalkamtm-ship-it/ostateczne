@@ -75,7 +75,7 @@ async function scanFromFirebaseStorage(): Promise<ChampionImageData[]> {
     
     // Filtruj tylko foldery
     const championFolders = championsList.items.filter(item => 
-      !item.name.includes('.') // Foldery nie mają rozszerzenia
+      !item.name.includes('.'), // Foldery nie mają rozszerzenia
     );
 
     console.log(`Znaleziono ${championFolders.length} folderów championów w Firebase Storage`);
@@ -140,7 +140,7 @@ async function scanFirebaseChampionFolder(folderId: string): Promise<ChampionIma
             url: url, // Firebase Storage URL
             alt: `Champion ${folderId} - zdjęcie ${index + 1}`,
           };
-        })
+        }),
       );
 
       champion.images = galleryImages;
@@ -164,7 +164,7 @@ async function scanFirebaseChampionFolder(folderId: string): Promise<ChampionIma
             url: url, // Firebase Storage URL
             alt: `Champion ${folderId} - wideo ${index + 1}`,
           };
-        })
+        }),
       );
 
       champion.videos = videos;
@@ -184,7 +184,7 @@ async function scanFirebaseChampionFolder(folderId: string): Promise<ChampionIma
       const pedigreeImages = await Promise.all(
         pedigreeList.items.map(async (item) => {
           return await getDownloadURL(item); // Firebase Storage URL
-        })
+        }),
       );
 
       if (pedigreeImages.length > 0) {
@@ -249,7 +249,7 @@ async function scanFromLocalFiles(): Promise<ChampionImageData[]> {
 // Funkcja do skanowania pojedynczego lokalnego folderu championa
 async function scanLocalChampionFolder(
   folderId: string,
-  folderPath: string
+  folderPath: string,
 ): Promise<ChampionImageData | null> {
   try {
     // Sprawdź czy istnieje plik JSON z danymi championa

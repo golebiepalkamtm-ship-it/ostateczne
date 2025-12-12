@@ -64,12 +64,12 @@ export default function HomePageClient() {
   const mouseRotateX = useTransform(
     scrollYProgress,
     [0, 1],
-    [mousePosition.y * 10, mousePosition.y * 5]
+    [mousePosition.y * 10, mousePosition.y * 5],
   );
   const mouseRotateY = useTransform(
     scrollYProgress,
     [0, 1],
-    [mousePosition.x * 10, mousePosition.x * 5]
+    [mousePosition.x * 10, mousePosition.x * 5],
   );
 
   return (

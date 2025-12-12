@@ -22,7 +22,7 @@ import { debug } from './logger';
 export async function withRedisCache<T>(
   cacheKey: string,
   fetchFn: () => Promise<T>,
-  ttl = 60
+  ttl = 60,
 ): Promise<T> {
   try {
     // Lazy connection - pobierz klienta Redis

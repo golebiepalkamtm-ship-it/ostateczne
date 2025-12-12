@@ -21,7 +21,7 @@ export function PhoneVerification({ user, onVerificationComplete }: PhoneVerific
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '');
   const [verificationCode, setVerificationCode] = useState('');
   const [step, setStep] = useState<'phone' | 'verify' | 'success'>(
-    user.isPhoneVerified ? 'success' : user.phoneNumber ? 'verify' : 'phone'
+    user.isPhoneVerified ? 'success' : user.phoneNumber ? 'verify' : 'phone',
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -83,7 +83,7 @@ export function PhoneVerification({ user, onVerificationComplete }: PhoneVerific
       const phoneAuthProvider = new PhoneAuthProvider(auth);
       const verificationId = await phoneAuthProvider.verifyPhoneNumber(
         phoneNumber,
-        recaptchaVerifier
+        recaptchaVerifier,
       );
       setVerificationId(verificationId);
 

@@ -65,7 +65,7 @@ class MemoryCache {
     // Jeśli nadal za dużo, usuń najstarsze
     if (this.cache.size >= this.maxSize) {
       const sortedEntries = Array.from(this.cache.entries()).sort(
-        (a, b) => a[1].createdAt - b[1].createdAt
+        (a, b) => a[1].createdAt - b[1].createdAt,
       );
 
       const toDelete = sortedEntries.slice(0, Math.floor(this.maxSize * 0.2));
@@ -207,7 +207,7 @@ export function withCache(
     ttl?: number; // Time to live w sekundach
     keyPrefix?: string;
     skipCache?: (request: NextRequest) => boolean;
-  } = {}
+  } = {},
 ) {
   const { ttl = 300, keyPrefix = 'api', skipCache } = options;
 

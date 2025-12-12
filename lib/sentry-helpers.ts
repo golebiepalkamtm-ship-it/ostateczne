@@ -27,7 +27,7 @@ if (isDev || isPhaseProductionBuild) {
     setContext: noop,
     startSpan: async <T>(
       _options: { name: string; op?: string },
-      callback: () => Promise<T>
+      callback: () => Promise<T>,
     ): Promise<T> => {
       return callback();
     },
@@ -59,7 +59,7 @@ export function captureError(error: Error | AppError, context?: Record<string, u
       scope.setTag('errorType', error.type);
       scope.setTag('statusCode', error.statusCode.toString());
       scope.setLevel(
-        error.statusCode >= 500 ? 'error' : error.statusCode >= 400 ? 'warning' : 'info'
+        error.statusCode >= 500 ? 'error' : error.statusCode >= 400 ? 'warning' : 'info',
       );
     }
 
@@ -82,7 +82,7 @@ export function captureError(error: Error | AppError, context?: Record<string, u
 export function captureMessage(
   message: string,
   level: 'debug' | 'info' | 'warning' | 'error' | 'fatal' = 'info',
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ) {
   Sentry.withScope((scope: any) => {
     if (context) {
@@ -132,7 +132,7 @@ export function addBreadcrumb(
   message: string,
   category?: string,
   level: 'debug' | 'info' | 'warning' | 'error' | 'fatal' = 'info',
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
 ) {
   Sentry.addBreadcrumb({
     message,
@@ -149,14 +149,14 @@ export function addBreadcrumb(
 export async function withSentrySpan<T>(
   name: string,
   operation: string,
-  callback: () => Promise<T>
+  callback: () => Promise<T>,
 ): Promise<T> {
   return Sentry.startSpan(
     {
       name,
       op: operation,
     },
-    callback
+    callback,
   );
 }
 

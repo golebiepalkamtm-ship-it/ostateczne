@@ -157,7 +157,7 @@ export function ChampionProfile({ champion }: ChampionProfileProps) {
                   handleImageClick(
                     allImages[selectedImageIndex - 1].src,
                     selectedImageIndex - 1,
-                    undefined
+                    undefined,
                   )
               : undefined
           }
@@ -167,7 +167,7 @@ export function ChampionProfile({ champion }: ChampionProfileProps) {
                   handleImageClick(
                     allImages[selectedImageIndex + 1].src,
                     selectedImageIndex + 1,
-                    undefined
+                    undefined,
                   )
               : undefined
           }

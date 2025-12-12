@@ -63,7 +63,7 @@ export async function requirePhoneVerification(request: NextRequest) {
           requiresPhoneVerification: true,
           phoneNumber: user.phoneNumber,
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -72,7 +72,7 @@ export async function requirePhoneVerification(request: NextRequest) {
     console.error('Błąd sprawdzania weryfikacji telefonu:', error);
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas sprawdzania weryfikacji' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

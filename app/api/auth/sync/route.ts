@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
         user: userData,
         roleUpgraded,
       },
-      roleUpgraded ? 'Rola użytkownika została zaktualizowana' : undefined
+      roleUpgraded ? 'Rola użytkownika została zaktualizowana' : undefined,
     )
 
     // Ustaw cookies UX na podstawie aktualnej roli

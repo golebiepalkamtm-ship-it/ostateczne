@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Nieprawidłowe dane wejściowe', details: validation.error.issues },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   }
 
   info(
-    `✅ User found: id=${user.id}, hasCode=${!!user.phoneVerificationCode}, expires=${user.phoneVerificationExpires}`
+    `✅ User found: id=${user.id}, hasCode=${!!user.phoneVerificationCode}, expires=${user.phoneVerificationExpires}`,
   );
 
   if (!user.phoneVerificationCode || !user.phoneVerificationExpires) {

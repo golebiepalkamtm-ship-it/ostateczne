@@ -85,7 +85,7 @@ ${validatedData.message}
             message: e.message,
           })),
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     return handleApiError(error, request, { endpoint: 'contact' });

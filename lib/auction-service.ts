@@ -6,7 +6,7 @@ export async function placeBidTransaction(
   newBid: number,
   userId: string,
   currentKnownBid: number,
-  minStep: number
+  minStep: number,
 ): Promise<SimpleBidResult> {
   try {
     await prisma.$transaction(async (tx) => {
@@ -125,7 +125,7 @@ async function createOutbidNotification(
   tx: Prisma.TransactionClient,
   previousBidderId: string,
   auction: Auction,
-  newBidAmount: number
+  newBidAmount: number,
 ): Promise<void> {
   await tx.notification.create({
     data: {
@@ -152,7 +152,7 @@ async function createAuctionExtendedNotification(
   tx: Prisma.TransactionClient,
   auction: Auction,
   newEndTime: Date,
-  watcherIds: string[]
+  watcherIds: string[],
 ): Promise<void> {
   const notifications = watcherIds.map(userId => ({
     userId,
@@ -180,7 +180,7 @@ async function findCompetingAutoBid(
   tx: Prisma.TransactionClient,
   auctionId: string,
   excludeBidderId: string,
-  minAmount: number
+  minAmount: number,
 ): Promise<Bid | null> {
   const competingBid = await tx.bid.findFirst({
     where: {
@@ -241,7 +241,7 @@ export async function createBidWithFeatures(params: CreateBidParams): Promise<Bi
     if (amount < minimumBid) {
       return { 
         success: false, 
-        message: `Minimalna kwota licytacji to ${minimumBid.toLocaleString('pl-PL')} PLN` 
+        message: `Minimalna kwota licytacji to ${minimumBid.toLocaleString('pl-PL')} PLN`, 
       };
     }
 
@@ -249,7 +249,7 @@ export async function createBidWithFeatures(params: CreateBidParams): Promise<Bi
     if (auction.buyNowPrice && amount >= auction.buyNowPrice) {
       return { 
         success: false, 
-        message: 'Użyj opcji "Kup teraz" zamiast licytacji' 
+        message: 'Użyj opcji "Kup teraz" zamiast licytacji', 
       };
     }
 
@@ -567,7 +567,7 @@ export async function finalizeAuction(auctionId: string): Promise<{
 export async function updateMaxBid(
   auctionId: string,
   bidderId: string,
-  newMaxBid: number
+  newMaxBid: number,
 ): Promise<{ success: boolean; message: string }> {
   const auction = await prisma.auction.findUnique({
     where: { id: auctionId },

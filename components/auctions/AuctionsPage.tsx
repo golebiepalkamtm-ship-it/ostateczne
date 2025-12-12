@@ -11,34 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 
-// Hook for scroll reveal animations
-const useScrollReveal = () => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const currentRef = ref.current;
-    if (!currentRef) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.35 }
-    );
-
-    observer.observe(currentRef);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return { ref, isVisible };
-};
+// Hook for scroll reveal animations - removed
 
 // Props for GoldenCard
 interface GoldenCardProps {
@@ -46,9 +19,8 @@ interface GoldenCardProps {
   className?: string;
 }
 
-// GoldenCard Component with solid styling and 3D depth
+// GoldenCard Component with solid styling and 3D depth - animations removed
 function GoldenCard({ children, className = '' }: GoldenCardProps) {
-  const { ref, isVisible } = useScrollReveal();
   return (
     <div className="relative">
       {/* 3D Shadow layers - solid depth effect */}
@@ -73,12 +45,8 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
       })}
 
       <article
-        ref={ref}
-        className={`card-glow-edge relative z-[12] w-full rounded-3xl border-2 p-8 text-white transition-all duration-[2000ms] overflow-hidden ${className}`}
+        className={`card-glow-edge relative z-[12] w-full rounded-3xl border-2 p-8 text-white overflow-hidden ${className}`}
         style={{
-          transform: !isVisible ? 'translateZ(-200px) scale(0.5)' : 'translateZ(0) scale(1)',
-          transition: 'all 2000ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-          opacity: isVisible ? 1 : 0,
           background:
             'linear-gradient(135deg, rgba(139, 117, 66, 1) 0%, rgba(133, 107, 56, 1) 25%, rgba(107, 91, 49, 1) 50%, rgba(89, 79, 45, 1) 75%, rgba(71, 61, 38, 1) 100%)',
           borderColor: 'rgba(218, 182, 98, 1)',
@@ -129,12 +97,12 @@ export function AuctionsPage() {
     switch (sortBy) {
       case 'newest':
         sortedFiltered.sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
         break;
       case 'oldest':
         sortedFiltered.sort(
-          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         );
         break;
       case 'price-low':
@@ -145,7 +113,7 @@ export function AuctionsPage() {
         break;
       case 'ending-soon':
         sortedFiltered.sort(
-          (a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime()
+          (a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime(),
         );
         break;
     }
@@ -185,7 +153,7 @@ export function AuctionsPage() {
               auction.assets
                 ?.filter((asset: { type: string; url: string }) => asset.type === 'DOCUMENT')
                 .map((asset: { type: string; url: string }) => asset.url) || [],
-          })
+          }),
         );
         setAuctions(auctionsWithImages);
       } else {
@@ -269,7 +237,7 @@ export function AuctionsPage() {
   const statusFilteredAuctions = useMemo(
     () =>
       filteredAuctions.filter(auction => filterStatus === 'all' || auction.status === filterStatus),
-    [filteredAuctions, filterStatus]
+    [filteredAuctions, filterStatus],
   );
 
   if (isLoading) {
@@ -302,31 +270,34 @@ export function AuctionsPage() {
 
   return (
     <>
-      {/* Hero Section - z padding-top dla miejsca na logo i nawigację, delay 0.8s czeka na animację fade-in-fwd logo/nawigacji */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.8 }}
-        className="relative z-10 pt-44 pb-12 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16"
+      {/* Hero Section - z padding-top dla miejsca na logo i nawigację */}
+      <section
+        className="relative z-10 pt-44 pb-12 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 magictime twisterInDown"
+        style={{ animationDuration: '1s', animationDelay: '0.2s' }}
       >
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-4xl font-bold uppercase tracking-[0.5em] text-white/60 mb-6">Nasze Aukcje</h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="text-lg md:text-xl text-white/90 mb-8 max-w-4xl mx-auto"
-          >
-            Licytuj ekskluzywne gołębie pocztowe z rodowodami championów
-          </motion.p>
+          <div className="gold-text-3d mb-6">
+            <div className="bg">Nasze Aukcje</div>
+            <div className="fg">Nasze Aukcje</div>
+          </div>
+          <div className="gold-text-3d-subtitle mb-8 max-w-4xl mx-auto">
+            <div className="bg">Licytuj ekskluzywne gołębie pocztowe z rodowodami championów</div>
+            <div className="fg">Licytuj ekskluzywne gołębie pocztowe z rodowodami championów</div>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Content */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 pb-20">
+      <div
+        className="relative z-10 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 pb-20 magictime twisterInUp"
+        style={{ animationDuration: '1s', animationDelay: '0.7s' }}
+      >
         <div className="max-w-[1600px] mx-auto">
             {/* Filters */}
-            <section className="mb-12">
+            <section
+              className="mt-14 md:mt-20 xl:mt-24 mb-1 magictime swap"
+              style={{ animationDuration: '1s', animationDelay: '1.2s' }}
+            >
               <GoldenCard className="p-6">
                 <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
                   {/* Search */}

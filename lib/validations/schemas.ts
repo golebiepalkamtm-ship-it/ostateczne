@@ -3,7 +3,7 @@ import { z } from 'zod';
 // Helper to convert NaN to undefined for optional number fields
 const optionalNumber = z.preprocess(
   (val) => (typeof val === 'number' && isNaN(val) ? undefined : val),
-  z.number().min(0, 'Wartość nie może być ujemna').optional()
+  z.number().min(0, 'Wartość nie może być ujemna').optional(),
 );
 
 // User validation schemas (bez hasła - Firebase obsługuje auth)
@@ -47,8 +47,8 @@ export const auctionCreateSchema = z
     startingPrice: optionalNumber,
     buyNowPrice: optionalNumber,
     reservePrice: optionalNumber,
-    startTime: z.string().datetime('Nieprawidłowa data rozpoczęcia').optional(),
-    endTime: z.string().datetime('Nieprawidłowa data zakończenia').optional(),
+    startTime: z.string().datetime('Nieprawidłowa data rozpoczęcia'),
+    endTime: z.string().datetime('Nieprawidłowa data zakończenia'),
     images: z.array(z.string().min(1, 'URL obrazu nie może być pusty')).optional(),
     videos: z.array(z.string().min(1, 'URL wideo nie może być pusty')).optional(),
     documents: z.array(z.string().min(1, 'URL dokumentu nie może być pusty')).optional(),
@@ -84,7 +84,7 @@ export const auctionCreateSchema = z
         flexibility: z.string().optional(),
       })
       .optional(),
-    csrfToken: z.string().min(1, 'Token CSRF jest wymagany').optional(),
+    csrfToken: z.string().min(1, 'Token CSRF jest wymagany'),
   })
   .refine(
     data => {
@@ -97,7 +97,7 @@ export const auctionCreateSchema = z
     {
       message: 'Cena kup teraz musi być większa lub równa cenie startowej',
       path: ['buyNowPrice'],
-    }
+    },
   )
   .refine(
     data => {
@@ -109,7 +109,7 @@ export const auctionCreateSchema = z
     {
       message: 'Dla aukcji gołębia wymagane są: numer obrączki, linia krwi i płeć',
       path: ['pigeon'],
-    }
+    },
   );
 
 // Base auction schema without refinements for partial updates
@@ -132,6 +132,7 @@ const baseAuctionSchema = z.object({
   videos: z.array(z.string().min(1, 'URL wideo nie może być pusty')).optional(),
   documents: z.array(z.string().min(1, 'URL dokumentu nie może być pusty')).optional(),
   location: z.string().optional(),
+  locationData: z.any().optional(),
   pigeon: z
     .object({
       ringNumber: z.string().min(1, 'Numer obrączki jest wymagany dla gołębia'),
@@ -162,6 +163,7 @@ const baseAuctionSchema = z.object({
       flexibility: z.string().optional(),
     })
     .optional(),
+  csrfToken: z.string().min(1, 'Token CSRF jest wymagany'),
 });
 
 export const auctionUpdateSchema = baseAuctionSchema.partial();
@@ -195,7 +197,7 @@ export const searchSchema = z
     {
       message: 'Maksymalna cena musi być większa lub równa minimalnej cenie',
       path: ['maxPrice'],
-    }
+    },
   );
 
 // File upload validation schemas
@@ -233,7 +235,7 @@ export const passwordSchema = z
       .min(8, 'Nowe hasło musi mieć co najmniej 8 znaków')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        'Nowe hasło musi zawierać małą literę, wielką literę i cyfrę'
+        'Nowe hasło musi zawierać małą literę, wielką literę i cyfrę',
       ),
     confirmPassword: z.string().min(1, 'Potwierdzenie hasła jest wymagane'),
   })

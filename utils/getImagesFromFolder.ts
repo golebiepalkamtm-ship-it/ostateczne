@@ -32,7 +32,7 @@ export const getImagesFromFolder = async (folderPath: string): Promise<string[]>
           part !== 'gallery' &&
           part !== 'pedigree' &&
           part !== 'offspring' &&
-          part !== 'videos'
+          part !== 'videos',
       );
 
     if (!championId) {

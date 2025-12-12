@@ -5,45 +5,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-// Scroll reveal hook from AchievementTimeline
-const useScrollReveal = () => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    if (prefersReducedMotion.matches) {
-      setIsVisible(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.35 }
-    );
-
-    observer.observe(node);
-
-    return () => {
-      if (node) {
-        observer.unobserve(node);
-      }
-    };
-  }, []);
-
-  return { ref, isVisible };
-};
+// Scroll reveal hook - removed
 
 // Styled card component matching AchievementTimeline
 interface GoldenCardProps {
@@ -52,8 +14,6 @@ interface GoldenCardProps {
 }
 
 function GoldenCard({ children, className = '' }: GoldenCardProps) {
-  const { ref, isVisible } = useScrollReveal();
-
   return (
     <div className="relative">
       {/* 3D Shadow layers */}
@@ -61,7 +21,7 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
         const layer = 11 - i;
         const offset = layer * 1.5;
         const opacity = Math.max(0.2, 0.7 - layer * 0.05);
-        
+
         return (
           <div
             key={i}
@@ -70,7 +30,7 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
               borderColor: `rgba(0, 0, 0, ${opacity})`,
               backgroundColor: `rgba(0, 0, 0, ${opacity * 0.8})`,
               transform: `translateX(${offset}px) translateY(${offset / 2}px) translateZ(-${offset}px)`,
-              zIndex: i + 1
+              zIndex: i + 1,
             }}
             aria-hidden="true"
           />
@@ -78,16 +38,11 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
       })}
 
       <article
-        ref={ref}
-        className={`glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white transition-all duration-[2000ms] overflow-hidden backdrop-blur-xl ${className} ${
-          !isVisible ? 'opacity-0' : 'opacity-100'
-        }`}
+        className={`glass-morphism relative z-[12] w-full rounded-3xl border-2 p-8 text-white overflow-hidden backdrop-blur-xl ${className}`}
         style={{
-          transform: !isVisible ? 'translateZ(-200px) scale(0.5)' : 'translateZ(0) scale(1)',
-          transition: 'all 2000ms cubic-bezier(0.34, 1.56, 0.64, 1)',
           background: 'linear-gradient(135deg, rgba(139, 117, 66, 1) 0%, rgba(133, 107, 56, 1) 25%, rgba(107, 91, 49, 1) 50%, rgba(89, 79, 45, 1) 75%, rgba(71, 61, 38, 1) 100%)',
           borderColor: 'rgba(218, 182, 98, 1)',
-          boxShadow: '0 0 30px rgba(218, 182, 98, 1), 0 0 50px rgba(189, 158, 88, 1), 0 0 70px rgba(165, 138, 78, 0.8), inset 0 0 40px rgba(71, 61, 38, 0.5), inset 0 2px 0 rgba(218, 182, 98, 1), inset 0 -2px 0 rgba(61, 51, 33, 0.6)'
+          boxShadow: '0 0 30px rgba(218, 182, 98, 1), 0 0 50px rgba(189, 158, 88, 1), 0 0 70px rgba(165, 138, 78, 0.8), inset 0 0 40px rgba(71, 61, 38, 0.5), inset 0 2px 0 rgba(218, 182, 98, 1), inset 0 -2px 0 rgba(61, 51, 33, 0.6)',
         }}
       >
         {/* Inner light effects */}
@@ -101,7 +56,7 @@ function GoldenCard({ children, className = '' }: GoldenCardProps) {
             `,
             backdropFilter: 'blur(80px)',
             mixBlendMode: 'soft-light',
-            zIndex: 1
+            zIndex: 1,
           }}
         />
         <div className="relative z-10">
@@ -183,49 +138,31 @@ export function PressPage() {
   return (
     <div className="relative">
       {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.8 }}
-        className="relative z-10 pt-44 pb-20 px-4 sm:px-6 lg:px-8"
+      <section
+        className="relative z-10 pt-44 pb-20 px-4 sm:px-6 lg:px-8 magictime twisterInDown"
+        style={{ animationDuration: '1s', animationDelay: '0.2s' }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold uppercase tracking-[0.5em] text-white/60 mb-6">
-            Prasa i Media
-          </h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto"
-          >
-            Opinie hodowców o naszych gołębiach, artykuły, wywiady i materiały prasowe o hodowli MTM
-            Pałka
-          </motion.p>
+          <div className="gold-text-3d mb-6">
+            <div className="bg">Prasa i Media</div>
+            <div className="fg">Prasa i Media</div>
+          </div>
+          <div className="gold-text-3d-subtitle mb-8 max-w-3xl mx-auto">
+            <div className="bg">Opinie hodowców o naszych gołębiach, artykuły, wywiady i materiały prasowe o hodowli MTM Pałka</div>
+            <div className="fg">Opinie hodowców o naszych gołębiach, artykuły, wywiady i materiały prasowe o hodowli MTM Pałka</div>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Content */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 pb-20">
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 pb-20 magictime perspectiveReturn" style={{ animationDuration: '1s', animationDelay: '0.35s' }}>
         <div className="max-w-7xl mx-auto">
           {/* DVD Section - na górze */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="mb-20"
-          >
+          <section className="mb-20 magictime twisterInUp" style={{ animationDuration: '1s', animationDelay: '0.7s' }}>
             <GoldenCard className="p-8 sm:p-12 lg:p-16 xl:p-20 2xl:p-24">
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 2xl:gap-20 items-stretch w-full">
                 {/* Okładka DVD (dopasowana do proporcji pudełka DVD) */}
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  className="flex justify-center"
-                >
+                <div className="flex justify-center">
                   <div className="relative">
                     {/* Subtelniejsze białe podświetlenie ZA ramką (nieprzycinane) */}
                     <div className="absolute -inset-4 -z-10 pointer-events-none blur-2xl shadow-2xl shadow-white/50" />
@@ -259,16 +196,10 @@ export function PressPage() {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Film YouTube */}
-                <motion.div
-                  initial={{ opacity: 0, x: 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  viewport={{ once: true }}
-                  className="flex justify-center"
-                >
+                <div className="flex justify-center">
                   <div className="relative w-full max-w-[320px] sm:max-w-[360px] md:max-w-[400px] h-full rounded-xl overflow-hidden shadow-2xl">
                     <iframe
                       src="https://www.youtube.com/embed/utXkaMWyZfk"
@@ -277,27 +208,17 @@ export function PressPage() {
                       allowFullScreen
                     ></iframe>
                   </div>
-                </motion.div>
+                </div>
               </div>
             </GoldenCard>
-          </motion.section>
+          </section>
 
           {/* Gazety Grid - na dole */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="mb-20"
-          >
+          <section className="mb-20 magictime swap" style={{ animationDuration: '1s', animationDelay: '1.2s' }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-full mx-auto">
               {newspaperFolders.map((folder, index) => (
-                <motion.div
+                <div
                   key={folder.id}
-                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
                   className="aspect-[3/4] w-full"
                 >
                   <div
@@ -326,15 +247,15 @@ export function PressPage() {
                       onError={() => {
                         console.error(
                           'Błąd ładowania obrazu:',
-                          `/press/articles/older/${folder.id}/${folder.cover}`
+                          `/press/articles/older/${folder.id}/${folder.cover}`,
                         );
                       }}
                     />
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.section>
+          </section>
         </div>
       </div>
 
@@ -379,7 +300,7 @@ export function PressPage() {
                 <button
                   onClick={() =>
                     setCurrentPageIndex(
-                      Math.min(currentNewspaperImages.length - 2, currentPageIndex + 2)
+                      Math.min(currentNewspaperImages.length - 2, currentPageIndex + 2),
                     )
                   }
                   disabled={currentPageIndex >= currentNewspaperImages.length - 2}
@@ -477,7 +398,7 @@ export function PressPage() {
                       }`}
                       title={`Strony ${index * 2 + 1}-${index * 2 + 2}`}
                     />
-                  )
+                  ),
                 )}
               </div>
             )}

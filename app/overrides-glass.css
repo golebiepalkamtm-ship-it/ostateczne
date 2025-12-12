@@ -1,0 +1,75 @@
+/* OPAQUE OVERRIDES: remove transparency and backdrop blur from glass elements */
+
+/* This file is loaded after globals.css to override generated styles */
+
+/* Target common glass/card selectors and force opaque backgrounds */
+.glass-morphism,
+.glass-morphism-strong,
+.glass-morphism-ultra,
+.glass-container,
+.card,
+.card-glass,
+.card-gradient,
+.card-3d,
+.card-3d-raised,
+.card-3d-raised-strong,
+.card-floating,
+.card-glow-edge,
+.card-glass,
+.champion-profile-card,
+.pedigree-card,
+.results-card,
+.offspring-card,
+.champion-card {
+  background: #111827 !important; /* dark opaque background for high contrast */
+  border-color: #fff !important;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 50%) !important;
+  backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Buttons and nav - make solid */
+.glass-nav-button,
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-ghost {
+  background: #111827 !important;
+  border-color: #fff !important;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 60%) !important;
+  backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Remove subtle translucent hover backgrounds that use alpha */
+.card:hover,
+.card-glass:hover,
+.glass-container:hover,
+.champion-profile-card:hover,
+.pedigree-card:hover,
+.results-card:hover,
+.offspring-card:hover {
+  background: #111827 !important;
+}
+
+/* Ensure any remaining white-ish translucent vars become solid white where used for emphasis */
+.text-glow,
+.hero-title,
+.text-gradient {
+  color: #fff !important;
+}
+
+/* Increase border contrast for clear separation */
+.card,
+.card-glass,
+.glass-container,
+.champion-profile-card,
+.pedigree-card {
+  border: 2px solid rgb(255 255 255 / 100%) !important;
+}
+
+/* Disable backdrop filter utility globally as a last resort */
+*:where(-webkit-backdrop-filter, backdrop-filter) {
+  backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}

@@ -52,7 +52,7 @@ export function rateLimit(options: RateLimitOptions) {
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': new Date(entry.resetTime).toISOString(),
           },
-        }
+        },
       );
     }
 

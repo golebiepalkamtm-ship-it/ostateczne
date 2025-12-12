@@ -91,8 +91,8 @@ export default function ImageModal({
         width: sourceRect.width,
         height: sourceRect.height,
         left: sourceRect.left,
-        top: sourceRect.top
-      } : null
+        top: sourceRect.top,
+      } : null,
     });
     console.log('ImageModal: Starting initialization process...');
 
@@ -153,7 +153,7 @@ export default function ImageModal({
       const container = modalRef.current;
       if (!container) return;
       const focusable = container.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
       );
       if (focusable.length === 0) {
         e.preventDefault();
@@ -286,7 +286,7 @@ export default function ImageModal({
     animationComplete,
     sourceRectExists: !!sourceRect,
     sourceRectWidth: sourceRect?.width,
-    isBrowser: isBrowser 
+    isBrowser: isBrowser, 
   });
 
   return ReactDOM.createPortal(
@@ -557,6 +557,6 @@ export default function ImageModal({
         </motion.div>
       )}
     </>,
-    document.body
+    document.body,
   );
 }

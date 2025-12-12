@@ -1,4 +1,5 @@
 /* Default stylesheet for jsdom/browser compatibility */
+
 /* This file is required by jsdom for DOM manipulation in Node.js environment */
 
 /* Basic reset */
@@ -9,7 +10,7 @@
 /* HTML elements */
 html {
   font-family: sans-serif;
-  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 

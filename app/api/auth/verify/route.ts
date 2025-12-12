@@ -13,7 +13,7 @@ async function handler(request: NextRequest) {
     if (!adminAuth) {
       return NextResponse.json(
         { error: 'Serwis tymczasowo niedostępny. Spróbuj ponownie później.' },
-        { status: 503 }
+        { status: 503 },
       );
     }
 

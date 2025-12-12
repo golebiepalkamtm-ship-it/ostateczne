@@ -1,0 +1,36 @@
+.perspectiveRightReturn {
+  animation-name: perspectiveRightReturn;
+  animation-name: perspectiveRightReturn;
+}
+
+@keyframes perspectiveRightReturn {
+  0% {
+    transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    transform: perspective(800px) rotateY(180deg);
+    transform: perspective(800px) rotateY(180deg);
+  }
+
+  100% {
+    transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    transform: perspective(800px) rotateY(0deg);
+    transform: perspective(800px) rotateY(0deg);
+  }
+}
+
+@keyframes perspectiveRightReturn {
+  0% {
+    transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    transform: perspective(800px) rotateY(180deg);
+    transform: perspective(800px) rotateY(180deg);
+  }
+
+  100% {
+    transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    transform: perspective(800px) rotateY(0deg);
+    transform: perspective(800px) rotateY(0deg);
+  }
+}

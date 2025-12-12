@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useDragAndDropFileUpload } from '@/app/hooks/useFileUpload';
 import { 
   uploadSystemBackgroundImage,
-  type FileUploadResult 
+  type FileUploadResult, 
 } from '@/app/actions/admin-storage';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
@@ -23,7 +23,7 @@ interface BackgroundImageManagerProps {
 
 export default function BackgroundImageManager({
   currentBackgroundUrl,
-  onBackgroundUpdate
+  onBackgroundUpdate,
 }: BackgroundImageManagerProps) {
   const [setting, setSetting] = useState<SystemSetting | null>(null);
   const [isLoading, setIsLoading] = useState(true);

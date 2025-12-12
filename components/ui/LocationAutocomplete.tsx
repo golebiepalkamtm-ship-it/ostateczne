@@ -58,7 +58,7 @@ export function LocationAutocomplete({
       // Using OpenStreetMap Nominatim API (free, no API key required)
       // Focus on detailed address components
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=pl&limit=10&addressdetails=1&extratags=1&namedetails=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=pl&limit=10&addressdetails=1&extratags=1&namedetails=1`,
       );
 
       if (response.ok) {
