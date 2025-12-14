@@ -1,50 +1,93 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"],
+  
+  "regions": ["fra1"],
+  "cleanUrls": true,
+  
   "env": {
     "NODE_ENV": "production"
   },
+  
   "git": {
     "deploymentEnabled": {
       "main": true
     }
   },
-  "checks": {
-    "build": {
+  
+  "crons": [
+    {
       "path": "/api/health",
-      "shouldFail": false
+      "schedule": "0 3 * * *"
+    }
+  ],
+  
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30,
+      "memory": 1024
     }
   },
+  
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
       "headers": [
         {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         },
         {
-          "key": "X-Frame-Options",
-          "value": "DENY"
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
         },
         {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With"
         },
         {
-          "key": "Referrer-Policy",
-          "value": "origin-when-cross-origin"
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
         }
       ]
     }
   ],
+  
   "rewrites": [
     {
       "source": "/api/:path*",
       "destination": "/api/:path*"
     }
-  ]
+  ],
+  
+  "images": {
+    "domains": [
+      "firebasestorage.googleapis.com",
+      "storage.googleapis.com",
+      "*.firebasestorage.app",
+      "pigeon-aucion-a722b.firebasestorage.app",
+      "palkamtm.pl",
+      "www.palkamtm.pl",
+      "res.cloudinary.com",
+      "cdn.pixabay.com",
+      "picsum.photos",
+      "cdn.buymeacoffee.com",
+      "*.googleapis.com",
+      "*.us-east4.hosted.app"
+    ],
+    "formats": ["image/webp", "image/avif"],
+    "minimumCacheTTL": 60,
+    "sizes": [640, 750, 828, 1080, 1200, 1920, 2048, 3840]
+  },
+  
+  "outputDirectory": ".next",
+  "public": true
 }
