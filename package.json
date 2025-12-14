@@ -21,7 +21,7 @@
   "scripts": {
     "dev": "set WATCHPACK_POLLING=true && set WATCHPACK_IGNORE_502=true && next dev",
     "dev:windows": "set WATCHPACK_POLLING=true && set WATCHPACK_IGNORE_502=true && next dev",
-    "postinstall": "prisma generate",
+
     "db:migrate": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:seed": "npx tsx prisma/seed.ts",
