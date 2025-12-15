@@ -8,7 +8,7 @@
 
 ### Firebase
 - **TYLKO do autoryzacji** (rejestracja, weryfikacja email, SMS)
-- Projekt: `pigeon-4fba2`
+- Projekt: `4fba2`
 - **NIE używamy Firebase do bazy danych ani hostingu**
 
 ### Hosting
@@ -40,7 +40,7 @@
 
 ### 1. Pobierz Firebase Admin SDK credentials
 
-1. Przejdź do: https://console.firebase.google.com/project/pigeon-4fba2/settings/serviceaccounts/adminsdk
+1. Przejdź do: https://console.firebase.google.com/project/4fba2/settings/serviceaccounts/adminsdk
 2. Kliknij "Generate new private key"
 3. Pobierz plik JSON
 4. Skopiuj wartości:

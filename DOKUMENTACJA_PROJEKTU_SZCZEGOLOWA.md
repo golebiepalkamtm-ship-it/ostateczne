@@ -1094,7 +1094,7 @@ npm run db:seed
 
 **Pobranie credentials:**
 1. Przejdź do [Firebase Console](https://console.firebase.google.com/)
-2. Wybierz projekt `m-t-m-62972`
+2. Wybierz projekt `4fba2`
 3. Settings → Service Accounts → Generate new private key
 4. Zapisz plik jako `firebase-key.json`
 

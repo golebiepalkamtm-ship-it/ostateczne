@@ -99,7 +99,7 @@ firebase login
 
 ### Krok 3: Wybór projektu
 ```powershell
-firebase use m-t-m-62972
+firebase use 4fba2
 ```
 
 ### Krok 4: Konfiguracja zmiennych środowiskowych

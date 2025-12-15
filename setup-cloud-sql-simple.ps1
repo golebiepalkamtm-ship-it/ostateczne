@@ -1,9 +1,9 @@
 # Automatyczna konfiguracja Cloud SQL i Secret Manager dla Firebase App Hosting
-# Wymaga: wlaczonego billing w projekcie m-t-m-62972
+# Wymaga: wlaczonego billing w projekcie 4fba2
 
 $ErrorActionPreference = "Stop"
-$projectId = "m-t-m-62972"
-$instanceName = "m-t-m-62972-instance"
+$projectId = "4fba2"
+$instanceName = "4fba2-instance"
 $region = "europe-west4"
 $databaseName = "palkamtm_production"
 $dbUser = "palkamtm_user"

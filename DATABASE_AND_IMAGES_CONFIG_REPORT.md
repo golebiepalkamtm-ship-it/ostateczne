@@ -13,8 +13,8 @@ Czas utworzenia: 2025-12-13 17:18:31
 - **Status**: ✅ Skonfigurowany i gotowy
 
 ### 2. Firebase Storage (Obrazy/CDN)
-- **ASSET_BASE_URL**: `https://storage.googleapis.com/m-t-m-62972.appspot.com`
-- **Storage Bucket**: `m-t-m-62972.appspot.com`
+- **ASSET_BASE_URL**: `https://storage.googleapis.com/4fba2.appspot.com`
+- **Storage Bucket**: `4fba2.appspot.com`
 - **Status**: ✅ Skonfigurowany dla ciężkich assetów
 
 ### 3. Modele Prisma z obsługą obrazów

@@ -45,7 +45,7 @@ const baseConfig = {
       "style-src 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
       "style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
       "img-src 'self' data: blob: https://storage.googleapis.com https://firebasestorage.googleapis.com",
-      "connect-src 'self' https://sentry.io https://pigeon-4fba2.firebaseapp.com https://storage.googleapis.com https://palkamtm.pl https://palkamtm.pl/api/metrics https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://firebaseinstallations.googleapis.com https://*.googleapis.com https://*.google-analytics.com https://region1.google-analytics.com https://www.google-analytics.com https://googletagmanager.com",
+      "connect-src 'self' https://sentry.io https://4fba2.firebaseapp.com https://storage.googleapis.com https://palkamtm.pl https://palkamtm.pl/api/metrics https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://firebaseinstallations.googleapis.com https://*.googleapis.com https://*.google-analytics.com https://region1.google-analytics.com https://www.google-analytics.com https://googletagmanager.com",
       "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
       "worker-src 'self' blob:",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",

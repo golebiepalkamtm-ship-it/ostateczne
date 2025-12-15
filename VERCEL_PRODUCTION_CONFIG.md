@@ -12,7 +12,7 @@
 
 ### Firebase
 - **TYLKO do autoryzacji** (rejestracja, weryfikacja email, SMS)
-- Projekt: `pigeon-4fba2`
+- Projekt: `4fba2`
 - **NIE używamy Firebase do bazy danych ani hostingu**
 
 ## ✅ Wymagane zmienne środowiskowe w Vercel

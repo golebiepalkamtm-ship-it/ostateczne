@@ -4,9 +4,9 @@
  */
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyD4PcLWRdE61ogbkm1199rV_p-sODJvtuE",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "pigeon-4fba2.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "pigeon-4fba2", // Wymuszone nadpisanie
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "pigeon-4fba2.firebasestorage.app",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "4fba2.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "4fba2", // Wymuszone nadpisanie
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "4fba2.firebasestorage.app",
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "1036150984520",
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:1036150984520:web:62445751bd607f2b56ad7d",
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-CDS9QF0ZJH",

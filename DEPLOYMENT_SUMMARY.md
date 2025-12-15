@@ -12,7 +12,7 @@
 
 ### 3. Firebase (tylko autoryzacja)
 - ✅ Wszystkie zmienne client-side skonfigurowane
-- ✅ Projekt: `pigeon-4fba2`
+- ✅ Projekt: `4fba2`
 
 ### 4. Naprawy kodu
 - ✅ `next.config.js` usunięty (używamy `next.config.cjs`)

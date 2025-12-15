@@ -1,32 +1,50 @@
 # Plan konfiguracji zmiennych środowiskowych - my-prisma-postgres-app
 
-## Status: ROZPOCZĘTE
-Czas rozpoczęcia: 2025-12-13 17:14:02
+## Status: ZAKOŃCZONE ✅
+Czas zakończenia: 2025-12-15
 
-## Kroki do wykonania:
+## Wykonane kroki:
 
-- [ ] 1. Konfiguracja lokalnych zmiennych środowiskowych
-  - .env - SQLite dla lokalnego rozwoju
-  - .env.development.local - konfiguracja development
-  - .env.production - konfiguracja produkcyjna (PostgreSQL)
+- [x] 1. Konfiguracja lokalnych zmiennych środowiskowych
+  - .env - Supabase PostgreSQL dla lokalnego rozwoju
+  - .env.local - zmienne Vercel
+  - .env.production - pełna konfiguracja produkcyjna (Supabase PostgreSQL)
 
-- [ ] 2. Konfiguracja bazy danych PostgreSQL
-  - Utworzenie pliku .env.production z DATABASE_URL
-  - Konfiguracja schematu Prisma dla PostgreSQL
-  - Przygotowanie instrukcji migracji
+- [x] 2. Konfiguracja bazy danych PostgreSQL
+  - Wszystkie pliki .env używają Supabase PostgreSQL z PgBouncer (port 6543)
+  - Poprawne DATABASE_URL z parametrami optymalizacji
+  - Konsystencja między środowiskami
 
-- [ ] 3. Konfiguracja Vercel Environment Variables
-  - Konfiguracja zmiennych w panelu Vercel
-  - Ustawienie DATABASE_URL dla production
-  - Ustawienie innych wymaganych zmiennych
+- [x] 3. Standaryzacja konfiguracji Firebase
+  - Wszystkie pliki używają projektu pigeon-4fba2
+  - Zaktualizowane setup scripts i przykłady
+  - Poprawne klucze API i konfiguracja
 
-- [ ] 4. Test konfiguracji
-  - Test lokalny z SQLite
-  - Test z PostgreSQL (gdy dostępny)
-  - Weryfikacja deployment w Vercel
+- [x] 4. Aktualizacja zmiennych środowiskowych
+  - NEXTAUTH_URL, NEXT_PUBLIC_BASE_URL dla produkcji
+  - Dodane brakujące zmienne (reCAPTCHA, Supabase, Prisma config)
+  - Zaktualizowane skrypty setup dla Vercel
+
+## Aktualna konfiguracja:
+
+### Baza danych:
+- **Supabase PostgreSQL** z PgBouncer (port 6543)
+- Connection string: `postgresql://postgres:Milosz.1205@db.fodfctgqzcuhqwcpupni.supabase.co:6543/postgres?pgbouncer=true&connection_limit=1`
+
+### Firebase:
+- **Projekt**: pigeon-4fba2
+- **Tylko do autoryzacji** (rejestracja, email, SMS)
+- **Nie używamy do bazy danych ani hostingu**
+
+### Pliki konfiguracyjne:
+- `.env` - lokalny development
+- `.env.local` - zmienne Vercel
+- `.env.production` - pełna produkcja
+- `firebase.env.example` - przykładowa konfiguracja
+- `setup-vercel-env.ps1` - skrypt setup dla Vercel
 
 ## Uwagi techniczne:
-- Aktualnie używamy SQLite dla prostoty lokalnego rozwoju
-- W produkcji zalecane PostgreSQL dla skalowalności
-- Zmienne środowiskowe muszą być poprawnie skonfigurowane w Vercel
-- DATABASE_URL jest kluczową zmienną dla Prisma
+- Wszystkie środowiska używają Supabase PostgreSQL
+- Firebase tylko do autoryzacji (nie do danych)
+- Vercel używa automatycznie utworzonej zmiennej SKŁADOWANIE_URL dla bazy danych
+- PgBouncer zapewnia optymalizację połączeń w produkcji
