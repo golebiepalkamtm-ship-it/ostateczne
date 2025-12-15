@@ -14,19 +14,19 @@ export async function placeBidTransaction(
 
       if (!auction) throw new Error('Auction not found (404).');
       if (auction.sellerId === userId) throw new Error('Cannot bid on own auction (403).');
-      if (new Date() > new Date(auction.deadline)) throw new Error('Auction has ended (400).');
-      if (newBid < Number(auction.currentBid || 0) + minStep) throw new Error(`Bid must be at least ${minStep} higher (400).`);
+      if (new Date() > new Date(auction.endTime)) throw new Error('Auction has ended (400).');
+      if (newBid < Number(auction.currentPrice || 0) + minStep) throw new Error(`Bid must be at least ${minStep} higher (400).`);
 
       const updateResult = await tx.auction.updateMany({
-        where: { id: auctionId, currentBid: currentKnownBid },
-        data: { currentBid: newBid, currentBidderId: userId },
+        where: { id: auctionId, currentPrice: currentKnownBid },
+        data: { currentPrice: newBid },
       });
 
       if (updateResult.count === 0) {
         throw new Error('Bid update failed. Race condition detected (409).');
       }
 
-      await tx.bidHistory.create({ data: { auctionId, userId, amount: newBid } });
+      await tx.bid.create({ data: { auctionId, bidderId: userId, amount: newBid } });
     });
 
     return { status: 200, code: 'AUCTION_BID_OK', message: 'Bid placed successfully.' };

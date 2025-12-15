@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { LogoGlow } from '@/components/layout/LogoGlow';
 
 import Link from 'next/link';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import Image from 'next/image';
 
 const navItems = [
@@ -26,7 +26,6 @@ interface UnifiedLayoutProps {
   showFooter?: boolean;
   showBackground?: boolean;
   className?: string;
-  isHomePage?: boolean;
 }
 
 export function UnifiedLayout({
@@ -35,8 +34,9 @@ export function UnifiedLayout({
   showFooter = true,
   showBackground = true,
   className = '',
-  isHomePage = false,
 }: UnifiedLayoutProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     const removeBisAttributes = () => {
       const elements = document.querySelectorAll('[bis_skin_checked]');
@@ -70,18 +70,18 @@ export function UnifiedLayout({
 
       {/* Logo, Navigation Menu i User Status - IDENTYCZNE NA WSZYSTKICH STRONACH */}
       {showNavigation && (
-        <div className="absolute z-[1001] pointer-events-auto top-5 left-12 right-6" suppressHydrationWarning={true}>
+        <div className="absolute z-[1001] pointer-events-auto top-5 left-4 right-4 md:left-12 md:right-6" suppressHydrationWarning={true}>
           <div className="flex items-center justify-between w-full" suppressHydrationWarning={true}>
             {/* Logo i Navigation Menu po lewej */}
-            <div className="flex items-center gap-6" suppressHydrationWarning={true}>
+            <div className="flex items-center gap-4 md:gap-6" suppressHydrationWarning={true}>
               {/* Logo */}
-              <div className="flex items-center scale-110" suppressHydrationWarning={true}>
+              <div className="flex items-center scale-100 md:scale-110" suppressHydrationWarning={true}>
                 <LogoGlow />
               </div>
 
               {/* Navigation Menu */}
-              <nav className="flex items-center" suppressHydrationWarning={true}>
-                <div className="flex items-center gap-4" suppressHydrationWarning={true}>
+              <nav className={`flex items-center navigation-container ${mobileMenuOpen ? 'mobile-nav-visible' : 'mobile-nav-hidden'}`} suppressHydrationWarning={true}>
+                <div className="flex items-center gap-2 md:gap-4" suppressHydrationWarning={true}>
                   {navItems.map((item, index) => (
                     <div
                       key={item.href}
@@ -91,14 +91,14 @@ export function UnifiedLayout({
                     >
                       <Link
                         href={item.href as `/${string}`}
-                        className="glass-nav-button flex items-center justify-center scale-105"
+                        className="glass-nav-button flex items-center justify-center scale-100 md:scale-105"
                         title={item.title}
                         onClick={() => {
-                          /* console.log('Clicked:', item.href) */
+                          setMobileMenuOpen(false);
                         }}
                       >
-                        <i className={`${item.icon} relative z-10 text-3xl`}></i>
-                        <span className="relative z-10 text-sm ml-2 font-medium">{item.label}</span>
+                        <i className={`${item.icon} relative z-10 text-2xl md:text-3xl`}></i>
+                        <span className="relative z-10 text-xs md:text-sm ml-1 md:ml-2 font-medium">{item.label}</span>
                       </Link>
                     </div>
                   ))}
@@ -108,18 +108,27 @@ export function UnifiedLayout({
 
             {/* User Status po prawej */}
             <div
-              className="flex items-center gap-4 scale-105 magictime spaceInRight"
+              className="flex items-center gap-2 md:gap-4 scale-100 md:scale-105 magictime spaceInRight"
               style={{ animationDuration: '0.9s', animationDelay: `${navItems.length * 0.08}s`, animationFillMode: 'both' }}
               suppressHydrationWarning={true}
             >
               <UserStatus />
+              {/* Mobile menu toggle button */}
+              <button
+                className="mobile-menu-toggle md:hidden"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+                suppressHydrationWarning={true}
+              >
+                <i className="fas fa-bars text-white text-xl"></i>
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Main Content - dodany padding-top aby nie nachodziło na navigation tiles */}
-      <div className="relative z-20 flex-1 pt-40" suppressHydrationWarning={true}>
+      {/* Main Content - responsywny padding-top */}
+      <div className="relative z-20 flex-1 responsive-pt" suppressHydrationWarning={true}>
         {children}
       </div>
 

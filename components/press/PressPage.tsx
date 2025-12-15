@@ -143,14 +143,12 @@ export function PressPage() {
         style={{ animationDuration: '1s', animationDelay: '0.2s' }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <div className="gold-text-3d mb-6">
-            <div className="bg">Prasa i Media</div>
-            <div className="fg">Prasa i Media</div>
-          </div>
-          <div className="gold-text-3d-subtitle mb-8 max-w-3xl mx-auto">
-            <div className="bg">Opinie hodowców o naszych gołębiach, artykuły, wywiady i materiały prasowe o hodowli MTM Pałka</div>
-            <div className="fg">Opinie hodowców o naszych gołębiach, artykuły, wywiady i materiały prasowe o hodowli MTM Pałka</div>
-          </div>
+          <h1 className="text-4xl md:text-6xl font-bold white-text-shadow mb-6">
+            Prasa i Media
+          </h1>
+          <h2 className="text-2xl md:text-4xl font-semibold white-text-shadow mb-8 max-w-3xl mx-auto">
+            Opinie hodowców o naszych gołębiach, artykuły, wywiady i materiały prasowe o hodowli MTM Pałka
+          </h2>
         </div>
       </section>
 

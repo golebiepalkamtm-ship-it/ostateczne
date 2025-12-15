@@ -29,10 +29,9 @@ export default function ChampionsPage() {
         className="relative z-10 pt-44 pb-12 px-4 sm:px-6 lg:px-8"
       >
         <div className="max-w-4xl mx-auto text-center">
-          <div className="gold-text-3d mb-6">
-            <div className="bg">Champions</div>
-            <div className="fg">Champions</div>
-          </div>
+          <h1 className="text-4xl md:text-6xl font-bold white-text-shadow mb-6">
+            Champions
+          </h1>
         </div>
       </section>
 

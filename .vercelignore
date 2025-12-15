@@ -1,0 +1,17 @@
+template
+template/**
+my-prisma-postgres-app
+my-app
+__tests__
+e2e
+monitoring
+scripts
+smietnik
+*.md
+!README.md
+.env*
+!.env.production.example
+firebase-key.json
+certs
+*.log
+test-results

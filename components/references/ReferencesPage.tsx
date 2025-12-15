@@ -230,14 +230,12 @@ export function ReferencesPage() {
         style={{ animationDuration: '1s', animationDelay: '0.2s' }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <div className="gold-text-3d mb-6">
-            <div className="bg">Opinie o Gołębiach</div>
-            <div className="fg">Opinie o Gołębiach</div>
-          </div>
-          <div className="gold-text-3d-subtitle mb-8 max-w-3xl mx-auto">
-            <div className="bg">Poznaj osiągnięcia gołębi, które super latają u innych hodowców</div>
-            <div className="fg">Poznaj osiągnięcia gołębi, które super latają u innych hodowców</div>
-          </div>
+          <h1 className="text-4xl md:text-6xl font-bold white-text-shadow mb-6">
+            Opinie o Gołębiach
+          </h1>
+          <h2 className="text-2xl md:text-4xl font-semibold white-text-shadow mb-8 max-w-3xl mx-auto">
+            Poznaj osiągnięcia gołębi, które super latają u innych hodowców
+          </h2>
         </div>
       </section>
 

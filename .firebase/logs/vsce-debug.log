@@ -258,3 +258,47 @@ I1212 12:39:45.161231    8988 dev.go:105] Listening on address (HTTP + gRPC): 12
 [debug] [2025-12-12T11:39:56.161Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
 [info] [Firebase Plugin] Stopping Data Connect toolkit
 [warn] !  Data Connect Emulator has exited upon receiving signal: SIGINT 
+[debug] [2025-12-14T00:25:45.485Z] [Firebase Plugin] Activating Firebase extension.
+[info] [Firebase Plugin] Checked firebase-tools, is up to date!
+[debug] [2025-12-14T00:26:05.966Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-12-14T00:26:05.970Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-14T00:26:05.971Z] > authorizing via signed-in user (golebie.palka.mtm@gmail.com)
+[debug] [2025-12-14T00:26:05.978Z] Checked if tokens are valid: false, expires at: 1765554921440
+[debug] [2025-12-14T00:26:05.979Z] Checked if tokens are valid: false, expires at: 1765554921440
+[debug] [2025-12-14T00:26:05.980Z] > refreshing access token with scopes: []
+[debug] [2025-12-14T00:26:05.984Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-12-14T00:26:05.985Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-14T00:26:06.017Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.17.0) on port 50001
+[debug] [2025-12-14T00:26:07.580Z] I1214 01:26:07.484109    7388 control.go:94] [/emulator/pigeon-aucion-41d68-service 1db5] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1243B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1214 01:26:07.484109    7388 control.go:94] [/emulator/pigeon-aucion-41d68-service 1db5] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1243B] \n"}}
+[debug] [2025-12-14T00:26:07.583Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-12-14T00:26:07.584Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-12-14T00:26:07.585Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\Marcin_Palka\\.cache\\firebase\\emulators\\dataconnect-emulator-2.17.0.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50001","--config_dir=c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\Marcin_Palka\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.17.0.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50001\",\"--config_dir=c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-12-14T00:26:11.509Z] I1214 01:26:07.807126   20436 load.go:31] Reloading schema and connectors...
+I1214 01:26:08.107400   20436 control.go:94] [/emulator/pigeon-aucion-41d68-service c92f] UpdateResources(): done
+Main schema: sources: schema\schema.gql [800B] 
+Connector "example": sources: example\queries.gql [1243B] 
+I1214 01:26:08.238526   20436 codegen.go:80] [connector "example" javascriptSdk] Generating sources into "c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\src\\dataconnect-generated"
+I1214 01:26:08.279696   20436 collector.go:107] schema extensions wrote into "c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\dataconnect\\.dataconnect\\schema"
+Generated sources: main\input.gql [55371B] main\relation.gql [30048B] main\query.gql [7373B] main\mutation.gql [19804B] main\implicit.gql [3153B] prelude.gql [73219B] 
+I1214 01:26:08.325437   20436 collector.go:107] connector "example" javascriptSdk wrote into "c:\\Users\\Marcin_Palka\\Desktop\\Aukcje-Palka-MTM\\src\\dataconnect-generated"
+Generated sources: .guides/usage.md [2432B] .guides/setup.md [1682B] esm\package.json [17B] index.cjs.js [2139B] react\esm\package.json [17B] react\README.md [28364B] esm\index.esm.js [1851B] react\index.cjs.js [1755B] package.json [863B] README.md [22180B] react\index.d.ts [2186B] react\package.json [460B] index.d.ts [4380B] react\esm\index.esm.js [1659B] .guides/config.json [236B] 
+I1214 01:26:08.381528   20436 installsdk.go:86] Running command: C:\nvm4w\nodejs\npm.cmd install file:src\dataconnect-generated
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1214 01:26:07.807126   20436 load.go:31] Reloading schema and connectors...\nI1214 01:26:08.107400   20436 control.go:94] [/emulator/pigeon-aucion-41d68-service c92f] UpdateResources(): done\nMain schema: sources: schema\\schema.gql [800B] \nConnector \"example\": sources: example\\queries.gql [1243B] \nI1214 01:26:08.238526   20436 codegen.go:80] [connector \"example\" javascriptSdk] Generating sources into \"c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\src\\\\dataconnect-generated\"\nI1214 01:26:08.279696   20436 collector.go:107] schema extensions wrote into \"c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\dataconnect\\\\.dataconnect\\\\schema\"\nGenerated sources: main\\input.gql [55371B] main\\relation.gql [30048B] main\\query.gql [7373B] main\\mutation.gql [19804B] main\\implicit.gql [3153B] prelude.gql [73219B] \nI1214 01:26:08.325437   20436 collector.go:107] connector \"example\" javascriptSdk wrote into \"c:\\\\Users\\\\Marcin_Palka\\\\Desktop\\\\Aukcje-Palka-MTM\\\\src\\\\dataconnect-generated\"\nGenerated sources: .guides/usage.md [2432B] .guides/setup.md [1682B] esm\\package.json [17B] index.cjs.js [2139B] react\\esm\\package.json [17B] react\\README.md [28364B] esm\\index.esm.js [1851B] react\\index.cjs.js [1755B] package.json [863B] README.md [22180B] react\\index.d.ts [2186B] react\\package.json [460B] index.d.ts [4380B] react\\esm\\index.esm.js [1659B] .guides/config.json [236B] \nI1214 01:26:08.381528   20436 installsdk.go:86] Running command: C:\\nvm4w\\nodejs\\npm.cmd install file:src\\dataconnect-generated\n"}}
+[debug] [2025-12-14T00:26:12.566Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-12-14T00:26:12.567Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-14T00:26:12.582Z] [Firebase Plugin] User found:  golebie.palka.mtm@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-12-14T00:26:12.585Z] Checked if tokens are valid: true, expires at: 1765675571568
+[debug] [2025-12-14T00:26:12.586Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-12-14T00:26:13.161Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-12-14T00:26:13.162Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[debug] [2025-12-14T00:26:21.833Z] I1214 01:26:19.741528   20436 load.go:109] Finished reloading
+I1214 01:26:19.787050   20436 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50001
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1214 01:26:19.741528   20436 load.go:109] Finished reloading\nI1214 01:26:19.787050   20436 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:50001\n"}}
+[info] [Firebase Plugin] Stopping Data Connect toolkit
+[warn] !  Data Connect Emulator has exited upon receiving signal: SIGINT 

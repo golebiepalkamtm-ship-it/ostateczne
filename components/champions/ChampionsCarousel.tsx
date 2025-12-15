@@ -87,10 +87,11 @@ export const ChampionsCarousel = memo(function ChampionsCarousel({
         ref={containerRef}
         className="relative overflow-hidden"
         style={{
-          height: "100vh",
+          height: "60vh",
           perspective: "1200px",
           transformStyle: "preserve-3d",
           background: "transparent",
+          marginTop: "-8rem",
         }}
       >
         <div

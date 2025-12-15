@@ -19,7 +19,7 @@ export async function authorizeApiRequest(requiredLevel: 'level2-ok' | 'level3-o
     });
 
     if (!user) return { ok: false, status: 404, error: 'User not found.' };
-    if (requiredRole === 'admin' && user.role !== 'admin') return { ok: false, status: 403, error: 'Forbidden: Admin role required.' };
+    if (requiredRole === 'admin' && user.role !== 'ADMIN') return { ok: false, status: 403, error: 'Forbidden: Admin role required.' };
     if (requiredLevel === 'level2-ok' && !user.isProfileVerified) return { ok: false, status: 403, error: 'Forbidden: Profile verification required.' };
     if (requiredLevel === 'level3-ok' && (!user.isProfileVerified || !user.isPhoneVerified)) return { ok: false, status: 403, error: 'Forbidden: Phone/Profile verification required.' };
 

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireFirebaseAuth } from '@/lib/firebase-auth';
-import { prisma } from '@/lib/prisma';
 import { handleApiError } from '@/lib/error-handling';
 
 /**
@@ -24,6 +23,20 @@ export async function GET(request: NextRequest) {
     const { decodedToken } = authResult;
 
     // Pobierz dane użytkownika z bazy
+    const { prisma, isDatabaseConfigured } = await import('@/lib/prisma');
+    if (!isDatabaseConfigured() || !prisma) {
+      return NextResponse.json(
+        {
+          authenticated: true,
+          firebaseUid: decodedToken.uid,
+          email: decodedToken.email,
+          inDatabase: false,
+          error: 'Baza danych nie jest skonfigurowana',
+        },
+        { status: 503 },
+      );
+    }
+
     const user = await prisma.user.findFirst({
       where: { firebaseUid: decodedToken.uid },
       select: {

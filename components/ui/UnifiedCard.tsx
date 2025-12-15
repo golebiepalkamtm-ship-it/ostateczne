@@ -13,6 +13,7 @@ interface UnifiedCardProps {
   intensity?: number; // 0-1 scale for holographic effect intensity
   glowingEdges?: boolean; // Enable colored glowing edges effect
   edgeGlowIntensity?: number; // 0-1 scale for edge glow intensity
+  noTransparency?: boolean; // Disable transparency for glass variant
 }
 
 export const UnifiedCard = memo(function UnifiedCard({

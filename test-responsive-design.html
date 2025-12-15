@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Responsywnego Designu - Pałka MTM</title>
+    <style>
+        /* Import Tailwind-like responsive classes for testing */
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+        
+        /* Base styles */
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6eef8;
+            min-height: 100vh;
+        }
+        
+        /* Responsive container */
+        .site-container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .site-container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .site-container {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+            }
+        }
+        
+        /* Responsive navigation buttons */
+        .glass-nav-button {
+            --size: 8.5rem;
+            width: var(--size);
+            height: var(--size);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fef3c7;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-shadow: 0 2px 6px rgb(0 0 0 / 60%);
+            background: linear-gradient(to bottom,
+                rgb(210 185 125 / 95%) 0%,
+                rgb(190 160 95 / 85%) 30%,
+                rgb(160 135 75 / 75%) 60%,
+                rgb(90 70 40 / 60%) 100%);
+            border: 3px solid rgb(218 182 98 / 100%);
+            border-radius: 1.6rem;
+            box-shadow:
+                0 18px 40px rgb(0 0 0 / 45%),
+                0 8px 20px rgb(0 0 0 / 35%),
+                0 0 24px rgb(218 182 98 / 12%),
+                6px 6px 0 rgb(0 0 0 / 25%),
+                10px 10px 6px rgb(0 0 0 / 18%),
+                inset 0 10px 20px rgb(255 255 255 / 8%),
+                inset 0 -8px 12px rgb(0 0 0 / 50%);
+            transition:
+                transform 380ms cubic-bezier(.2,.9,.28,1),
+                box-shadow 380ms cubic-bezier(.2,.9,.28,1),
+                border-color 380ms cubic-bezier(.2,.9,.28,1),
+                background 380ms cubic-bezier(.2,.9,.28,1);
+            overflow: hidden;
+            position: relative;
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            margin: 0;
+        }
+        
+        .glass-nav-button:hover {
+            transform: scale(1.03);
+        }
+        
+        @media (max-width: 1024px) {
+            .glass-nav-button {
+                --size: 7rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .glass-nav-button {
+                --size: 5.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .glass-nav-button i {
+                font-size: 1.5rem !important;
+            }
+            
+            .glass-nav-button span {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .glass-nav-button {
+                --size: 4.5rem;
+            }
+            
+            .glass-nav-button i {
+                font-size: 1.2rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .glass-nav-button {
+                --size: 3.5rem;
+            }
+            
+            .glass-nav-button i {
+                font-size: 1rem !important;
+            }
+        }
+        
+        /* Responsive hero image */
+        .hero-section-image {
+            width: 600px;
+            height: 600px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 13px rgb(0 0 0 / 0.3));
+        }
+        
+        @media (max-width: 1024px) {
+            .hero-section-image {
+                width: 480px;
+                height: 480px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section-image {
+                width: 360px;
+                height: 360px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .hero-section-image {
+                width: 280px;
+                height: 280px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-section-image {
+                width: 240px;
+                height: 240px;
+            }
+        }
+        
+        /* Responsive typography */
+        .responsive-heading {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 4px 4px 8px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .responsive-subheading {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 4px 4px 8px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        
+        /* Responsive layout */
+        .responsive-pt {
+            padding-top: 4rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .responsive-pt {
+                padding-top: 3rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .responsive-pt {
+                padding-top: 2rem;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .responsive-pt {
+                padding-top: 1.5rem;
+            }
+        }
+        
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                right: 1rem;
+                z-index: 1002;
+                background: rgba(255, 255, 255, 0.9);
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+                cursor: pointer;
+                border: none;
+            }
+            
+            .mobile-menu-toggle i {
+                color: #333;
+            }
+        }
+        
+        /* Test sections */
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section h3 {
+            color: #fff;
+            margin-top: 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 0.5rem;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .test-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Device frames for testing */
+        .device-frame {
+            background: #333;
+            border-radius: 2rem;
+            padding: 1rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .device-frame::before {
+            content: attr(data-device);
+            position: absolute;
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 0.25rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .device-content {
+            background: #fff;
+            border-radius: 1rem;
+            overflow: hidden;
+            height: 600px;
+        }
+        
+        .device-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Responsive info table */
+        .responsive-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        
+        .responsive-table th,
+        .responsive-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .responsive-table th {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .responsive-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Info boxes */
+        .info-box {
+            background: linear-gradient(135deg, rgba(100, 180, 255, 0.1) 0%, rgba(100, 180, 255, 0.05) 100%);
+            border-left: 3px solid #64b4ff;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, rgba(100, 255, 180, 0.1) 0%, rgba(100, 255, 180, 0.05) 100%);
+            border-left: 3px solid #64ffb4;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, rgba(255, 200, 100, 0.1) 0%, rgba(255, 200, 100, 0.05) 100%);
+            border-left: 3px solid #ffc864;
+        }
+    </style>
+</head>
+<body>
+    <div class="site-container">
+        <header class="text-center responsive-pt">
+            <h1 class="responsive-heading">Test Responsywnego Designu</h1>
+            <h2 class="responsive-subheading">Pałka MTM - Mistrzowie Sprintu</h2>
+        </header>
+        
+        <main>
+            <section class="test-section">
+                <h3>Podsumowanie Poprawek Responsywnych</h3>
+                <p>Ta strona testowa demonstruje wszystkie wprowadzone poprawki responsywnego designu dla strony Pałka MTM.</p>
+                
+                <div class="info-box">
+                    <strong>Główne poprawki:</strong>
+                    <ul>
+                        <li>✅ Responsywne przyciski nawigacyjne (skalowanie od 8.5rem do 3.5rem)</li>
+                        <li>✅ Responsywne obrazy (skalowanie od 600px do 240px)</li>
+                        <li>✅ Responsywna typografia (clamp() dla płynnego skalowania)</li>
+                        <li>✅ Responsywne układy i odstępy</li>
+                        <li>✅ Mobile menu toggle dla małych ekranów</li>
+                        <li>✅ Breakpointy: 480px, 640px, 768px, 1024px, 1280px, 1536px</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="test-section">
+                <h3>Test Przycisków Nawigacyjnych</h3>
+                <p>Przyciski automatycznie dostosowują rozmiar i układ w zależności od szerokości ekranu:</p>
+                
+                <div class="test-grid">
+                    <div class="test-item">
+                        <h4>Desktop (1024px+)</h4>
+                        <p>Rozmiar: 8.5rem</p>
+                        <p>Ikona: 3xl (1.5rem)</p>
+                        <p>Tekst: widoczny</p>
+                    </div>
+                    <div class="test-item">
+                        <h4>Tablet (768px)</h4>
+                        <p>Rozmiar: 5.5rem</p>
+                        <p>Ikona: 2xl (1.5rem)</p>
+                        <p>Tekst: ukryty</p>
+                    </div>
+                    <div class="test-item">
+                        <h4>Mobile (480px)</h4>
+                        <p>Rozmiar: 3.5rem</p>
+                        <p>Ikona: lg (1rem)</p>
+                        <p>Tekst: ukryty</p>
+                    </div>
+                </div>
+                
+                <div class="test-item mt-2">
+                    <h4>Przykładowy przycisk nawigacyjny:</h4>
+                    <a href="#" class="glass-nav-button">
+                        <i class="fas fa-home"></i>
+                        <span>Strona Główna</span>
+                    </a>
+                </div>
+            </section>
+            
+            <section class="test-section">
+                <h3>Test Responsywnych Obrazów</h3>
+                <p>Obrazy skalują się płynnie od 600px (desktop) do 240px (mobile):</p>
+                
+                <div class="test-grid">
+                    <div class="test-item text-center">
+                        <h4>Desktop (1024px+)</h4>
+                        <p>600px × 600px</p>
+                        <img src="/pigeon.gif" alt="Gołąb desktop" class="hero-section-image" style="width: 600px; height: 600px;">
+                    </div>
+                    <div class="test-item text-center">
+                        <h4>Mobile (480px)</h4>
+                        <p>240px × 240px</p>
+                        <img src="/pigeon.gif" alt="Gołąb mobile" class="hero-section-image" style="width: 240px; height: 240px;">
+                    </div>
+                </div>
+            </section>
+            
+            <section class="test-section">
+                <h3>Test Typografii</h3>
+                <p>Tekst skaluje się płynnie używając funkcji clamp():</p>
+                
+                <div class="test-item">
+                    <h4>Nagłówek responsywny:</h4>
+                    <p class="responsive-heading">Pałka MTM - Mistrzowie Sprintu</p>
+                    <p class="mt-1">Rozmiar: clamp(1.5rem, 4vw, 3rem)</p>
+                </div>
+                
+                <div class="test-item mt-2">
+                    <h4>Podtytuł responsywny:</h4>
+                    <p class="responsive-subheading">Najlepsze gołębie pocztowe w Polsce</p>
+                    <p class="mt-1">Rozmiar: clamp(1.2rem, 3vw, 2rem)</p>
+                </div>
+            </section>
+            
+            <section class="test-section">
+                <h3>Tabela Breakpointów</h3>
+                <table class="responsive-table">
+                    <thead>
+                        <tr>
+                            <th>Breakpoint</th>
+                            <th>Szerokość</th>
+                            <th>Zachowanie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2xl</td>
+                            <td>1536px</td>
+                            <td>Pełny desktop, maksymalne rozmiary</td>
+                        </tr>
+                        <tr>
+                            <td>xl</td>
+                            <td>1280px</td>
+                            <td>Duży desktop</td>
+                        </tr>
+                        <tr>
+                            <td>lg</td>
+                            <td>1024px</td>
+                            <td>Standardowy desktop</td>
+                        </tr>
+                        <tr>
+                            <td>md</td>
+                            <td>768px</td>
+                            <td>Tablet - ukrycie tekstu w przyciskach</td>
+                        </tr>
+                        <tr>
+                            <td>sm</td>
+                            <td>640px</td>
+                            <td>Mały tablet/mobile - mniejsze przyciski</td>
+                        </tr>
+                        <tr>
+                            <td>xs</td>
+                            <td>360px</td>
+                            <td>Bardzo małe urządzenia</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <section class="test-section">
+                <h3>Instrukcje Testowania</h3>
+                <div class="info-box">
+                    <strong>Jak testować responsywność:</strong>
+                    <ol>
+                        <li>Otwórz tę stronę w przeglądarce</li>
+                        <li>Użyj narzędzi deweloperskich (F12) → Device Toolbar</li>
+                        <li>Testuj różne rozmiary ekranu:</li>
+                        <ul>
+                            <li>iPhone SE (375px)</li>
+                            <li>iPhone 12 (390px)</li>
+                            <li>iPad (768px)</li>
+                            <li>iPad Pro (1024px)</li>
+                            <li>Desktop (1920px)</li>
+                        </ul>
+                        <li>Sprawdź czy wszystkie elementy poprawnie się skalują</li>
+                        <li>Testuj na rzeczywistych urządzeniach mobilnych</li>
+                    </ol>
+                </div>
+                
+                <div class="success-box mt-2">
+                    <strong>Oczekiwane zachowanie:</strong>
+                    <ul>
+                        <li>✅ Przyciski nawigacyjne zmniejszają się na mniejszych ekranach</li>
+                        <li>✅ Tekst w przyciskach znika poniżej 768px</li>
+                        <li>✅ Obrazy skalują się płynnie</li>
+                        <li>✅ Tekst nagłówków dostosowuje rozmiar</li>
+                        <li>✅ Układ pozostaje czytelny na wszystkich rozmiarach</li>
+                        <li>✅ Mobile menu toggle pojawia się na małych ekranach</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="test-section">
+                <h3>Porównanie Przed/Po</h3>
+                <div class="test-grid">
+                    <div class="test-item">
+                        <h4>Przed poprawkami:</h4>
+                        <ul>
+                            <li>❌ Przyciski o stałym rozmiarze (8.5rem)</li>
+                            <li>❌ Obrazy o stałym rozmiarze (600px)</li>
+                            <li>❌ Brak breakpointów dla małych urządzeń</li>
+                            <li>❌ Tekst nie skalował się</li>
+                            <li>❌ Problemy z wyświetlaniem na mobile</li>
+                        </ul>
+                    </div>
+                    <div class="test-item">
+                        <h4>Po poprawkach:</h4>
+                        <ul>
+                            <li>✅ Przyciski responsywne (3.5rem - 8.5rem)</li>
+                            <li>✅ Obrazy responsywne (240px - 600px)</li>
+                            <li>✅ Pełne wsparcie dla wszystkich breakpointów</li>
+                            <li>✅ Płynne skalowanie tekstu</li>
+                            <li>✅ Optymalne wyświetlanie na wszystkich urządzeniach</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-4 mb-8">
+            <p class="text-sm opacity-75">Test Responsywnego Designu • Pałka MTM • © 2025</p>
+            <div class="mt-2">
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                    ↑ Wróć do góry
+                </button>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // Add some interactive elements for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Responsive design test page loaded');
+            
+            // Add current viewport size display
+            const sizeDisplay = document.createElement('div');
+            sizeDisplay.style.position = 'fixed';
+            sizeDisplay.style.bottom = '1rem';
+            sizeDisplay.style.right = '1rem';
+            sizeDisplay.style.background = 'rgba(0, 0, 0, 0.7)';
+            sizeDisplay.style.color = 'white';
+            sizeDisplay.style.padding = '0.5rem 1rem';
+            sizeDisplay.style.borderRadius = '0.5rem';
+            sizeDisplay.style.fontSize = '0.8rem';
+            sizeDisplay.style.zIndex = '1000';
+            sizeDisplay.id = 'viewport-size';
+            document.body.appendChild(sizeDisplay);
+            
+            function updateViewportSize() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                let breakpoint = 'Unknown';
+                
+                if (width >= 1536) breakpoint = '2xl';
+                else if (width >= 1280) breakpoint = 'xl';
+                else if (width >= 1024) breakpoint = 'lg';
+                else if (width >= 768) breakpoint = 'md';
+                else if (width >= 640) breakpoint = 'sm';
+                else if (width >= 360) breakpoint = 'xs';
+                else breakpoint = 'xxs';
+                
+                sizeDisplay.textContent = `${width}px × ${height}px (${breakpoint})`;
+            }
+            
+            window.addEventListener('resize', updateViewportSize);
+            updateViewportSize();
+            
+            // Add mobile menu toggle functionality for demo
+            const mobileToggle = document.createElement('button');
+            mobileToggle.className = 'mobile-menu-toggle';
+            mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            mobileToggle.style.position = 'fixed';
+            mobileToggle.style.top = '1rem';
+            mobileToggle.style.right = '1rem';
+            mobileToggle.style.zIndex = '1002';
+            mobileToggle.style.background = 'rgba(255, 255, 255, 0.9)';
+            mobileToggle.style.borderRadius = '0.5rem';
+            mobileToggle.style.padding = '0.5rem';
+            mobileToggle.style.cursor = 'pointer';
+            mobileToggle.style.border = 'none';
+            
+            document.body.appendChild(mobileToggle);
+            
+            // Add click handler
+            mobileToggle.addEventListener('click', function() {
+                alert('Mobile menu toggle clicked! This would show/hide the navigation on small screens.');
+            });
+        });
+    </script>
+</body>
+</html>

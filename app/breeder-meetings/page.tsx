@@ -244,14 +244,12 @@ export default function BreederMeetingsPage() {
         className="relative z-10 pt-40 pb-12 px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-12"
       >
         <div className="w-full mx-auto text-center">
-          <div className="gold-text-3d mb-6">
-            <div className="bg">Spotkania z Hodowcami</div>
-            <div className="fg">Spotkania z Hodowcami</div>
-          </div>
-          <div className="gold-text-3d-subtitle mb-8 max-w-3xl mx-auto">
-            <div className="bg">Galeria zdjęć z naszych spotkań z hodowcami gołębi pocztowych</div>
-            <div className="fg">Galeria zdjęć z naszych spotkań z hodowcami gołębi pocztowych</div>
-          </div>
+          <h1 className="text-4xl md:text-6xl font-bold white-text-shadow mb-6">
+            Spotkania z Hodowcami
+          </h1>
+          <h2 className="text-2xl md:text-4xl font-semibold white-text-shadow mb-8 max-w-3xl mx-auto">
+            Galeria zdjęć z naszych spotkań z hodowcami gołębi pocztowych
+          </h2>
         </div>
       </section>
 

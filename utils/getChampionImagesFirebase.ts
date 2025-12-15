@@ -1,4 +1,4 @@
-import { storage } from '@/lib/firebase';
+import { storage } from '@/lib/firebase.client';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
 
 export interface ChampionImageData {

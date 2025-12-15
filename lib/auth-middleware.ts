@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { error as logError } from '@/lib/logger'
 import * as Sentry from '@sentry/nextjs'
 import { ROLE_HIERARCHY, Role } from '@/types/auth'
+import { captureException } from '@/lib/sentry-helpers'
 
 /**
  * Uniwersalna funkcja sprawdzająca czy użytkownik spełnia wymagania roli

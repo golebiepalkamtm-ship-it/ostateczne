@@ -805,13 +805,285 @@ html, body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-/* Container helper */
+/* === REMOVED SCALING RULES === */
+/* Global page scaling is now handled in layout.tsx */
+body {
+  transform: none !important; /* Allow layout scaling to work */
+}
+
+/* === IMAGE SHARPNESS ENHANCEMENT === */
+/* Targeted approach - only for images, not all elements */
+img,
+.bg-image,
+.background-image,
+[class*="bg-"],
+[class*="background-"] {
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+  filter: none !important;
+}
+
+/* Remove blur effects from specific elements only */
+.magictime,
+.puffIn,
+.vanishIn,
+.boingInUp,
+.twisterInUp {
+  filter: none !important;
+}
+
+/* Remove glow effects that cause blur */
+[class*="card"]::before,
+[class*="card"]::after,
+[class*="glass"]::before,
+[class*="glass"]::after,
+.btn-primary::before,
+.btn-primary::after,
+.btn-secondary::before,
+.btn-secondary::after,
+.glass-nav-button::before,
+.glass-nav-button::after {
+  display: none !important;
+}
+
+/* Container helper - now responsive */
 .site-container {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+@media (max-width: 768px) {
+  .site-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-container {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+}
+
+/* Responsive navigation buttons */
+.glass-nav-button {
+  --size: 8.5rem;
+  width: var(--size);
+  height: var(--size);
+}
+
+@media (max-width: 1024px) {
+  .glass-nav-button {
+    --size: 7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .glass-nav-button {
+    --size: 5.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .glass-nav-button i {
+    font-size: 1.5rem !important;
+  }
+  
+  .glass-nav-button span {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .glass-nav-button {
+    --size: 4.5rem;
+  }
+  
+  .glass-nav-button i {
+    font-size: 1.2rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-nav-button {
+    --size: 3.5rem;
+  }
+  
+  .glass-nav-button i {
+    font-size: 1rem !important;
+  }
+}
+
+/* Responsive hero section */
+.hero-section-image {
+  width: 600px;
+  height: 600px;
+}
+
+@media (max-width: 1024px) {
+  .hero-section-image {
+    width: 480px;
+    height: 480px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section-image {
+    width: 360px;
+    height: 360px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-section-image {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section-image {
+    width: 240px;
+    height: 240px;
+  }
+}
+
+/* Responsive typography */
+.responsive-heading {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+}
+
+.responsive-subheading {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 768px) {
+  .unified-layout {
+    padding-top: 3rem !important;
+  }
+  
+  .navigation-container {
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .unified-layout {
+    padding-top: 2rem !important;
+  }
+}
+
+/* Mobile menu toggle (hidden by default) */
+.mobile-menu-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: block;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1002;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+  
+  /* Hide navigation on mobile by default */
+  .mobile-nav-hidden .navigation-container {
+    display: none;
+  }
+  
+  .mobile-nav-visible .navigation-container {
+    display: flex;
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem !important;
+    z-index: 1001;
+  }
+}
+
+/* Responsive cards and containers */
+@media (max-width: 768px) {
+  [class*="card"],
+  [class*="glass"],
+  [class*="container"] {
+    border-radius: 1rem !important;
+    padding: 0.75rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  [class*="card"],
+  [class*="glass"],
+  [class*="container"] {
+    border-radius: 0.75rem !important;
+    padding: 0.5rem !important;
+  }
+}
+
+/* Responsive spacing */
+.responsive-pt {
+  padding-top: 4rem;
+}
+
+@media (max-width: 1024px) {
+  .responsive-pt {
+    padding-top: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .responsive-pt {
+    padding-top: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .responsive-pt {
+    padding-top: 1.5rem;
+  }
+}
+
+/* Responsive image handling */
+.responsive-image {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* Ensure proper scaling on mobile devices */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
 }
 
 /* Links and accessible focus */
@@ -855,6 +1127,12 @@ h1, h2, h3, h4 {
 
 /* End of site base improvements */
 
+/* White text with strong black shadow for headers */
+.white-text-shadow {
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 4px 4px 8px rgba(0, 0, 0, 0.6);
+}
+
 /* ========================================
    3D GOLD TEXT EFFECT FOR HEADERS
    ======================================== */
@@ -880,10 +1158,10 @@ h1, h2, h3, h4 {
   color: #363833;
   font-family: 'Poppins', sans-serif;
   font-weight: 900;
-  font-size: clamp(3em, 15vw, 6rem);
+  font-size: clamp(1em, 6vw, 2.5rem);
   grid-area: overlap;
-  letter-spacing: 1px;
-  -webkit-text-stroke: 4px transparent;
+  letter-spacing: 0.5px;
+  -webkit-text-stroke: 1px transparent;
   line-height: 1.1;
 }
 
@@ -920,10 +1198,10 @@ h1, h2, h3, h4 {
   color: #363833;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: clamp(2em, 10vw, 3.5rem);
+  font-size: clamp(0.8em, 4vw, 1.5rem);
   grid-area: overlap;
-  letter-spacing: 0.5px;
-  -webkit-text-stroke: 2px transparent;
+  letter-spacing: 0.3px;
+  -webkit-text-stroke: 0.5px transparent;
   line-height: 1.2;
 }
 

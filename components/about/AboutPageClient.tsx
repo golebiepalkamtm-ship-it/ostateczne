@@ -72,14 +72,12 @@ export default function AboutPageClient() {
         className="relative z-10 pt-44 pb-12 px-4 sm:px-6 lg:px-8"
       >
         <div className="max-w-4xl mx-auto text-center">
-          <div className="gold-text-3d mb-6">
-            <div className="bg">O nas</div>
-            <div className="fg">O nas</div>
-          </div>
-          <div className="gold-text-3d-subtitle mb-8 max-w-3xl mx-auto">
-            <div className="bg">Poznaj historię i pasję stojącą za hodowlą gołębi pocztowych MTM Pałka</div>
-            <div className="fg">Poznaj historię i pasję stojącą za hodowlą gołębi pocztowych MTM Pałka</div>
-          </div>
+          <h1 className="text-4xl md:text-6xl font-bold white-text-shadow mb-6">
+            O nas
+          </h1>
+          <h2 className="text-2xl md:text-4xl font-semibold white-text-shadow mb-8 max-w-3xl mx-auto">
+            Poznaj historię i pasję stojącą za hodowlą gołębi pocztowych MTM Pałka
+          </h2>
         </div>
       </section>
 

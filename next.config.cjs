@@ -45,7 +45,7 @@ const baseConfig = {
       "style-src 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
       "style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com https://cdnjs.cloudflare.com",
       "img-src 'self' data: blob: https://storage.googleapis.com https://firebasestorage.googleapis.com",
-      "connect-src 'self' https://sentry.io https://pigeon-aucion-a722b.firebaseapp.com https://storage.googleapis.com https://palkamtm.pl https://palkamtm.pl/api/metrics https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://firebaseinstallations.googleapis.com https://*.googleapis.com",
+      "connect-src 'self' https://sentry.io https://pigeon-4fba2.firebaseapp.com https://storage.googleapis.com https://palkamtm.pl https://palkamtm.pl/api/metrics https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebasestorage.googleapis.com https://firebaseinstallations.googleapis.com https://*.googleapis.com https://*.google-analytics.com https://region1.google-analytics.com https://www.google-analytics.com https://googletagmanager.com",
       "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
       "worker-src 'self' blob:",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
@@ -65,12 +65,22 @@ const baseConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), fullscreen=self' },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
           { key: 'Content-Security-Policy', value: csp },
+          // Headers for Firebase Auth popup compatibility
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+          { key: 'Cross-Origin-Embedder-Policy', value: 'unsafe-none' },
         ],
       },
       {
         source: '/api/(.*)',
         headers: [
           { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        ],
+      },
+      {
+        source: '/manifest.json',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+          { key: 'Content-Type', value: 'application/manifest+json' },
         ],
       },
     ];
@@ -146,6 +156,14 @@ let nextConfig = withPWA(baseConfig);
 
 nextConfig.webpack = (config, options) => {
   const webpack = require('webpack');
+  const path = require('path');
+
+  // Exclude --template folder from compilation
+  config.resolve = config.resolve || {};
+  config.resolve.alias = {
+    ...(config.resolve.alias || {}),
+    '--template': false,
+  };
 
   if (options.dev || isPhaseProductionBuild) {
     config.plugins = [
@@ -220,9 +238,18 @@ nextConfig.webpack = (config, options) => {
       ...(config.watchOptions.ignored || []),
       /(^|[\\/])node_modules([\\/]|$)/,
       /(^|[\\/])C:[\\/](?:pagefile|swapfile)\.sys$/i,
+      /(^|[\\/])--template([\\/]|$)/, // Ignore template folder
     ]
   } catch {
     // ignore
+  }
+
+  // Exclude --template folder from build
+  if (config.module && config.module.rules) {
+    config.module.rules.push({
+      test: /--template/,
+      use: 'ignore-loader'
+    });
   }
 
   return config;

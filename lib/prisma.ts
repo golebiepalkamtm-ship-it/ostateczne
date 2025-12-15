@@ -1,3 +1,8 @@
+// Force engine type to avoid client engine validation errors - MUST be first
+if (!process.env.PRISMA_CLIENT_ENGINE_TYPE || process.env.PRISMA_CLIENT_ENGINE_TYPE.toLowerCase() === 'client') {
+  process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
+}
+
 import type { PrismaClient as PrismaClientType } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as {
@@ -11,6 +16,7 @@ const getDatabaseUrl = () => {
   const urlFromEnv =
     process.env.DEV_DATABASE_URL ||
     process.env.DATABASE_URL ||
+    process.env.SKŁADOWANIE_URL || // Nowa zmienna z Vercel PostgreSQL
     process.env.PROD_DATABASE_URL ||
     process.env.TEST_DATABASE_URL ||
     '';
@@ -29,13 +35,14 @@ export function isDatabaseConfigured(): boolean {
   const isPlaceholder = lower.includes('placeholder');
   const isPostgresUrl = lower.startsWith('postgres://') || lower.startsWith('postgresql://');
 
+  // Log database configuration status for debugging
+  console.log('[Prisma] Database URL configured:', !!databaseUrl, 'Is PostgreSQL:', isPostgresUrl, 'Is placeholder:', isPlaceholder);
+
   return !isPlaceholder && isPostgresUrl;
 }
 
 // Lazy initialization function to avoid Prisma initialization during build
 const createPrismaClient = () => {
-  const databaseUrl = getDatabaseUrl();
-
   // Wymuś bezpieczny typ silnika – nie używaj "client", który wymaga adaptera/accelerateUrl
   if (!process.env.PRISMA_CLIENT_ENGINE_TYPE || process.env.PRISMA_CLIENT_ENGINE_TYPE.toLowerCase() === 'client') {
     process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
@@ -65,10 +72,22 @@ const createPrismaClient = () => {
   }
 };
 
-export const prisma =
-  globalForPrisma.prisma ?? createPrismaClient();
+const _prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== 'production' && prisma) globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production' && _prisma) globalForPrisma.prisma = _prisma;
+
+// Export with type assertion - runtime checks are done via isDatabaseConfigured()
+// During build, DATABASE_URL may not be available, but at runtime it will be
+// We use 'as any' to bypass TypeScript checks during build - runtime will handle undefined cases
+export const prisma = _prisma as any as PrismaClientType;
+
+// Type guard helper for runtime checks
+export function requirePrisma(): PrismaClientType {
+  if (!prisma) {
+    throw new Error('Prisma client is not initialized. Database may not be configured.');
+  }
+  return prisma;
+}
 
 // Database fallback utility function
 export async function withDatabaseFallback<T>(

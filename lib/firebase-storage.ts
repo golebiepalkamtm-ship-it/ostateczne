@@ -8,7 +8,7 @@
  */
 
 import { getStorage, ref, getDownloadURL } from 'firebase/storage'
-import { app } from '@/lib/firebase'
+import { app } from '@/lib/firebase.client'
 
 /**
  * Zwraca publiczny URL dla pliku w Firebase Storage

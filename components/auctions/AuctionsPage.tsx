@@ -276,14 +276,12 @@ export function AuctionsPage() {
         style={{ animationDuration: '1s', animationDelay: '0.2s' }}
       >
         <div className="max-w-5xl mx-auto text-center">
-          <div className="gold-text-3d mb-6">
-            <div className="bg">Nasze Aukcje</div>
-            <div className="fg">Nasze Aukcje</div>
-          </div>
-          <div className="gold-text-3d-subtitle mb-8 max-w-4xl mx-auto">
-            <div className="bg">Licytuj ekskluzywne gołębie pocztowe z rodowodami championów</div>
-            <div className="fg">Licytuj ekskluzywne gołębie pocztowe z rodowodami championów</div>
-          </div>
+          <h1 className="text-4xl md:text-6xl font-bold white-text-shadow mb-6">
+            Nasze Aukcje
+          </h1>
+          <h2 className="text-2xl md:text-4xl font-semibold white-text-shadow mb-8 max-w-4xl mx-auto">
+            Licytuj ekskluzywne gołębie pocztowe z rodowodami championów
+          </h2>
         </div>
       </section>
 

@@ -16,7 +16,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pl" data-scroll-behavior="smooth" suppressHydrationWarning={true}>
+    <html lang="pl" data-scroll-behavior="smooth" suppressHydrationWarning={true} style={{ zoom: 0.8 }}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/logo.png" />

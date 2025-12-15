@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "m-t-m-62972",
-    "staging": "m-t-m-62972"
+    "default": "pigeon-4fba2",
+    "staging": "pigeon-4fba2"
   },
   "targets": {},
   "etags": {}

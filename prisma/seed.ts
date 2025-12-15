@@ -1,12 +1,19 @@
+// Separate Prisma client for seed script to avoid engine type issues
+import 'dotenv/config';
+
+// Force engine type before any Prisma imports
+if (!process.env.PRISMA_CLIENT_ENGINE_TYPE || process.env.PRISMA_CLIENT_ENGINE_TYPE.toLowerCase() === 'client') {
+  process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
+}
+
 /**
  * Database Seeding Script for Palka MTM Auction System
  * Initializes roles and basic data for the 3-level verification system
  */
 
-import { PrismaClient, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { captureError } from '../lib/sentry-helpers';
-
-const prisma = new PrismaClient();
+import { prisma } from './seed-prisma';
 
 interface RoleSeedData {
   name: string;
@@ -45,6 +52,10 @@ const ROLES_SEED_DATA: RoleSeedData[] = [
 async function seedRoles() {
   console.log('🌱 Starting database seeding...');
 
+  if (!prisma) {
+    throw new Error('Prisma client not available. Check database configuration.');
+  }
+
   try {
     // Check if roles already exist
     const existingRoles = await prisma.user.findMany({
@@ -52,7 +63,7 @@ async function seedRoles() {
       distinct: ['role'],
     });
 
-    const existingRoleNames = existingRoles.map(u => u.role);
+    const existingRoleNames = existingRoles.map((u: { role: Role }) => u.role);
     const rolesToCreate = ROLES_SEED_DATA.filter(role => !existingRoleNames.includes(role.name as Role));
 
     if (rolesToCreate.length === 0) {
@@ -84,6 +95,11 @@ async function seedRoles() {
 }
 
 async function verifyDatabaseConnection() {
+  if (!prisma) {
+    console.error('❌ Prisma client not available');
+    return false;
+  }
+
   try {
     await prisma.$connect();
     console.log('✅ Database connection successful');
@@ -121,5 +137,7 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    if (prisma) {
+      await prisma.$disconnect();
+    }
   });
