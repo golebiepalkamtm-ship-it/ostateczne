@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       <ContactPageClient />
     </UnifiedLayout>
   );

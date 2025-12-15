@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function ChampionsPage() {
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       {/* Hero Section */}
       <section
         className="relative z-10 pt-44 pb-12 px-4 sm:px-6 lg:px-8"

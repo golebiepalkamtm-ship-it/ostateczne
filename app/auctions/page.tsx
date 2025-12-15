@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function Auctions() {
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       <main>
         <AuctionsPage />
       </main>

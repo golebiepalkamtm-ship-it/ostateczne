@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function Press() {
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       <PressPage />
     </UnifiedLayout>
   );

@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function References() {
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       <ReferencesPage />
     </UnifiedLayout>
   );

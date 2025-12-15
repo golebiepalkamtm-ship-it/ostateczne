@@ -8,7 +8,7 @@ import { UnifiedLayout } from '@/components/layout/UnifiedLayout';
 
 export default function AchievementsPage() {
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       {/* Hero Section - z padding-top dla miejsca na logo i nawigację, delay 0.8s czeka na animację fade-in-fwd */}
       <section className="relative z-10 pt-48 pb-12 px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-12">
         <div className="w-full mx-auto text-center">

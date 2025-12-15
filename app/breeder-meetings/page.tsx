@@ -238,7 +238,7 @@ export default function BreederMeetingsPage() {
   }
 
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       {/* Hero Section - z padding-top dla miejsca na logo i nawigację */}
       <section
         className="relative z-10 pt-40 pb-12 px-2 sm:px-4 lg:px-6 xl:px-8 2xl:px-12"

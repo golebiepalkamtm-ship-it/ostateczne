@@ -8,7 +8,7 @@ import { UnifiedLayout } from '@/components/layout/UnifiedLayout';
 
 export default function PrivacyPage() {
   return (
-    <UnifiedLayout isHomePage={true}>
+    <UnifiedLayout>
       <div className="relative z-10 pt-60 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
